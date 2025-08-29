@@ -1,0 +1,28 @@
+// assets/custom-bootstrap.scss
+
+// 1. Функции (обязательно в самом начале)
+@import "bootstrap/scss/functions";
+
+// 2. Переменные и карты (тут есть $gutters)
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/maps";
+
+// 3. Миксины (после переменных)
+@import "bootstrap/scss/mixins";
+
+// 4. Основные стили (root, reboot и т.д.)
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/utilities";
+
+// 5. Компоненты, которые нужны
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";

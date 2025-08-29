@@ -1,0 +1,16 @@
+// Функции и переменные (обязательно)
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+// Базовые стили и сброс
+@import "bootstrap/scss/reboot";
+
+// Сетка и адаптивность
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/utilities";
+
+// Компоненты
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/forms";
