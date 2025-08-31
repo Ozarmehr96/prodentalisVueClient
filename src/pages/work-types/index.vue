@@ -26,7 +26,7 @@
             <td>
               <button
                 class="btn btn-danger btn-sm"
-                @click.stop="deleteWorkStep(workType.id)"
+                @click.stop="deleteWorkType(workType.id)"
               >
                 <i class="bi bi-trash"></i>
                 <!-- иконка из Bootstrap Icons -->
@@ -43,7 +43,7 @@
 <script>
 import { mapActions } from "vuex";
 import AppPage from "../../components/AppPage.vue";
-import { LOAD_WORK_TYPES } from "../../store/types";
+import { DELETE_WORK_TYPE, LOAD_WORK_TYPES } from "../../store/types";
 
 /**
  * Страница "Типы работ"
@@ -70,8 +70,14 @@ export default {
   methods: {
     ...mapActions({
       loadWorkSteps: LOAD_WORK_TYPES,
+      deleteWorkTypeAction: DELETE_WORK_TYPE,
     }),
-    deleteWorkStep(id) {},
+    async deleteWorkType(id) {
+      await this.deleteWorkTypeAction(id).then(() => {
+        this.$toast(`Тип работы успешно удален`);
+        this.workTypes = this.workTypes.filter((type) => type.id !== id);
+      });
+    },
   },
 };
 </script>

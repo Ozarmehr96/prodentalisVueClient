@@ -1,0 +1,642 @@
+<template>
+  <div class="teeth-arc-container">
+    <svg
+      viewBox="100 -55 1000 2000"
+      preserveAspectRatio="xMidYMin meet"
+      xmlns="http://www.w3.org/2000/svg"
+      style="width: auto; height: 100%; max-width: 100%"
+    >
+      <g id="teeth-layer" @click="handleToothClick">
+        <!-- Верхняя дуга -->
+        <g class="tooth" id="tooth-18" transform="translate(205, 698)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            18
+          </text>
+        </g>
+        <g class="tooth" id="tooth-17" transform="translate(182, 568)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            17
+          </text>
+        </g>
+        <g class="tooth" id="tooth-16" transform="translate(186, 436)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            16
+          </text>
+        </g>
+        <g class="tooth" id="tooth-15" transform="translate(216, 308)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            15
+          </text>
+        </g>
+        <g class="tooth" id="tooth-14" transform="translate(272, 195)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            14
+          </text>
+        </g>
+        <g class="tooth" id="tooth-13" transform="translate(349, 103)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            13
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-12"
+          transform="translate(443, 38) rotate(-3)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            12
+          </text>
+        </g>
+        <g class="tooth" id="tooth-11" transform="translate(546, 4) rotate(-6)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            11
+          </text>
+        </g>
+        <g class="tooth" id="tooth-21" transform="translate(654, 4) rotate(-9)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            21
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-22"
+          transform="translate(757, 38) rotate(-12)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            22
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-23"
+          transform="translate(851, 103) rotate(-15)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            23
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-24"
+          transform="translate(928, 195) rotate(-18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            24
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-25"
+          transform="translate(984, 308) rotate(-18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            25
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-26"
+          transform="translate(1014, 436) rotate(-18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            26
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-27"
+          transform="translate(1018, 568) rotate(-18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            27
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-28"
+          transform="translate(995, 698) rotate(-18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            28
+          </text>
+        </g>
+
+        <!-- Нижняя дуга -->
+        <g class="tooth" id="tooth-48" transform="translate(205, 982)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            48
+          </text>
+        </g>
+        <g class="tooth" id="tooth-47" transform="translate(182, 1112)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            47
+          </text>
+        </g>
+        <g class="tooth" id="tooth-46" transform="translate(186, 1244)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            46
+          </text>
+        </g>
+        <g class="tooth" id="tooth-45" transform="translate(216, 1372)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            45
+          </text>
+        </g>
+        <g class="tooth" id="tooth-44" transform="translate(272, 1485)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            44
+          </text>
+        </g>
+        <g class="tooth" id="tooth-43" transform="translate(349, 1577)">
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            43
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-42"
+          transform="translate(443, 1642) rotate(3)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            42
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-41"
+          transform="translate(546, 1676) rotate(6)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            41
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-31"
+          transform="translate(654, 1676) rotate(9)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            31
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-32"
+          transform="translate(757, 1642) rotate(12)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            32
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-33"
+          transform="translate(851, 1577) rotate(15)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            33
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-34"
+          transform="translate(928, 1485) rotate(18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            34
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-35"
+          transform="translate(984, 1372) rotate(18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            35
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-36"
+          transform="translate(1014, 1244) rotate(18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            36
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-37"
+          transform="translate(1018, 1112) rotate(18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            37
+          </text>
+        </g>
+        <g
+          class="tooth"
+          id="tooth-38"
+          transform="translate(995, 982) rotate(18)"
+        >
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="51"
+            ry="50"
+            fill="#efe6d0"
+            stroke="#bfae92"
+            stroke-width="2"
+          />
+          <text x="0" y="20" font-size="42" fill="#111111" text-anchor="middle">
+            38
+          </text>
+        </g>
+      </g>
+    </svg>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "TeethArc",
+  data() {
+    return {
+      selectedTeeth: [], // массив выбранных зубов
+    };
+  },
+  methods: {
+    onPlusClick() {
+      console.log("Стрелка нажата");
+      // Здесь позже можно открывать модалку
+    },
+    updateSelected(newSelection) {
+      this.selectedTeeth = newSelection;
+    },
+    handleToothClick(event) {
+      const toothG = event.target.closest(".tooth");
+
+      if (!toothG) return;
+
+      const toothId = parseInt(toothG.id.replace("tooth-", ""));
+      console.log("toothId:", toothId);
+      const index = this.selectedTeeth.indexOf(toothId);
+      const ellipse = toothG.querySelector("ellipse");
+      const text = toothG.querySelector("text");
+      console.log("ellipse:", ellipse);
+      if (index === -1) {
+        this.selectedTeeth.push(toothId);
+        toothG.classList.add("selected");
+        ellipse.setAttribute("fill", "#3dd2cc"); // фон
+        text.setAttribute("stroke", "#ffff"); // цвет текста
+      } else {
+        this.selectedTeeth.splice(index, 1);
+        toothG.classList.remove("selected");
+        ellipse.setAttribute("fill", "#efe6d0"); // фон
+        ellipse.setAttribute("stroke-width", "2"); // фон
+        text.setAttribute("stroke", "#111111"); // цвет текста
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+body {
+  overflow: hidden !important;
+}
+.cross-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+/* горизонтальная линия */
+.cross-container::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  /* left: 0; */
+  margin-top: -35px;
+  width: 80%;
+  height: 2px;
+  background: #c4c4c4;
+  transform: translateY(-50%);
+}
+
+/* вертикальная линия */
+.cross-container::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 60px;
+  width: 2px;
+  height: 70%;
+  background: #c4c4c4;
+  transform: translateX(-50%);
+}
+
+.teeth-arc-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* привязываем к верху */
+  overflow: hidden;
+  padding-bottom: 15px;
+}
+svg {
+  width: 100%;
+  height: 100%;
+}
+.tooth {
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.tooth:hover {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+}
+.selected {
+  stroke: #333;
+  stroke-width: 3px;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6));
+}
+</style>

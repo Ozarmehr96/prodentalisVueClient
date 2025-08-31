@@ -40,15 +40,20 @@ export const LOAD_REQUESTS = "requests/LOAD_REQUESTS";
 export const INVOKE_USER_REQUEST = "requests/INVOKE_USER_REQUEST";
 
 // Типы работ
+export const WORK_TYPES = "workTypes/WORK_TYPES";
+export const MUTATE_WORK_TYPES = "workTypes/MUTATE_WORK_TYPES";
 export const LOAD_WORK_TYPES = "workTypes/LOAD_WORK_TYPES";
 export const LOAD_WORK_TYPE = "workTypes/LOAD_WORK_TYPE";
 export const SAVE_WORK_TYPE = "workTypes/SAVE_WORK_TYPE";
 export const UPDATE_WORK_TYPE = "workTypes/UPDATE_WORK_TYPE";
+export const DELETE_WORK_TYPE = "workTypes/DELETE_WORK_TYPE";
 export const SELECTED_WORK_TYPE_STEPS = "workTypes/SELECTED_WORK_TYPE_STEPS";
 export const MUTATE_SELECTED_WORK_TYPE_STEPS = "workTypes/MUTATE_SELECTED_WORK_TYPE_STEPS";
 export const SET_SELECTED_WORK_TYPE_STEPS = "workTypes/SET_SELECTED_WORK_TYPE_STEPS";
+
 // Этапы работ
 export const SAVE_WORK_STEP = "workSteps/SAVE_WORK_STEP";
+export const SAVE_WORK_STEP_PRIORITY = "workSteps/SAVE_WORK_STEP_PRIORITY";
 export const UPDATE_WORK_STEP = "workSteps/UPDATE_WORK_STEP";
 export const DELETE_WORK_STEP = "workSteps/DELETE_WORK_STEP";
 export const LOAD_WORK_STEPS = "workSteps/LOAD_WORK_STEPS";

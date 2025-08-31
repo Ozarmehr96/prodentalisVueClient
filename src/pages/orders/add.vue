@@ -1,22 +1,22 @@
 <template>
-  <app-page
-    title="Заказы"
-    @onAddButtonClickEvent="() => $router.push('/orders/add')"
-    isShowAddButton
-  >
+  <app-page title="Добавление заказа">
+    <OrderWizard />
   </app-page>
 </template>
 
 <script>
 import AppPage from "../../components/AppPage.vue";
+import OrderWizard from "../../components/OrderWizard.vue";
+
 /**
- * Страница "Запросы"
+ * Страница "Добавление заказа"
  *
  * @vue-computed {object} currentUser - Текущий пользователь
  */
 export default {
   components: {
     AppPage,
+    OrderWizard,
   },
 };
 </script>

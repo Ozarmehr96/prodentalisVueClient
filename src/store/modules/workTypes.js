@@ -1,22 +1,36 @@
 import api from "../../services/api";
-import * as types from "../types";
+import {
+  DELETE_WORK_TYPE,
+  LOAD_WORK_TYPE,
+  LOAD_WORK_TYPES,
+  MUTATE_SELECTED_WORK_TYPE_STEPS,
+  MUTATE_WORK_TYPES,
+  SAVE_WORK_TYPE,
+  SELECTED_WORK_TYPE_STEPS,
+  SET_SELECTED_WORK_TYPE_STEPS,
+  UPDATE_WORK_TYPE,
+} from "../types";
 
 const state = {
   selectedWorkTypeSteps: [],
+  workTypes: []
 };
 
 const mutations = {
-  [types.MUTATE_SELECTED_WORK_TYPE_STEPS]: (state, selectedWorkTypeSteps) => {
+  [MUTATE_SELECTED_WORK_TYPE_STEPS]: (state, selectedWorkTypeSteps) => {
     state.selectedWorkTypeSteps = selectedWorkTypeSteps;
   },
+  [MUTATE_WORK_TYPES]: (state, workTypes) => {
+    state.workTypes = workTypes;
+  }
 };
 
 const actions = {
-  [types.SET_SELECTED_WORK_TYPE_STEPS]: ({ commit, state }, workTypeStep) => {
-    commit(types.MUTATE_SELECTED_WORK_TYPE_STEPS, workTypeStep);
+  [SET_SELECTED_WORK_TYPE_STEPS]: ({ commit, state }, workTypeStep) => {
+    commit(MUTATE_SELECTED_WORK_TYPE_STEPS, workTypeStep);
   },
 
-  [types.SAVE_WORK_TYPE]: async ({}, params) => {
+  [SAVE_WORK_TYPE]: async ({}, params) => {
     try {
       let response = await api.post("/work-types", params);
       params.callback(response.data);
@@ -26,7 +40,7 @@ const actions = {
     }
   },
 
-  [types.UPDATE_WORK_TYPE]: async ({}, params) => {
+  [UPDATE_WORK_TYPE]: async ({}, params) => {
     try {
       let response = await api.put("/work-types/" + params.id, params);
       params.callback(response.data);
@@ -36,16 +50,25 @@ const actions = {
     }
   },
 
-  [types.LOAD_WORK_TYPES]: async ({}) => {
+  [DELETE_WORK_TYPE]: async ({}, id) => {
+    try {
+      let response = await api.delete("/work-types/" + id);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting work type:", error);
+    }
+  },
+
+  [LOAD_WORK_TYPES]: async ({commit}) => {
     try {
       let response = await api.get("/work-types");
-      return response.data;
+      commit(MUTATE_WORK_TYPES, response.data);
     } catch (error) {
       console.error("Error loading work types:", error);
     }
   },
 
-  [types.LOAD_WORK_TYPE]: async ({}, id) => {
+  [LOAD_WORK_TYPE]: async ({}, id) => {
     try {
       let response = await api.get("/work-types/" + id);
       return response.data;
@@ -56,7 +79,7 @@ const actions = {
 };
 
 const getters = {
-  [types.SELECTED_WORK_TYPE_STEPS]: (state) => state.selectedWorkTypeSteps,
+  [SELECTED_WORK_TYPE_STEPS]: (state) => state.selectedWorkTypeSteps,
 };
 
 export default {
