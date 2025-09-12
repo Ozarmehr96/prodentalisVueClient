@@ -53,7 +53,7 @@
     <!-- Sidebar -->
     <div
       class="d-flex flex-column flex-shrink-0 p-3 bg-light"
-      style="width: 200px; padding-top: 10px !important"
+      style="width: 250px; padding-top: 10px !important"
     >
       <a
         href="/"

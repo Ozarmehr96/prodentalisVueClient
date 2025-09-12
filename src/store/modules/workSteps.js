@@ -4,6 +4,7 @@ import {
   LOAD_WORK_STEP,
   LOAD_WORK_STEPS,
   SAVE_WORK_STEP,
+  SAVE_WORK_STEP_PRIORITY,
   UPDATE_WORK_STEP,
 } from "../types";
 
@@ -36,6 +37,15 @@ const actions = {
       return response.data;
     } catch (error) {
       console.error("Error deleting work step:", error);
+    }
+  },
+  [SAVE_WORK_STEP_PRIORITY]: async ({}, params) => {
+    try {
+      let response = await api.post(`/work-steps/priorities`, params);
+      params.callback(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error saving work step priority:", error);
     }
   },
   [LOAD_WORK_STEPS]: async ({}) => {

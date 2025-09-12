@@ -6,6 +6,7 @@ import users from "./modules/users";
 import requests from "./modules/requests";
 import workSteps from "./modules/workSteps";
 import workTypes from "./modules/workTypes";
+import orders from "./modules/orders";
 const store = createStore({
   modules: {
     auth,
@@ -14,6 +15,7 @@ const store = createStore({
     requests,
     workSteps,
     workTypes,
+    orders,
   },
 });
 
