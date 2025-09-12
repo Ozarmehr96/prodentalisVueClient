@@ -1,7 +1,7 @@
 <template>
   <div class="teeth-arc-container">
     <svg
-      viewBox="100 -55 1000 2000"
+      viewBox="0 -55 1140 1800"
       preserveAspectRatio="xMidYMin meet"
       xmlns="http://www.w3.org/2000/svg"
       style="width: auto; height: 100%; max-width: 100%"
@@ -537,47 +537,97 @@
 
 <script>
 export default {
-  name: "TeethArc",
+  name: "ToothSelection",
   data() {
     return {
-      selectedTeeth: [], // массив выбранных зубов
+      selectedTeethLocal: [], // массив выбранных зубов
     };
   },
+  props: {
+    // Массив выбранных зубов
+    newSelectedTeeth: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  watch: {
+    // Следим за изменениями массива зубов от родителя
+    newSelectedTeeth(newVal) {
+      console.log("newSelectedTeeth changed:", newVal);
+      // синхронизируем локальное состояние
+      this.selectedTeethLocal = [...newVal];
+      // вызываем единый метод подсветки
+      this.applySelection();
+    },
+  },
   methods: {
+    // Единый метод подсветки зубов
+    applySelection() {
+      const allTeeth = document.querySelectorAll(".tooth");
+
+      allTeeth.forEach((toothG) => {
+        const toothId = parseInt(toothG.id.replace("tooth-", ""));
+        const ellipse = toothG.querySelector("ellipse");
+        const text = toothG.querySelector("text");
+
+        if (this.selectedTeethLocal.includes(toothId)) {
+          // Зуб выбран
+          toothG.classList.add("selected");
+          if (ellipse) ellipse.setAttribute("fill", "#3dd2cc"); // фон
+          if (text) text.setAttribute("stroke", "#ffff");       // текст
+        } else {
+          // Зуб не выбран
+          toothG.classList.remove("selected");
+          if (ellipse) {
+            ellipse.setAttribute("fill", "#efe6d0");           // фон
+            ellipse.setAttribute("stroke-width", "2");         // обводка
+          }
+          if (text) text.setAttribute("stroke", "#111111");     // текст
+        }
+      });
+    },
+
+    // Обработка клика по зубу
+    handleToothClick(event) {
+      const toothG = event.target.closest(".tooth");
+      if (!toothG) return;
+
+      const toothId = parseInt(toothG.id.replace("tooth-", ""));
+      const index = this.selectedTeethLocal.indexOf(toothId);
+
+      if (index === -1) {
+        this.selectedTeethLocal.push(toothId); // добавляем зуб
+      } else {
+        this.selectedTeethLocal.splice(index, 1); // убираем зуб
+      }
+
+      // Применяем подсветку через единый метод
+      this.applySelection();
+
+      // Отправляем обновлённый массив выбранных зубов наружу
+      this.$emit("update:selected", this.selectedTeethLocal);
+    },
+
+    // Пример метода для кнопки "+"
     onPlusClick() {
       console.log("Стрелка нажата");
       // Здесь позже можно открывать модалку
     },
+
+    // Прямое обновление выбранных зубов
     updateSelected(newSelection) {
-      this.selectedTeeth = newSelection;
+      this.selectedTeethLocal = [...newSelection];
+      this.applySelection();
     },
-    handleToothClick(event) {
-      const toothG = event.target.closest(".tooth");
+  },
 
-      if (!toothG) return;
-
-      const toothId = parseInt(toothG.id.replace("tooth-", ""));
-      console.log("toothId:", toothId);
-      const index = this.selectedTeeth.indexOf(toothId);
-      const ellipse = toothG.querySelector("ellipse");
-      const text = toothG.querySelector("text");
-      console.log("ellipse:", ellipse);
-      if (index === -1) {
-        this.selectedTeeth.push(toothId);
-        toothG.classList.add("selected");
-        ellipse.setAttribute("fill", "#3dd2cc"); // фон
-        text.setAttribute("stroke", "#ffff"); // цвет текста
-      } else {
-        this.selectedTeeth.splice(index, 1);
-        toothG.classList.remove("selected");
-        ellipse.setAttribute("fill", "#efe6d0"); // фон
-        ellipse.setAttribute("stroke-width", "2"); // фон
-        text.setAttribute("stroke", "#111111"); // цвет текста
-      }
-    },
+  mounted() {
+    // Подсветка при первой загрузке
+    this.applySelection();
   },
 };
 </script>
+
 
 <style scoped>
 body {
@@ -616,16 +666,13 @@ body {
 
 .teeth-arc-container {
   width: 100%;
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start; /* привязываем к верху */
   overflow: hidden;
-  padding-bottom: 15px;
 }
 svg {
   width: 100%;
-  height: 100%;
 }
 .tooth {
   cursor: pointer;

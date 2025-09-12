@@ -43,7 +43,8 @@
 <script>
 import { mapActions } from "vuex";
 import AppPage from "../../components/AppPage.vue";
-import { DELETE_WORK_TYPE, LOAD_WORK_TYPES } from "../../store/types";
+import { DELETE_WORK_TYPE, LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
+import { mapGetters } from "vuex/dist/vuex.cjs.js";
 
 /**
  * Страница "Типы работ"
@@ -54,15 +55,13 @@ export default {
   components: {
     AppPage,
   },
-  data() {
-    return {
-      workTypes: [],
-    };
-  },
   async beforeMount() {
-    this.workTypes = await this.loadWorkSteps();
+    await this.loadWorkSteps();
   },
   computed: {
+    ...mapGetters({
+      workTypes: WORK_TYPES,
+    }),
     filtredWorkTypes() {
       return this.workTypes;
     },

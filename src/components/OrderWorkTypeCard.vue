@@ -1,7 +1,6 @@
 <template>
   <div
     class="work-type-card"
-    :class="{ selected: isSelected }"
     @click="toggleSelect"
   >
     <!-- Иконка типа работы -->
@@ -14,14 +13,6 @@
       <!-- Заголовок + цвет -->
       <div class="d-flex justify-content-between align-items-center mb-2">
         <h6 class="card-title mb-0">{{ name }}</h6>
-        <span
-          class="badge bg-primary"
-          :style="{
-            backgroundColor: getColorByName(colorName) + ' !important',
-            color: getTextColor(getColorByName(colorName)) + ' !important',
-          }"
-          >Цвет {{ colorName }}</span
-        >
       </div>
 
       <div class="teeth">
@@ -57,7 +48,7 @@ export default {
   methods: {
     toggleSelect() {
       this.isSelected = !this.isSelected;
-      this.$emit("update:selected", this.isSelected);
+      this.$emit("onUpdateSelected", this.isSelected);
     },
     deleteCard() {
       this.$emit("delete");

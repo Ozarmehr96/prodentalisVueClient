@@ -9,11 +9,12 @@ import {
   SELECTED_WORK_TYPE_STEPS,
   SET_SELECTED_WORK_TYPE_STEPS,
   UPDATE_WORK_TYPE,
+  WORK_TYPES,
 } from "../types";
 
 const state = {
   selectedWorkTypeSteps: [],
-  workTypes: []
+  workTypes: [],
 };
 
 const mutations = {
@@ -22,7 +23,7 @@ const mutations = {
   },
   [MUTATE_WORK_TYPES]: (state, workTypes) => {
     state.workTypes = workTypes;
-  }
+  },
 };
 
 const actions = {
@@ -59,10 +60,11 @@ const actions = {
     }
   },
 
-  [LOAD_WORK_TYPES]: async ({commit}) => {
+  [LOAD_WORK_TYPES]: async ({ commit }) => {
     try {
       let response = await api.get("/work-types");
       commit(MUTATE_WORK_TYPES, response.data);
+      return response.data;
     } catch (error) {
       console.error("Error loading work types:", error);
     }
@@ -80,6 +82,7 @@ const actions = {
 
 const getters = {
   [SELECTED_WORK_TYPE_STEPS]: (state) => state.selectedWorkTypeSteps,
+  [WORK_TYPES]: (state) => state.workTypes,
 };
 
 export default {
