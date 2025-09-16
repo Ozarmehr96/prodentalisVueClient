@@ -1,5 +1,7 @@
 <template>
-  <div class="teeth-arc-container">
+  <div
+    class="teeth-arc-container data-in-center"
+  >
     <svg
       viewBox="0 -55 1140 1800"
       preserveAspectRatio="xMidYMin meet"
@@ -532,15 +534,33 @@
         </g>
       </g>
     </svg>
+    <div
+      style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 16px;
+        color: #333;
+      "
+    >
+      Привет<br>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex/dist/vuex.cjs.js";
+import { SET_SELECTED_TOOTH } from "../store/types";
+
 export default {
   name: "ToothSelection",
   data() {
     return {
-      selectedTeethLocal: [], // массив выбранных зубов
+      selectedTooth: {
+        id: null,
+        isSelected: false,
+      }, // массив выбранных зубов
     };
   },
   props: {
@@ -555,14 +575,19 @@ export default {
     newSelectedTeeth(newVal) {
       console.log("newSelectedTeeth changed:", newVal);
       // синхронизируем локальное состояние
-      this.selectedTeethLocal = [...newVal];
+      this.selectedTooth = newVal;
       // вызываем единый метод подсветки
       this.applySelection();
     },
   },
   methods: {
+    ...mapActions({
+      setSelectedTooth: SET_SELECTED_TOOTH,
+    }),
+    defineExpose() {},
     // Единый метод подсветки зубов
     applySelection() {
+      console.log("applySelection", "this.selectedTooth", this.selectedTooth);
       const allTeeth = document.querySelectorAll(".tooth");
 
       allTeeth.forEach((toothG) => {
@@ -570,42 +595,39 @@ export default {
         const ellipse = toothG.querySelector("ellipse");
         const text = toothG.querySelector("text");
 
-        if (this.selectedTeethLocal.includes(toothId)) {
-          // Зуб выбран
-          toothG.classList.add("selected");
-          if (ellipse) ellipse.setAttribute("fill", "#3dd2cc"); // фон
-          if (text) text.setAttribute("stroke", "#ffff");       // текст
+        if (this.selectedTooth.id === toothId) {
+          if (this.selectedTooth.isSelected) {
+            // Зуб выбран
+            toothG.classList.add("selected");
+            if (ellipse) ellipse.setAttribute("fill", "red"); // фон
+            if (text) text.setAttribute("stroke", "#ffff"); // текст
+          } else this.removeSelected(toothG, ellipse, text);
         } else {
           // Зуб не выбран
-          toothG.classList.remove("selected");
-          if (ellipse) {
-            ellipse.setAttribute("fill", "#efe6d0");           // фон
-            ellipse.setAttribute("stroke-width", "2");         // обводка
-          }
-          if (text) text.setAttribute("stroke", "#111111");     // текст
+          this.removeSelected(toothG, ellipse, text);
         }
       });
     },
+    removeSelected(toothG, ellipse, text) {
+      toothG.classList.remove("selected");
+      if (ellipse) ellipse.setAttribute("fill", "#efe6d0"); // фон
+      if (text) text.setAttribute("stroke", "#111111"); // текст
+    },
 
     // Обработка клика по зубу
-    handleToothClick(event) {
+    async handleToothClick(event) {
       const toothG = event.target.closest(".tooth");
       if (!toothG) return;
 
       const toothId = parseInt(toothG.id.replace("tooth-", ""));
-      const index = this.selectedTeethLocal.indexOf(toothId);
-
-      if (index === -1) {
-        this.selectedTeethLocal.push(toothId); // добавляем зуб
-      } else {
-        this.selectedTeethLocal.splice(index, 1); // убираем зуб
-      }
-
-      // Применяем подсветку через единый метод
-      this.applySelection();
-
+      this.selectedTooth = {
+        id: toothId,
+        isSelected: true,
+      };
+      await this.setSelectedTooth(this.selectedTooth);
+      this.applySelection(); // применяем подсветку
       // Отправляем обновлённый массив выбранных зубов наружу
-      this.$emit("update:selected", this.selectedTeethLocal);
+      this.$emit("onToothSelectedChanged", this.selectedTooth.id);
     },
 
     // Пример метода для кнопки "+"
@@ -613,23 +635,15 @@ export default {
       console.log("Стрелка нажата");
       // Здесь позже можно открывать модалку
     },
-
-    // Прямое обновление выбранных зубов
-    updateSelected(newSelection) {
-      this.selectedTeethLocal = [...newSelection];
-      this.applySelection();
-    },
-  },
-
-  mounted() {
-    // Подсветка при первой загрузке
-    this.applySelection();
   },
 };
 </script>
 
-
 <style scoped>
+.data-in-center {
+  position: relative; display: inline-block
+}
+
 body {
   overflow: hidden !important;
 }

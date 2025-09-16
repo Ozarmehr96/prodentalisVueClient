@@ -33,7 +33,9 @@ const actions = {
 
   [SAVE_WORK_TYPE]: async ({}, params) => {
     try {
-      let response = await api.post("/work-types", params);
+      let response = await api.post("/work-types", params.formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       params.callback(response.data);
       return response.data;
     } catch (error) {
@@ -43,7 +45,9 @@ const actions = {
 
   [UPDATE_WORK_TYPE]: async ({}, params) => {
     try {
-      let response = await api.put("/work-types/" + params.id, params);
+      let response = await api.put("/work-types/" + params.id, params.formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       params.callback(response.data);
       return response.data;
     } catch (error) {

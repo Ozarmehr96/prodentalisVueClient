@@ -16,6 +16,34 @@
               placeholder="Введите название"
             />
           </div>
+
+          <!-- Логотип -->
+          <div class="mb-3" @click="(e) => clickWorkTypeItemCard(e)">
+            <!-- Выбор цвет фона-->
+            <ColorPalette
+              v-model="workType.background_color"
+              ref="colorPalette"
+              class="form-control d-none"
+            />
+            <!-- Выбор картинки-->
+            <input
+              ref="fileInput"
+              type="file"
+              class="form-control d-none"
+              id="image"
+              @change="onFileChange"
+              accept="image/*"
+            />
+
+            <div class="mt-2">
+              <WorkTypeCardItem
+                :workType="workType"
+                :imageSrc="workType.imageSrc"
+                isEditMode
+                :backgroundColor="workType.background_color"
+              />
+            </div>
+          </div>
           <!-- Комментарии -->
           <div class="mb-3">
             <label for="description" class="form-label">Комментарии</label>
@@ -37,26 +65,6 @@
                 }
               "
             />
-          </div>
-
-          <!-- Логотип -->
-          <div class="mb-3">
-            <label for="image" class="form-label">Логотип</label>
-            <input
-              type="file"
-              class="form-control"
-              id="image"
-              @change="onFileChange"
-              accept="image/*"
-            />
-            <div class="mt-2" v-if="imagePreview">
-              <img
-                :src="imagePreview"
-                alt="Preview"
-                class="img-thumbnail"
-                style="max-height: 200px"
-              />
-            </div>
           </div>
 
           <button
@@ -81,10 +89,14 @@ import {
   SET_SELECTED_WORK_TYPE_STEPS,
   UPDATE_WORK_TYPE,
 } from "../store/types";
+import WorkTypeCardItem from "./WorkTypeCardItem.vue";
+import ColorPalette from "./ColorPalette.vue";
 
 export default {
   components: {
     SelectWorkStepWizard,
+    WorkTypeCardItem,
+    ColorPalette,
   },
   props: {
     workTypeData: {
@@ -103,7 +115,6 @@ export default {
         description: "",
         image: null,
       },
-      imagePreview: null,
       selectedWorkSteps: [],
       isSaving: false,
     };
@@ -113,9 +124,7 @@ export default {
       selectedWorkTypeSteps: SELECTED_WORK_TYPE_STEPS,
     }),
     isValid() {
-      return (
-        this.workType.name.trim() !== "" && this.selectedWorkSteps.length > 0
-      );
+      return this.workType.name.trim() !== "";
     },
   },
   async beforeMount() {
@@ -171,6 +180,17 @@ export default {
       loadWorkSteps: LOAD_WORK_STEPS,
       setSelectedWorkTypeStep: SET_SELECTED_WORK_TYPE_STEPS,
     }),
+    /**
+     * Выбор цвета или картинки
+     * @param e
+     */
+    clickWorkTypeItemCard(e) {
+      if (e.srcElement.localName === "img") {
+        this.$refs.fileInput.click();
+      } else {
+        this.$refs.colorPalette.handleClick(e);
+      }
+    },
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
@@ -178,23 +198,31 @@ export default {
 
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.imagePreview = e.target.result;
+          this.workType.imageSrc = e.target.result;
         };
         reader.readAsDataURL(file);
       } else {
         this.workType.image = null;
-        this.imagePreview = null;
       }
     },
     async createWorkType() {
-      if (!this.workType.name.trim() || this.selectedWorkSteps.length === 0) {
+      if (!confirm("Вы не выбрали ни один этап работы. Продолжить?")) {
+        return;
+      }
+      if (!this.workType.name.trim()) {
         alert("Пожалуйста, заполните все обязательные поля");
         return;
       }
       this.isSaving = true;
-      await this.saveWorkType({
+      let params = {
         ...this.workType,
         steps: this.selectedWorkSteps,
+      };
+      params.imageSrc = null;
+      let formData = this.objectToFormData(params);
+
+      await this.saveWorkType({
+        formData: formData,
         callback: (newWorkStep) => {
           this.$toast(`Тип работы ${newWorkStep.name} добавлен`, 7000);
           this.$router.go(-1);
@@ -204,21 +232,54 @@ export default {
     },
 
     async updateWorkType() {
-      if (!this.workType.name.trim() || this.selectedWorkSteps.length === 0) {
+      if (!this.workType.name.trim()) {
         alert("Пожалуйста, заполните все обязательные поля");
         return;
       }
       this.isSaving = true;
-      await this.updateWorkTypeAction({
+      let params = {
         ...this.workType,
         id: this.workType.id,
         steps: this.selectedWorkSteps,
+      };
+      params.imageSrc = null;
+      let formData = this.objectToFormData(params);
+      await this.updateWorkTypeAction({
+        formData: formData,
+        id: this.workType.id,
         callback: (newWorkStep) => {
           this.$toast(`Тип работы обновлён`, 5000);
-          this.$router.go(-1);
+          // this.$router.go(-1); - пока нельзя использовать потому что картинка не обновляется, так как кэшируется и еще название картинки это иД тип работы
+          window.location.href = "/work-types"; 
         },
       });
+
       this.isSaving = false;
+    },
+    objectToFormData(obj, form = new FormData(), namespace = "") {
+      for (let property in obj) {
+        if (!obj.hasOwnProperty(property) || obj[property] === undefined)
+          continue;
+
+        const formKey = namespace ? `${namespace}[${property}]` : property;
+
+        if (obj[property] instanceof File || obj[property] instanceof Blob) {
+          form.append(formKey, obj[property]);
+        } else if (
+          typeof obj[property] === "object" &&
+          !Array.isArray(obj[property])
+        ) {
+          this.objectToFormData(obj[property], form, formKey);
+        } else {
+          form.append(
+            formKey,
+            typeof obj[property] === "object"
+              ? JSON.stringify(obj[property])
+              : obj[property]
+          );
+        }
+      }
+      return form;
     },
   },
 };

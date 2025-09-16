@@ -6,7 +6,7 @@
 
 <script>
 import AppPage from "../../components/AppPage.vue";
-import OrderWizard from "../../components/OrderWizard.vue";
+import OrderWizard from "../../components/OrderWizardNew.vue";
 
 /**
  * Страница "Добавление заказа"
