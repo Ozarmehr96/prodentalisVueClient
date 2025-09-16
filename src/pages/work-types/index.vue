@@ -20,7 +20,7 @@
             @click="() => $router.push(`/work-types/${workType.id}`)"
           >
             <td>
-              {{ workType.name }}
+              <WorkTypeCardItem :workType="workType" />
             </td>
             <td>{{ workType.description }}</td>
             <td>
@@ -45,6 +45,7 @@ import { mapActions } from "vuex";
 import AppPage from "../../components/AppPage.vue";
 import { DELETE_WORK_TYPE, LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
 import { mapGetters } from "vuex/dist/vuex.cjs.js";
+import WorkTypeCardItem from "../../components/WorkTypeCardItem.vue";
 
 /**
  * Страница "Типы работ"
@@ -54,9 +55,11 @@ import { mapGetters } from "vuex/dist/vuex.cjs.js";
 export default {
   components: {
     AppPage,
+    WorkTypeCardItem
   },
   async beforeMount() {
-    await this.loadWorkSteps();
+    await this.loadWorkTypes();
+    await this.loadWorkTypes();
   },
   computed: {
     ...mapGetters({
@@ -68,7 +71,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadWorkSteps: LOAD_WORK_TYPES,
+      loadWorkTypes: LOAD_WORK_TYPES,
       deleteWorkTypeAction: DELETE_WORK_TYPE,
     }),
     async deleteWorkType(id) {

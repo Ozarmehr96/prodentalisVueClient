@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex sidebar-fixed-left" style="height: 100vh">
+  <div class="d-flex sidebar-fixed-left" style="height: 100vh" >
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
       <symbol id="bootstrap" viewBox="0 0 118 94">
         <title>Bootstrap</title>

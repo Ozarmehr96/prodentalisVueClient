@@ -1,5 +1,5 @@
 <template>
-  <nav class="mobile-bottom-nav d-md-none bg-light border-top fixed-bottom">
+  <nav class="mobile-bottom-nav d-md-none bg-light border-top fixed-bottom" data-bs-theme="dark">
     <div class="d-flex justify-content-around align-items-center py-2">
       <router-link
         v-for="item in navItems"

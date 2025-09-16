@@ -65,3 +65,11 @@ export const MUTATE_ORDERS = "orders/MUTATE_ORDERS";
 export const ORDERS = "orders/ORDERS";
 export const CREATE_ORDER = "orders/CREATE_ORDER";
 export const UPDATE_ORDER = "orders/UPDATE_ORDER";
+
+// Создание заказа
+export const SELECTED_TOOTH = "order_wizard/SELECTED_TOOTH";
+export const MUTATE_SELECTED_TOOTH = "order_wizard/MUTATE_SELECTED_TOOTH";
+export const SET_SELECTED_TOOTH = "order_wizard/SET_SELECTED_TOOTH";
+export const ORDER_SELECTED_TEETH = "order_wizard/ORDER_SELECTED_TEETH"; // выбранные зубы при создании задачи. У каждого зуба свои типы работ
+export const MUTATE_ORDER_SELECTED_TEETH = "order_wizard/MUTATE_ORDER_SELECTED_TEETH";
+export const SET_ORDER_SELECTED_TEETH = "order_wizard/SET_ORDER_SELECTED_TEETH";

@@ -1,58 +1,124 @@
 <template>
-  <SidePanel title="Типы работ" :is-open="isOpen" @close="closePanel">
-    <div class="work-type-grid">
-      <div
-        v-for="workType in availableWorkTypes"
-        :key="workType.id"
-        class="work-type-card"
-        @click="selectWorkType(workType)"
-      >
-        <img
-          v-if="workType.image_url"
-          :src="workType.image_url"
-          alt=""
-          class="work-type-image"
-        />
-        <div class="work-type-name">{{ workType.name }}</div>
-      </div>
+  <SidePanel
+    :title="`Зуб ${selectedTooth.id}`"
+    :is-open="isOpen"
+    @close="onClosePanel"
+    @clear="onClearClick"
+    @onSaveChanged="saveChanges"
+  >
+    <div class="work-type-body flex-grow-1">
+      <!-- container-fluid нужен, чтобы компенсировать отрицательные margin у .row -->
+      <div class="container-fluid px-0 h-100">
+        <div class="work-type-grid">
+          <div
+            v-for="workType in availableWorkTypes"
+            :key="workType.id"
+            class="d-inline-flex"
+            style="flex: 0 1 auto; min-width: 300px"
+            @click="toggleWorkType(workType)"
+          >
+            <!-- Карточка растягивается на всю ширину и высоту колонки -->
+            <WorkTypeCardItem :workType="workType" class="d-inline-flex" />
+          </div>
 
-      <span v-if="availableWorkTypes.length === 0" class="text-muted">Нет доступных типов работ</span>
+          <span
+            v-if="availableWorkTypes.length === 0"
+            class="text-muted d-block mt-2"
+          >
+            Нет доступных типов работ
+          </span>
+        </div>
+      </div>
     </div>
   </SidePanel>
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+import {
+  ORDER_SELECTED_TEETH,
+  SELECTED_TOOTH,
+  SET_ORDER_SELECTED_TEETH,
+  SET_SELECTED_TOOTH,
+} from "../store/types";
 import SidePanel from "./SidePanel.vue";
+import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 
-/**
- * Компонент выбора типов работ
- *
- * @vue-prop {Boolean} isOpen - видимость панели
- * @vue-prop {Array} availableWorkTypes - массив доступных типов работ [{id, name, image}]
- * @vue-event select - выбранный тип работы
- * @vue-event close - закрытие панели
- */
 export default {
   name: "WorkTypeSelector",
-  components: {
-    SidePanel,
-  },
+  components: { SidePanel, WorkTypeCardItem },
   props: {
-    isOpen: {
-      type: Boolean,
-      required: true,
-    },
-    availableWorkTypes: {
-      type: Array,
-      required: true,
-    },
+    isOpen: { type: Boolean, required: true },
+    availableWorkTypes: { type: Array, required: true },
+  },
+  data() {
+    return {
+      selectedWorkTypes: [], // выбранные типы работ
+    };
+  },
+  computed: {
+    ...mapGetters({
+      selectedTooth: SELECTED_TOOTH,
+      orderSelectedTeeth: ORDER_SELECTED_TEETH,
+    }),
   },
   methods: {
-    selectWorkType(workType) {
-      // Отправляем выбранный тип наружу
-      this.$emit("select", workType);
+    ...mapActions({
+      setSelectedTooth: SET_SELECTED_TOOTH, // используется для выделения.снятия выделения с конкретного зуба в компоненте выбора зубов
+      setOrderSelectedTeeth: SET_ORDER_SELECTED_TEETH,
+    }),
+    isSelected(workType) {
+      return this.selectedWorkTypes.some((w) => w.id === workType.id);
     },
-    closePanel() {
+    onClearClick() {
+      this.availableWorkTypes.forEach(t => t.isSelected = false);
+      this.selectedWorkTypes = [];
+    },
+    toggleWorkType(workType) {
+      workType.isSelected = !workType.isSelected;
+      if (this.isSelected(workType)) {
+        this.selectedWorkTypes = this.selectedWorkTypes.filter(
+          (w) => w.id !== workType.id
+        );
+      } else {
+        this.selectedWorkTypes.push(workType);
+      }
+      this.$emit("select", this.selectedWorkTypes);
+    },
+    async onClosePanel() {
+      this.selectedWorkTypes = [];
+      this.availableWorkTypes.forEach(t => t.isSelected = false);
+      this.selectedTooth.isSelected = false; // при закрытии убираем выделенный зуб
+      await this.setSelectedTooth(this.selectedTooth);
+      this.$emit("applyChangesToSelectedTooth");
+    },
+    /**
+     * Сохраняем выбранные типы работ и выбранный зуб
+     */
+    async saveChanges() {
+      let orderTooth = {
+        toothId: this.selectedTooth.id,
+        workTypes: this.selectedWorkTypes,
+      };
+
+      let existedOrderTooth = this.orderSelectedTeeth.find(
+        (o) => o.toothId == orderTooth
+      );
+      if (!existedOrderTooth) {
+        existedOrderTooth = orderTooth;
+      } else {
+        await this.setOrderSelectedTeeth([
+          ...orderTooth,
+          ...this.orderSelectedTeeth,
+        ]);
+      }
+      console.log([
+          orderTooth,
+          ...this.orderSelectedTeeth,
+        ]);
+      console.log('this.orderSelectedTeeth');
+
+      return;
       this.$emit("close");
     },
   },
@@ -60,35 +126,21 @@ export default {
 </script>
 
 <style scoped>
+.work-type-card {
+  width: 100%; /* не шире колонки */
+  height: 100%; /* растягивается по Y */
+  box-sizing: border-box; /* учитываем padding/border */
+  width: 100%;
+  box-sizing: border-box;
+  word-break: break-word; /* переносим длинные слова */
+  overflow-wrap: break-word; /* резервный вариант */
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start; /* содержимое сверху */
+}
 .work-type-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-}
-
-.work-type-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.work-type-card:hover {
-  border-color: #007bff;
-  background-color: #e6f0ff;
-}
-
-.work-type-image {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  margin-bottom: 4px;
-}
-
-.work-type-name {
-  font-size: 14px;
-  font-weight: 500;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem; /* расстояние между карточками */
 }
 </style>
