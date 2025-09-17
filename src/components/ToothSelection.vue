@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="teeth-arc-container data-in-center"
-  >
+  <div class="teeth-arc-container data-in-center">
     <svg
       viewBox="0 -55 1140 1800"
       preserveAspectRatio="xMidYMin meet"
@@ -544,7 +542,7 @@
         color: #333;
       "
     >
-      Привет<br>
+      Привет<br />
     </div>
   </div>
 </template>
@@ -602,6 +600,14 @@ export default {
             if (ellipse) ellipse.setAttribute("fill", "red"); // фон
             if (text) text.setAttribute("stroke", "#ffff"); // текст
           } else this.removeSelected(toothG, ellipse, text);
+
+          if (this.selectedTooth.background_color) {
+            toothG.classList.add("colored");
+            if (ellipse)
+              ellipse.setAttribute("fill", this.selectedTooth.background_color); // фон
+            if (text) text.setAttribute("stroke", "#ffff"); // текст
+            if (text) text.setAttribute("fill", "#ffff"); // текст
+          }
         } else {
           // Зуб не выбран
           this.removeSelected(toothG, ellipse, text);
@@ -610,6 +616,11 @@ export default {
     },
     removeSelected(toothG, ellipse, text) {
       toothG.classList.remove("selected");
+      // если зуб "закрашенный", не трогаем
+      if (toothG.classList.contains("colored")) {
+        return;
+      }
+
       if (ellipse) ellipse.setAttribute("fill", "#efe6d0"); // фон
       if (text) text.setAttribute("stroke", "#111111"); // текст
     },
@@ -641,7 +652,8 @@ export default {
 
 <style scoped>
 .data-in-center {
-  position: relative; display: inline-block
+  position: relative;
+  display: inline-block;
 }
 
 body {

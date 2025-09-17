@@ -52,13 +52,17 @@
       </div>
       <div class="col-md-4">
         <h5 class="mb-3">Типы работ</h5>
-        <OrderWorkTypeCard
-          v-for="work in selectedWorkTypes"
+        <WorkTypeCardItem
+          v-for="workType in filtredOrderSelectedTeethasWorktype"
+          :workType="workType"
+          :key="workType.id"
+          style="margin-bottom: 10px"
+        />
+        <!-- Todo Необходимо отображать выбранные зубы! -->
+        <!-- <OrderWorkTypeCard
+          v-for="work in filtredOrderSelectedTeethasWorktype"
           :key="work.id"
           :name="work.name"
-          :class="{
-            selected: selectedWorkType && selectedWorkType.id == work.id,
-          }"
           colorName="1M1"
           :teeth="work.teeth"
           @onUpdateSelected="
@@ -69,15 +73,7 @@
           "
           @delete="deleteWorkTypeFromSelected(work)"
           @click="selectWorkType(work)"
-        />
-
-        <!-- Кнопка добавить -->
-        <button
-          class="btn btn-primary fa-lg gradient-custom-2 mb-3 w-100"
-          @click="() => (isVisibleSelectWorkType = true)"
-        >
-          Добавить
-        </button>
+        /> -->
       </div>
       <!-- Правая часть -->
       <div class="col-md-4 d-flex align-items-center justify-content-center">
@@ -114,16 +110,25 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 import OrderWorkTypeCard from "./OrderWorkTypeCard.vue";
 import ToothSelection from "./ToothSelection.vue";
-import { CREATE_ORDER, LOAD_WORK_TYPES, SELECTED_TOOTH, WORK_TYPES } from "../store/types";
+import {
+  CREATE_ORDER,
+  LOAD_WORK_TYPES,
+  ORDER_SELECTED_TEETH,
+  SELECTED_TOOTH,
+  SET_SELECTED_TOOTH,
+  WORK_TYPES,
+} from "../store/types";
 import SelectWorkTypeWizard from "./SelectWorkTypeWizard.vue";
 
 export default {
   name: "OrderWizard",
   components: {
     ToothSelection,
-    OrderWorkTypeCard,
+    // OrderWorkTypeCard,
+    WorkTypeCardItem,
     SelectWorkTypeWizard,
   },
   data() {
@@ -144,11 +149,40 @@ export default {
   computed: {
     ...mapGetters({
       workTypes: WORK_TYPES,
-      selectedTooth: SELECTED_TOOTH
+      selectedTooth: SELECTED_TOOTH,
+      orderSelectedTeeth: ORDER_SELECTED_TEETH,
     }),
-
     filteredWorkTypes() {
       return this.workTypes;
+    },
+    filtredOrderSelectedTeethasWorktype() {
+      let orderSelectedTeeth = this.orderSelectedTeeth.slice();
+      let workTypes = [];
+
+      orderSelectedTeeth.forEach((tooth) => {
+        console.log("tooth", tooth);
+        // перебираем все типы работ у зуба
+        tooth.workTypes.forEach((workType) => {
+          console.log("workTypes", workType);
+          // ищем, есть ли уже такой тип работы в result
+          let existing = workTypes.find((x) => x.id === workType.id);
+
+          if (!existing) {
+            // если такого типа работы ещё нет — добавляем новый объект
+            existing = {
+              ...workType,
+              teeth: [],
+            };
+            existing.isSelected = false;
+            workTypes.push(existing);
+          }
+
+          // добавляем зуб в список
+          existing.teeth.push(tooth.toothId);
+        });
+      });
+
+      return workTypes;
     },
   },
   methods: {
@@ -158,11 +192,18 @@ export default {
     }),
     /**
      * Событие выбора зуба
-     * @param selectedTeeth 
+     * @param selectedTeeth
      */
     selectedToothChnged(selectedTeeth) {
       console.log("Выбранные зубы:", selectedTeeth);
       this.selectedToothId = selectedTeeth;
+      let selectedWorkTypes = this.orderSelectedTeeth.find(
+        (o) => o.toothId == this.selectedToothId
+      );
+      this.selectedTooth.workTypes = selectedWorkTypes
+        ? selectedWorkTypes.workTypes
+        : [];
+
       this.isVisibleSelectWorkType = true;
     },
     openSidePanelSelectWorkType() {},
@@ -191,9 +232,12 @@ export default {
       await this.createOrderAction(order);
     },
     async applyChangesToSelectedTooth() {
-      console.log(this.$refs.toothSelection);
-      this.$refs.toothSelection.applySelection();
-    }
+      console.log("Сохранение изменений в компонент выбора зубов");
+      console.log("Свойства выбранного зуба", this.selectedTooth);
+      console.log("типы работ для зубов", this.orderSelectedTeeth);
+      await this.$refs.toothSelection.applySelection();
+      this.isVisibleSelectWorkType = false;
+    },
   },
 };
 </script>
