@@ -74,6 +74,9 @@ export default {
     this.$refs.offcanvasRef.addEventListener("hide.bs.offcanvas", () => {
       this.$emit("close");
     });
+    this.$refs.offcanvasRef.addEventListener("show.bs.offcanvas", () => {
+      this.$emit("onOpen");
+    });
   },
   watch: {
     isOpen(newVal) {

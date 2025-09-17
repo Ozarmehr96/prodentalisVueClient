@@ -4,6 +4,7 @@
     :is-open="isOpen"
     @close="onClosePanel"
     @clear="onClearClick"
+    @onOpen="onOpenSidePanel"
     @onSaveChanged="saveChanges"
   >
     <div class="work-type-body flex-grow-1">
@@ -45,84 +46,124 @@ import SidePanel from "./SidePanel.vue";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 
 export default {
-  name: "WorkTypeSelector",
-  components: { SidePanel, WorkTypeCardItem },
+  name: "WorkTypeSelector", // имя компонента Vue
+  components: { SidePanel, WorkTypeCardItem }, // подключаемые компоненты
   props: {
-    isOpen: { type: Boolean, required: true },
-    availableWorkTypes: { type: Array, required: true },
+    isOpen: { type: Boolean, required: true }, // флаг, открыта ли боковая панель
+    availableWorkTypes: { type: Array, required: true }, // список всех доступных типов работ
   },
   data() {
     return {
-      selectedWorkTypes: [], // выбранные типы работ
+      selectedWorkTypes: [], // массив выбранных типов работ для текущего зуба
     };
   },
   computed: {
     ...mapGetters({
-      selectedTooth: SELECTED_TOOTH,
-      orderSelectedTeeth: ORDER_SELECTED_TEETH,
+      selectedTooth: SELECTED_TOOTH, // геттер для выбранного зуба из Vuex
+      orderSelectedTeeth: ORDER_SELECTED_TEETH, // геттер для массива выбранных зубов с их типами работ
     }),
   },
   methods: {
     ...mapActions({
-      setSelectedTooth: SET_SELECTED_TOOTH, // используется для выделения.снятия выделения с конкретного зуба в компоненте выбора зубов
+      setSelectedTooth: SET_SELECTED_TOOTH, 
       setOrderSelectedTeeth: SET_ORDER_SELECTED_TEETH,
     }),
+    /** 
+     * Метод вызывается при открытии боковой панели.
+     * Очищает предыдущие выбранные типы работ и устанавливает текущие для выбранного зуба.
+     */
+    onOpenSidePanel() {
+      this.onClearClick(); // снимаем все отметки с доступных типов работ
+      this.selectedWorkTypes = this.selectedTooth.workTypes; // копируем текущие типы работ выбранного зуба
+      this.availableWorkTypes.forEach(w => {
+        if (this.selectedWorkTypes.find(t => t.id == w.id)){
+          w.isSelected = true; // помечаем как выбранные
+        }
+      });
+    },
+    /** 
+     * Проверяет, выбран ли конкретный тип работы.
+     * @param {Object} workType - объект типа работы
+     * @returns {Boolean} true, если выбран
+     */
     isSelected(workType) {
       return this.selectedWorkTypes.some((w) => w.id === workType.id);
     },
+    /** 
+     * Снимает все выбранные типы работ на панели.
+     * Используется при очистке или при открытии панели.
+     */
     onClearClick() {
-      this.availableWorkTypes.forEach(t => t.isSelected = false);
-      this.selectedWorkTypes = [];
+      this.availableWorkTypes.forEach((t) => (t.isSelected = false)); // снимаем отметку со всех
+      this.selectedWorkTypes = []; // очищаем массив выбранных
     },
+
+    /** 
+     * Переключает выбор конкретного типа работы.
+     * @param {Object} workType - объект типа работы
+     */
     toggleWorkType(workType) {
-      workType.isSelected = !workType.isSelected;
+      workType.isSelected = !workType.isSelected; // меняем флаг выбранности
       if (this.isSelected(workType)) {
+        // если тип уже есть в выбранных, удаляем
         this.selectedWorkTypes = this.selectedWorkTypes.filter(
           (w) => w.id !== workType.id
         );
       } else {
+        // если нет — добавляем
         this.selectedWorkTypes.push(workType);
       }
-      this.$emit("select", this.selectedWorkTypes);
+      this.$emit("select", this.selectedWorkTypes); // уведомляем родителя о выборе
     },
+    /** 
+     * Метод вызывается при закрытии боковой панели.
+     * Снимает выделение с текущего зуба и обновляет его в Vuex.
+     */
     async onClosePanel() {
-      this.selectedWorkTypes = [];
-      this.availableWorkTypes.forEach(t => t.isSelected = false);
-      this.selectedTooth.isSelected = false; // при закрытии убираем выделенный зуб
-      await this.setSelectedTooth(this.selectedTooth);
-      this.$emit("applyChangesToSelectedTooth");
+      this.selectedTooth.isSelected = false; // убираем выделение с зуба
+      await this.setSelectedTooth(this.selectedTooth); // сохраняем изменения в Vuex
+      this.$emit("applyChangesToSelectedTooth"); // уведомляем родителя о применении изменений
     },
-    /**
-     * Сохраняем выбранные типы работ и выбранный зуб
+    /** 
+     * Сохраняет выбранные типы работ и выбранный зуб.
+     * Обновляет массив выбранных зубов в Vuex и выделяет цветом в компоненте выбора зубов.
      */
     async saveChanges() {
       let orderTooth = {
-        toothId: this.selectedTooth.id,
-        workTypes: this.selectedWorkTypes,
+        toothId: this.selectedTooth.id, // ID зуба
+        workTypes: this.selectedWorkTypes.slice(), // копия массива выбранных типов работ
       };
 
       let existedOrderTooth = this.orderSelectedTeeth.find(
-        (o) => o.toothId == orderTooth
-      );
-      if (!existedOrderTooth) {
-        existedOrderTooth = orderTooth;
-      } else {
-        await this.setOrderSelectedTeeth([
-          ...orderTooth,
-          ...this.orderSelectedTeeth,
-        ]);
-      }
-      console.log([
-          orderTooth,
-          ...this.orderSelectedTeeth,
-        ]);
-      console.log('this.orderSelectedTeeth');
+        (o) => o.toothId == orderTooth.toothId
+      ); // проверяем, есть ли зуб в массиве выбранных
 
-      return;
-      this.$emit("close");
+      if (!existedOrderTooth) {
+        // если зуб не найден, добавляем его в начало массива
+        const a = [orderTooth, ...this.orderSelectedTeeth];
+        this.setOrderSelectedTeeth(a); // сохраняем в Vuex
+      } else {
+        existedOrderTooth = orderTooth; // если есть — обновляем объект
+      }
+
+      console.log(this.orderSelectedTeeth); // вывод текущего состояния массива
+
+      // визуально выделяем выбранный зуб
+      this.selectedTooth.isSelected = false; // снимаем выделение
+      this.selectedTooth.background_color =
+        this.selectedWorkTypes.length > 0
+          ? this.selectedWorkTypes[0].background_color // цвет первого выбранного типа
+          : null; // если нет выбранных типов — цвет не устанавливаем
+
+      console.log("Выбранные типы работ", this.selectedWorkTypes); // лог выбранных типов
+
+      await this.setSelectedTooth(this.selectedTooth); // сохраняем выбранный зуб в Vuex
+      await this.$emit("applyChangesToSelectedTooth"); // уведомляем родителя о применении изменений
+      //this.$emit("close"); // ранее можно было закрывать панель
     },
   },
 };
+
 </script>
 
 <style scoped>
