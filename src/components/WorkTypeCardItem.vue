@@ -21,6 +21,11 @@
       :style="workType.background_color ? 'color:white !important' : ''"
     >
       {{ workType.name }}
+      <div class="teeth" v-if="workType.teeth && workType.teeth.length > 0">
+        <span v-for="tooth in workType.teeth" :key="tooth" class="tooth">
+          {{ tooth }}
+        </span>
+      </div>
     </div>
 
     <span v-if="workType.isSelected" class="selected-check">
@@ -51,23 +56,37 @@ export default {
       required: true,
     },
     isEditMode: {
-      type:Boolean,
-      required: false
+      type: Boolean,
+      required: false,
     },
     imageSrc: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
   computed: {
     imagePath() {
-      return this.workType.image_url ? `${baseHost}/${this.workType.image_url}` : this.workType.imageSrc
-    }
+      return this.workType.image_url
+        ? `${baseHost}/${this.workType.image_url}`
+        : this.workType.imageSrc;
+    },
   },
 };
 </script>
 
 <style scoped>
+.tooth {
+  font-size: 12px;
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.teeth {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  color: black;
+}
 .work-type-card {
   cursor: pointer;
   transition: 0.2s;
