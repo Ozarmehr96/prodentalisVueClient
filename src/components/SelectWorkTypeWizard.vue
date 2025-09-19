@@ -44,6 +44,7 @@ import {
 } from "../store/types";
 import SidePanel from "./SidePanel.vue";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
+import ToothSelection from "./ToothSelection.vue";
 
 export default {
   name: "WorkTypeSelector", // имя компонента Vue
@@ -74,7 +75,7 @@ export default {
      */
     onOpenSidePanel() {
       this.onClearClick(); // снимаем все отметки с доступных типов работ
-      this.selectedWorkTypes = this.selectedTooth.workTypes; // копируем текущие типы работ выбранного зуба
+      this.selectedWorkTypes = this.selectedTooth.workTypes.slice(); // копируем текущие типы работ выбранного зуба
       this.availableWorkTypes.forEach(w => {
         if (this.selectedWorkTypes.find(t => t.id == w.id)){
           w.isSelected = true; // помечаем как выбранные
@@ -144,17 +145,23 @@ export default {
         this.setOrderSelectedTeeth(a); // сохраняем в Vuex
       } else {
         existedOrderTooth = orderTooth; // если есть — обновляем объект
+        console.log("Обновляю типы работы для существующего зуба");
+        let indexOfOrderTeeth = this.orderSelectedTeeth.findIndex(o => o.toothId == orderTooth.toothId);
+        if (indexOfOrderTeeth >= 0) {
+          this.orderSelectedTeeth[indexOfOrderTeeth] = orderTooth;
+        }
       }
 
       console.log(this.orderSelectedTeeth); // вывод текущего состояния массива
 
       // визуально выделяем выбранный зуб
       this.selectedTooth.isSelected = false; // снимаем выделение
+      this.selectedTooth.workTypes = orderTooth.workTypes;
       this.selectedTooth.background_color =
-        this.selectedWorkTypes.length > 0
-          ? this.selectedWorkTypes[0].background_color // цвет первого выбранного типа
+        this.selectedTooth.workTypes.length > 0
+          ? this.selectedTooth.workTypes[0].background_color // цвет первого выбранного типа
           : null; // если нет выбранных типов — цвет не устанавливаем
-
+      this.selectedTooth.removeColored = this.selectedTooth.workTypes.length == 0;
       console.log("Выбранные типы работ", this.selectedWorkTypes); // лог выбранных типов
 
       await this.setSelectedTooth(this.selectedTooth); // сохраняем выбранный зуб в Vuex

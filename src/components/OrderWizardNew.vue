@@ -50,6 +50,7 @@
           </div>
         </form>
       </div>
+
       <div class="col-md-4">
         <h5 class="mb-3">Типы работ</h5>
         <WorkTypeCardItem
@@ -80,6 +81,7 @@
         <ToothSelection
           ref="toothSelection"
           @onToothSelectedChanged="selectedToothChnged"
+          @onCopyToothData="copyToothData"
         />
       </div>
       <div class="col-md-8" style="margin-top: -50px">
@@ -237,6 +239,25 @@ export default {
       console.log("типы работ для зубов", this.orderSelectedTeeth);
       await this.$refs.toothSelection.applySelection();
       this.isVisibleSelectWorkType = false;
+    },
+    copyToothData(fromToothId, toToothId) {
+      let copyFromThoothId = this.orderSelectedTeeth.findIndex(
+        (o) => o.toothId == fromToothId
+      );
+      if (copyFromThoothId >= 0) {
+        let isExistsTargetTooth = this.orderSelectedTeeth.findIndex(
+          (o) => o.toothId == toToothId
+        );
+
+        let newTooth = this.orderSelectedTeeth[copyFromThoothId];
+        newTooth = JSON.parse(JSON.stringify(newTooth));
+        newTooth.toothId = toToothId;
+        if (isExistsTargetTooth >= 0) {
+          this.orderSelectedTeeth[isExistsTargetTooth] = newTooth;
+        } else {
+          this.orderSelectedTeeth.push(newTooth);
+        }
+      }
     },
   },
 };

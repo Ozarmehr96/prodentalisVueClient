@@ -1,10 +1,14 @@
 <template>
   <div class="teeth-arc-container data-in-center">
     <svg
+      ref="svgRoot"
       viewBox="0 -55 1140 1800"
       preserveAspectRatio="xMidYMin meet"
       xmlns="http://www.w3.org/2000/svg"
       style="width: auto; height: 100%; max-width: 100%"
+      @mousedown="startDrag"
+      @mousemove="moveDrag"
+      @mouseup="endDrag"
     >
       <g id="teeth-layer" @click="handleToothClick">
         <!-- Верхняя дуга -->
@@ -548,8 +552,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex/dist/vuex.cjs.js";
-import { SET_SELECTED_TOOTH } from "../store/types";
+import { mapActions, mapGetters } from "vuex";
+import { ORDER_SELECTED_TEETH, SET_SELECTED_TOOTH } from "../store/types";
 
 export default {
   name: "ToothSelection",
@@ -559,6 +563,10 @@ export default {
         id: null,
         isSelected: false,
       }, // массив выбранных зубов
+      draggedToothId: null,
+      draggedCopy: null,
+      offsetX: 0,
+      offsetY: 0,
     };
   },
   props: {
@@ -577,6 +585,11 @@ export default {
       // вызываем единый метод подсветки
       this.applySelection();
     },
+  },
+  computed: {
+    ...mapGetters({
+      orderSelectedTeeth: ORDER_SELECTED_TEETH,
+    }),
   },
   methods: {
     ...mapActions({
@@ -607,12 +620,22 @@ export default {
               ellipse.setAttribute("fill", this.selectedTooth.background_color); // фон
             if (text) text.setAttribute("stroke", "#ffff"); // текст
             if (text) text.setAttribute("fill", "#ffff"); // текст
+          } else {
+            // если передан признак удаление выбранного цвета когда нет типов работ, то установим стили по умолчанию
+            if (this.selectedTooth.hasOwnProperty("removeColored")) {
+              toothG.classList.remove("colored");
+              this.setTextDefaultStyle(text);
+            }
           }
         } else {
           // Зуб не выбран
           this.removeSelected(toothG, ellipse, text);
         }
       });
+    },
+    setTextDefaultStyle(text) {
+      if (text) text.setAttribute("stroke", "#111111"); // текст
+      if (text) text.setAttribute("fill", "#111111"); // текст
     },
     removeSelected(toothG, ellipse, text) {
       toothG.classList.remove("selected");
@@ -645,6 +668,133 @@ export default {
     onPlusClick() {
       console.log("Стрелка нажата");
       // Здесь позже можно открывать модалку
+    },
+
+    /**
+     * Перетаскивание зуба и копирование стилей.
+     */
+    getMouseSVGPoint(event) {
+      const svg = this.$refs.svgRoot;
+      const pt = svg.createSVGPoint();
+      pt.x = event.clientX;
+      pt.y = event.clientY;
+      return pt.matrixTransform(svg.getScreenCTM().inverse());
+    },
+    /**
+     * Подготовка объекта для перетаскивания
+     */
+    startDrag(event) {
+      const tooth = event.target.closest(".tooth");
+      if (!tooth) return;
+
+      this.draggedTooth = tooth;
+      this.draggedCopy = tooth.cloneNode(true);
+      this.draggedCopy.setAttribute("opacity", "0.8");
+      this.draggedCopy.setAttribute("pointer-events", "none");
+      this.$refs.svgRoot.appendChild(this.draggedCopy);
+
+      const mousePos = this.getMouseSVGPoint(event);
+      this.offsetX = mousePos.x;
+      this.offsetY = mousePos.y;
+
+      // Начальная позиция копии
+      const transform = tooth
+        .getAttribute("transform")
+        .match(/translate\((.+),\s*(.+)\)/);
+      this.startX = parseFloat(transform[1]);
+      this.startY = parseFloat(transform[2]);
+
+      this.draggedCopy.setAttribute(
+        "transform",
+        `translate(${this.startX}, ${this.startY})`
+      );
+    },
+
+    /**
+     * Перемещение объекта
+     */
+    moveDrag(event) {
+      if (!this.draggedCopy) return;
+
+      const mousePos = this.getMouseSVGPoint(event);
+      const x = mousePos.x - (this.offsetX - this.startX);
+      const y = mousePos.y - (this.offsetY - this.startY);
+      this.draggedCopy.setAttribute("transform", `translate(${x}, ${y})`);
+    },
+    /**
+     * Получение зуба в указанной позиции
+     */
+    getToothAtPosition(mousePos) {
+      const allTeeth = document.querySelectorAll(".tooth");
+      for (const tooth of allTeeth) {
+        const ellipse = tooth.querySelector("ellipse");
+        if (!ellipse) continue;
+
+        const transformMatch = tooth
+          .getAttribute("transform")
+          ?.match(/translate\((.+),\s*(.+)\)/);
+        if (!transformMatch) continue;
+
+        const x = parseFloat(transformMatch[1]);
+        const y = parseFloat(transformMatch[2]);
+        const bbox = ellipse.getBBox();
+
+        if (
+          mousePos.x >= x - bbox.width / 2 &&
+          mousePos.x <= x + bbox.width / 2 &&
+          mousePos.y >= y - bbox.height / 2 &&
+          mousePos.y <= y + bbox.height / 2
+        ) {
+          return tooth; // возвращаем сам объект зуба
+        }
+      }
+      return null; // если не попали ни на один зуб
+    },
+    /**
+     * Вставка объекта. Копирование стилей.
+     */
+    endDrag(event) {
+      if (!this.draggedCopy) return;
+
+      const mousePos = this.getMouseSVGPoint(event);
+      const targetTooth = this.getToothAtPosition(mousePos);
+
+      let fromToothId = null;
+      let toToothId = null;
+
+      if (targetTooth) {
+        // копируем стили
+        const fromEllipse = this.draggedTooth.querySelector("ellipse");
+        const fromText = this.draggedTooth.querySelector("text");
+        const toEllipse = targetTooth.querySelector("ellipse");
+        const toText = targetTooth.querySelector("text");
+
+        toEllipse.setAttribute("fill", fromEllipse.getAttribute("fill"));
+        toEllipse.setAttribute("stroke", fromEllipse.getAttribute("stroke"));
+
+        toText.setAttribute("fill", fromText.getAttribute("fill"));
+        toText.setAttribute("stroke", fromText.getAttribute("stroke"));
+        
+        this.draggedTooth.classList.forEach(c => {
+          if (!targetTooth.classList.contains(c)) {
+            targetTooth.classList.add(c);
+          }
+        });
+
+        fromToothId = parseInt(this.draggedTooth.id.replace("tooth-", ""));
+        toToothId = parseInt(targetTooth.id.replace("tooth-", ""));
+        console.log("copy from ", fromToothId);
+        console.log("copy to ", toToothId);
+      }
+
+      // удаляем копию
+      this.draggedCopy.remove();
+      this.draggedCopy = null;
+      this.draggedTooth = null;
+
+      if (targetTooth && fromToothId && toToothId) {
+        this.$emit("onCopyToothData", fromToothId, toToothId);
+      }
     },
   },
 };
@@ -711,5 +861,12 @@ svg {
   stroke: #333;
   stroke-width: 3px;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6));
+}
+svg,
+text {
+  user-select: none; /* запрещаем выделение текста */
+  -webkit-user-select: none; /* для Safari/Chrome */
+  -moz-user-select: none; /* для Firefox */
+  -ms-user-select: none; /* для IE/Edge */
 }
 </style>
