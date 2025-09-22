@@ -1,5 +1,5 @@
 <template>
-  <app-page title="Добавление типа работы">
+  <app-page title="Добавление типа работы" :showBackButton="true">
     <WorkTypeWizard />
   </app-page>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex sidebar-fixed-left" style="height: 100vh" >
+  <div class="d-flex sidebar-fixed-left" style="height: 100vh">
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
       <symbol id="bootstrap" viewBox="0 0 118 94">
         <title>Bootstrap</title>
@@ -65,21 +65,20 @@
       </a>
       <hr style="margin-top: 10px" />
       <ul class="nav nav-pills flex-column mb-auto">
-        <template v-for="link in links">
-          <li>
-            <a
-              :href="link.link"
-              class="nav-link"
-              :class="isActive(link.link) ? 'activee' : 'link-dark'"
-            >
-              <svg class="bi me-2" width="16" height="16">
-                <use :xlink:href="link.svg"></use>
-              </svg>
-              {{ link.label }}
-            </a>
-          </li>
-        </template>
+        <li v-for="link in links" :key="link.link">
+          <router-link
+            :to="link.link"
+            class="nav-link link-dark"
+            active-class="activee"
+          >
+            <svg class="bi me-2" width="16" height="16">
+              <use :xlink:href="link.svg"></use>
+            </svg>
+            {{ link.label }}
+          </router-link>
+        </li>
       </ul>
+
       <hr />
       <div class="dropdown">
         <a
@@ -173,6 +172,10 @@ export default {
 </script>
 
 <style>
+.nav-link.activee {
+  background-color: #0d6efd;
+  color: black !important;
+}
 /* Чтоб sidebar всегда был фиксирован */
 nav {
   min-height: 100vh;
@@ -259,7 +262,7 @@ nav {
   color: black;
 }
 .activee {
-  color: white !important;
+  color: black !important;
   background-color: #3dd2cc !important;
 }
 .sidebar-fixed-left {

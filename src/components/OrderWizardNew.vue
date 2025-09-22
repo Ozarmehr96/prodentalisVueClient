@@ -11,7 +11,6 @@
               v-model="customer"
               class="form-control"
               id="floatingInput"
-              placeholder="342"
             />
             <label for="floatingInput">Заказчик</label>
           </div>
@@ -22,7 +21,6 @@
               v-model="patient"
               class="form-control"
               id="floatingInput"
-              placeholder="342"
             />
             <label for="floatingInput">Пациент</label>
           </div>
@@ -33,19 +31,20 @@
               v-model="expectedDate"
               class="form-control"
               id="floatingInput"
-              placeholder="342"
+              :min="new Date().toISOString().split('T')[0]"
             />
             <label for="floatingInput">Ожидаемая дата</label>
           </div>
 
           <div class="form-floating mb-4">
-            <input
+            <textarea
               type="text"
-              v-model="comment"
+              v-model="description"
               class="form-control"
               id="floatingInput"
-              placeholder="342"
-            />
+              rows="5"
+              style="height: 120px;"
+            ></textarea>
             <label for="floatingInput">Комментарий</label>
           </div>
         </form>
@@ -59,25 +58,16 @@
           :key="workType.id"
           style="margin-bottom: 10px"
         />
-        <!-- Todo Необходимо отображать выбранные зубы! -->
-        <!-- <OrderWorkTypeCard
-          v-for="work in filtredOrderSelectedTeethasWorktype"
-          :key="work.id"
-          :name="work.name"
-          colorName="1M1"
-          :teeth="work.teeth"
-          @onUpdateSelected="
-            (isSelected) => {
-              work.selected = isSelected;
-              updateSelectedTeethOnToothSelection(work);
-            }
-          "
-          @delete="deleteWorkTypeFromSelected(work)"
-          @click="selectWorkType(work)"
-        /> -->
+
+        <span
+          v-if="filtredOrderSelectedTeethasWorktype.length === 0"
+          class="text-muted d-block mt-2"
+        >
+          Нет выбранных типов работ
+        </span>
       </div>
       <!-- Правая часть -->
-      <div class="col-md-4 d-flex align-items-center justify-content-center">
+      <div class="col-md-4 d-flex justify-content-center">
         <ToothSelection
           ref="toothSelection"
           @onToothSelectedChanged="selectedToothChnged"
@@ -85,9 +75,14 @@
         />
       </div>
       <div class="col-md-8" style="margin-top: -50px">
-        <button class="btn btn-primary w-100 brand-style" @click="createOrder">
-          Сохранить
-        </button>
+        <ButtonWithLoader
+          :isLoading="isSaving"
+          title="Сохранить"
+          :customClasses="['btn-primary', 'w-100', 'brand-style']"
+          :loadingText="'Сохранение...'"
+          @click="createOrder"
+          :isValid="isValid === true"
+        />
       </div>
     </div>
     <SelectWorkTypeWizard
@@ -113,25 +108,25 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
-import OrderWorkTypeCard from "./OrderWorkTypeCard.vue";
 import ToothSelection from "./ToothSelection.vue";
 import {
   CREATE_ORDER,
   LOAD_WORK_TYPES,
   ORDER_SELECTED_TEETH,
   SELECTED_TOOTH,
-  SET_SELECTED_TOOTH,
   WORK_TYPES,
 } from "../store/types";
 import SelectWorkTypeWizard from "./SelectWorkTypeWizard.vue";
+import { convertOrderTeethToWorkTypes } from "../helpers/order-helpers";
+import ButtonWithLoader from "./ButtonWithLoader.vue";
 
 export default {
   name: "OrderWizard",
   components: {
     ToothSelection,
-    // OrderWorkTypeCard,
     WorkTypeCardItem,
     SelectWorkTypeWizard,
+    ButtonWithLoader,
   },
   data() {
     return {
@@ -139,10 +134,11 @@ export default {
       isVisibleSelectWorkType: false,
       customer: null,
       expectedDate: null,
-      comment: null,
+      description: null,
       patient: null,
       selectedWorkType: null,
       selectedToothId: null,
+      isSaving: false,
     };
   },
   async beforeMount() {
@@ -154,37 +150,19 @@ export default {
       selectedTooth: SELECTED_TOOTH,
       orderSelectedTeeth: ORDER_SELECTED_TEETH,
     }),
+    isValid() {
+      return (
+        this.customer &&
+        this.patient &&
+        this.expectedDate &&
+        this.orderSelectedTeeth.length > 0
+      );
+    },
     filteredWorkTypes() {
       return this.workTypes;
     },
     filtredOrderSelectedTeethasWorktype() {
-      let orderSelectedTeeth = this.orderSelectedTeeth.slice();
-      let workTypes = [];
-
-      orderSelectedTeeth.forEach((tooth) => {
-        console.log("tooth", tooth);
-        // перебираем все типы работ у зуба
-        tooth.workTypes.forEach((workType) => {
-          console.log("workTypes", workType);
-          // ищем, есть ли уже такой тип работы в result
-          let existing = workTypes.find((x) => x.id === workType.id);
-
-          if (!existing) {
-            // если такого типа работы ещё нет — добавляем новый объект
-            existing = {
-              ...workType,
-              teeth: [],
-            };
-            existing.isSelected = false;
-            workTypes.push(existing);
-          }
-
-          // добавляем зуб в список
-          existing.teeth.push(tooth.toothId);
-        });
-      });
-
-      return workTypes;
+      return convertOrderTeethToWorkTypes(this.orderSelectedTeeth.slice());
     },
   },
   methods: {
@@ -217,21 +195,23 @@ export default {
       );
     },
     async createOrder() {
+      this.isSaving = true;
       let order = {
         customer_name: this.customer,
         patient_name: this.patient,
         expired_at: this.expectedDate,
-        work_types: this.selectedWorkTypes.map((wt) => ({
-          work_type_id: wt.id,
-          teeth: JSON.stringify(wt.teeth),
-        })),
         description: this.description,
+        teeth: this.orderSelectedTeeth.map((t) => ({
+          tooth_id: t.toothId,
+          work_type_ids: t.workTypes.map((wt) => wt.id),
+        })),
         callback: (createdOrder) => {
-          this.$toast(`Заказ ${createdOrder.id} создан`, 7000);
-          this.$router.go(-1);
+          this.$toast(`Заказ №${createdOrder.id} создан`, 7000);
+          this.$router.push("/orders");
         },
       };
       await this.createOrderAction(order);
+      this.isSaving = false;
     },
     async applyChangesToSelectedTooth() {
       console.log("Сохранение изменений в компонент выбора зубов");

@@ -1,5 +1,5 @@
 <template>
-  <app-page title="Редактирование этапа работы">
+  <app-page title="Редактирование этапа работы" :showBackButton="true">
     <WorkStepWizard v-if="workStep" :workStepData="workStep" :isEditMode="true" />
   </app-page>
 </template>

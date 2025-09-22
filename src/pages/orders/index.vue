@@ -5,7 +5,7 @@
     isShowAddButton
   >
     <div class="row">
-      <div class="col-12 mb-3" v-for="order in orders" :key="order.id">
+      <div class="col-12 mb-3" v-for="order in orders" :key="order.id" :id="`order-${order.id}`">
         <OrderCardItem :order="order" />
       </div>
     </div>

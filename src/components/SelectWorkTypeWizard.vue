@@ -152,6 +152,14 @@ export default {
         }
       }
 
+      // если не выбрано ни одного типа работы и зуб есть в массиве, удаляем его
+      if (this.selectedWorkTypes.length === 0 && existedOrderTooth) {
+        // если не выбрано ни одного типа работы, удаляем зуб из массива выбранных
+        this.setOrderSelectedTeeth(
+          this.orderSelectedTeeth.filter((o) => o.toothId != orderTooth.toothId)
+        );
+      }
+
       console.log(this.orderSelectedTeeth); // вывод текущего состояния массива
 
       // визуально выделяем выбранный зуб

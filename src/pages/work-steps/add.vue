@@ -1,5 +1,5 @@
 <template>
-  <app-page title="Добавление этапа работы">
+  <app-page title="Добавление этапа работы" :showBackButton="true">
     <WorkStepWizard />
   </app-page>
 </template>
