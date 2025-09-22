@@ -27,7 +27,6 @@ const actions = {
     commit(MUTATE_SELECTED_TOOTH, selectedTooth);
   },
   [SET_ORDER_SELECTED_TEETH]: ({ commit }, newOrderSelectedTeeth) => {
-    console.log('SET_ORDER_SELECTED_TEETH', newOrderSelectedTeeth)
     commit(MUTATE_ORDER_SELECTED_TEETH, newOrderSelectedTeeth);
   },
 };

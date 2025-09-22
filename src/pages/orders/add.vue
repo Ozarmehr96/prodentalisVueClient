@@ -1,12 +1,12 @@
 <template>
-  <app-page title="Добавление заказа">
+  <app-page title="Добавление заказа" :showBackButton="true">
     <OrderWizard />
   </app-page>
 </template>
 
 <script>
 import AppPage from "../../components/AppPage.vue";
-import OrderWizard from "../../components/OrderWizardNew.vue";
+import OrderWizard from "../../components/OrderWizard.vue";
 
 /**
  * Страница "Добавление заказа"

@@ -1,5 +1,5 @@
 <template>
-  <app-page title="Добавление сотрудника">
+  <app-page title="Добавление сотрудника" :showBackButton="true">
     <UserFromCRUD />
   </app-page>
 </template>
