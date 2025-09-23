@@ -63,6 +63,9 @@ export const LOAD_WORK_STEP = "workSteps/LOAD_WORK_STEP";
 export const LOAD_ORDERS = "orders/LOAD_ORDERS";
 export const MUTATE_ORDERS = "orders/MUTATE_ORDERS";
 export const ORDERS = "orders/ORDERS";
+export const LOAD_ORDER = "orders/LOAD_ORDER";
+export const MUTATE_ORDER = "orders/MUTATE_ORDER";
+export const ORDER = "orders/ORDER";
 export const CREATE_ORDER = "orders/CREATE_ORDER";
 export const UPDATE_ORDER = "orders/UPDATE_ORDER";
 

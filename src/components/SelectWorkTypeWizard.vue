@@ -44,7 +44,6 @@ import {
 } from "../store/types";
 import SidePanel from "./SidePanel.vue";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
-import ToothSelection from "./ToothSelection.vue";
 
 export default {
   name: "WorkTypeSelector", // имя компонента Vue

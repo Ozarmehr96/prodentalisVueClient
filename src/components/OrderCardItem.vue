@@ -31,8 +31,12 @@
 
         <!-- Срок исполнения -->
         <p class="mb-1 text-danger fw-bold">
-          <i class="bi bi-hourglass-split"></i>
           Срок: {{ $toDateFormat(order.expired_at) }}
+        </p>
+
+        <!-- Цена -->
+        <p class="mb-1" v-if="order.price">
+          Цена: {{ order.price }} сомони
         </p>
 
         <!-- Комментарий -->
@@ -81,15 +85,26 @@
       <span class="text-truncate">
         Создано пользователем: {{ order.created_user_name }}
       </span>
-      <!-- Кнопка справа -->
-      <button
-        class="btn btn-sm btn-outline-primary ms-auto"
-        @click="printOrder(order.id)"
-        title="Печать заказа"
-        style="height: 28px; font-size: 0.75rem"
-      >
-        Печать
-      </button>
+
+      <div class="ms-auto">
+        <button
+          class="btn btn-sm btn-outline-primary ms-auto me-2"
+          @click="() => $router.push(`/orders/${order.id}`)"
+          title="Редактировать"
+          style="height: 28px; font-size: 0.75rem"
+        >
+          Редактировать
+        </button>
+        <!-- Кнопка справа -->
+        <button
+          class="btn btn-sm btn-outline-primary"
+          @click="printOrder(order.id)"
+          title="Печать заказа"
+          style="height: 28px; font-size: 0.75rem"
+        >
+          Печать
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -113,7 +128,7 @@ export default {
     },
     host() {
       return `${window.location.protocol}//${window.location.hostname}${
-      window.location.port ? ":" + window.location.port : ""
+        window.location.port ? ":" + window.location.port : ""
       }/orders/${this.order.id}`;
     },
   },

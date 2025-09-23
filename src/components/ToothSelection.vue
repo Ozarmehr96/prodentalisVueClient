@@ -553,16 +553,12 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { ORDER_SELECTED_TEETH, SET_SELECTED_TOOTH } from "../store/types";
+import { ORDER_SELECTED_TEETH, SELECTED_TOOTH, SET_SELECTED_TOOTH } from "../store/types";
 
 export default {
   name: "ToothSelection",
   data() {
     return {
-      selectedTooth: {
-        id: null,
-        isSelected: false,
-      }, // массив выбранных зубов
       draggedToothId: null,
       draggedCopy: null,
       offsetX: 0,
@@ -570,25 +566,10 @@ export default {
     };
   },
   props: {
-    // Массив выбранных зубов
-    newSelectedTeeth: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  watch: {
-    // Следим за изменениями массива зубов от родителя
-    newSelectedTeeth(newVal) {
-      console.log("newSelectedTeeth changed:", newVal);
-      // синхронизируем локальное состояние
-      this.selectedTooth = newVal;
-      // вызываем единый метод подсветки
-      this.applySelection();
-    },
   },
   computed: {
     ...mapGetters({
-      orderSelectedTeeth: ORDER_SELECTED_TEETH,
+      selectedTooth: SELECTED_TOOTH
     }),
   },
   methods: {
@@ -599,6 +580,7 @@ export default {
     // Единый метод подсветки зубов
     applySelection() {
       console.log("applySelection", "this.selectedTooth", this.selectedTooth);
+      console.log("Применение подсветки для зуба", this.selectedTooth);
       const allTeeth = document.querySelectorAll(".tooth");
 
       allTeeth.forEach((toothG) => {
@@ -654,11 +636,10 @@ export default {
       if (!toothG) return;
 
       const toothId = parseInt(toothG.id.replace("tooth-", ""));
-      this.selectedTooth = {
+      await this.setSelectedTooth({
         id: toothId,
         isSelected: true,
-      };
-      await this.setSelectedTooth(this.selectedTooth);
+      });
       this.applySelection(); // применяем подсветку
       // Отправляем обновлённый массив выбранных зубов наружу
       this.$emit("onToothSelectedChanged", this.selectedTooth.id);
