@@ -1,5 +1,9 @@
 <template>
-  <div class="container-fluid" style="padding-left: 0">
+  <div
+    class="container-fluid"
+    style="padding-left: 0"
+    v-if="isEditMode ? orderSelectedTeeth : true"
+  >
     <div class="row">
       <!-- Левая часть -->
       <div class="col-md-4">
@@ -34,6 +38,18 @@
               :min="new Date().toISOString().split('T')[0]"
             />
             <label for="floatingInput">Ожидаемая дата</label>
+          </div>
+
+          <div class="form-floating mb-4">
+            <input
+              type="number"
+              v-model="price"
+              min="0"
+              max="10000"
+              class="form-control"
+              id="floatingInput"
+            />
+            <label for="floatingInput">Стоимость</label>
           </div>
 
           <div class="form-floating mb-4">
@@ -115,6 +131,8 @@ import {
   ORDER_SELECTED_TEETH,
   SELECTED_TOOTH,
   SET_ORDER_SELECTED_TEETH,
+  SET_SELECTED_TOOTH,
+  UPDATE_ORDER,
   WORK_TYPES,
 } from "../store/types";
 import SelectWorkTypeWizard from "./SelectWorkTypeWizard.vue";
@@ -150,18 +168,51 @@ export default {
       selectedWorkType: null,
       selectedToothId: null,
       isSaving: false,
+      price: null,
     };
   },
   async beforeMount() {
-    this.loadWorkTypes();
-
     // если режим редактирования, заполняем поля
     if (this.isEditMode) {
-
-    }
-    else { // если режим создания нового заказа, очищаем выбранные зубы
+      this.orderToEdit.teeth.forEach((t) => {
+        t.toothId = t.tooth_id;
+        t.workTypes = t.work_types;
+      });
+      this.setOrderSelectedTeeth(this.orderToEdit.teeth);
+      this.price = this.orderToEdit.price;
+      this.customer = this.orderToEdit.customer_name;
+      this.patient = this.orderToEdit.patient_name;
+      this.expectedDate = this.orderToEdit.expired_at
+        ? this.orderToEdit.expired_at.split("T")[0]
+        : null;
+      this.description = this.orderToEdit.description;
+    } else {
+      // если режим создания нового заказа, очищаем выбранные зубы
       this.setOrderSelectedTeeth([]);
     }
+
+    this.loadWorkTypes();
+  },
+  async mounted() {
+    if (this.isEditMode) {
+      console.log("Order to edit:", this.orderToEdit);
+      // в режиме редактирования выделяем первый зуб из заказа
+      this.orderToEdit.teeth.forEach(async (t) => {
+        let selectedTooth = {};
+        selectedTooth.id = t.tooth_id;
+        selectedTooth.isSelected = false;
+        selectedTooth.workTypes = t.work_types;
+        selectedTooth.background_color = t.work_types.length
+          ? t.work_types[0].background_color
+          : null;
+
+        await new Promise((resolve) => setTimeout(resolve, 100)); // небольшая задержка для корректного рендера
+        await this.setSelectedTooth(selectedTooth).then(async () => {
+          await this.$refs.toothSelection.applySelection();
+        });
+      });
+    }
+    // console.log("OrderWizard mounted");
   },
   computed: {
     ...mapGetters({
@@ -185,27 +236,49 @@ export default {
     filtredOrderSelectedTeethasWorktype() {
       return convertOrderTeethToWorkTypes(this.orderSelectedTeeth.slice());
     },
+    calcPrice() {
+      let total = 0;
+      this.orderSelectedTeeth.forEach((t) => {
+        t.workTypes.forEach((workType) => {
+          workType.steps.forEach((step) => {
+            total += step.price;
+          });
+        });
+      });
+
+      return total;
+    },
   },
   methods: {
     ...mapActions({
       loadWorkTypes: LOAD_WORK_TYPES,
       createOrderAction: CREATE_ORDER,
+      updateOrderAction: UPDATE_ORDER,
       setOrderSelectedTeeth: SET_ORDER_SELECTED_TEETH,
+      setSelectedTooth: SET_SELECTED_TOOTH,
     }),
     /**
      * Событие выбора зуба
      * @param selectedTeeth
      */
-    selectedToothChnged(selectedTeeth) {
-      console.log("Выбранные зубы:", selectedTeeth);
-      this.selectedToothId = selectedTeeth;
+    selectedToothChnged(toothId) {
+      this.selectedToothId = toothId;
       let selectedWorkTypes = this.orderSelectedTeeth.find(
         (o) => o.toothId == this.selectedToothId
       );
+
+      // находим данные выбранного зуба
       this.selectedTooth.workTypes = selectedWorkTypes
         ? selectedWorkTypes.workTypes
         : [];
 
+      // запоминаем цвет выделения зуба
+      this.setSelectedTooth({
+        ...this.selectedTooth,
+        background_color: this.selectedTooth.workTypes.length
+          ? this.selectedTooth.workTypes[0].background_color
+          : null,
+      });
       this.isVisibleSelectWorkType = true;
     },
     openSidePanelSelectWorkType() {},
@@ -218,8 +291,9 @@ export default {
     },
     async createOrder() {
       this.isSaving = true;
-      let order = {
+      let newOrder = {
         customer_name: this.customer.trim(),
+        price: this.price,
         patient_name: this.patient.trim(),
         expired_at: this.expectedDate,
         description: this.description ? this.description.trim() : null,
@@ -232,13 +306,21 @@ export default {
           this.$router.push("/orders");
         },
       };
-      await this.createOrderAction(order);
+
+      // если режим редактирования, обновляем заказ
+      if (this.isEditMode) {
+        newOrder.id = this.orderToEdit.id;
+        await this.updateOrderAction(newOrder);
+        this.isSaving = false;
+        return;
+      }
+
+      await this.createOrderAction(newOrder);
       this.isSaving = false;
     },
     async applyChangesToSelectedTooth() {
-      console.log("Сохранение изменений в компонент выбора зубов");
-      console.log("Свойства выбранного зуба", this.selectedTooth);
-      console.log("типы работ для зубов", this.orderSelectedTeeth);
+      // пересчитываем цену
+      this.price = this.calcPrice;
       await this.$refs.toothSelection.applySelection();
       this.isVisibleSelectWorkType = false;
     },
