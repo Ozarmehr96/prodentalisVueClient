@@ -1,0 +1,14 @@
+# Docker Compose файл для запуска Vue приложения в контейнере (как запустить образ, какой контейнер создается, с какими настройками)
+# Предполагается, что Dockerfile находится в той же папке, что и этот файл docker-compose.yml
+# Запуск: docker-compose up -d
+# Остановка: docker-compose down
+# Приложение будет доступно по адресу http://localhost:3000
+
+services: # Определение сервисов (контейнеров)
+  frontend: # Имя сервиса (контейнера)
+    build:
+      context: .        # текущая папка, где лежит docker-compose.yml и Dockerfile  (то есть нужно указать где есть тек файл D:/Projects/ProDentalisClient/prodentalis-client
+      dockerfile: Dockerfile # Указываем, что нужно использовать этот Dockerfile
+    ports:
+      - "3000:80" # Пробрасываем порт 80 из контейнера на порт 3000 хоста, то есть доступ к приложению будет по адресу http://localhost:3000
+    restart: always # Автоматически перезапускать контейнер при сбое

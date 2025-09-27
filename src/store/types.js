@@ -68,7 +68,8 @@ export const MUTATE_ORDER = "orders/MUTATE_ORDER";
 export const ORDER = "orders/ORDER";
 export const CREATE_ORDER = "orders/CREATE_ORDER";
 export const UPDATE_ORDER = "orders/UPDATE_ORDER";
-
+export const START_ORDER = "orders/START_ORDER";
+export const FINISH_ORDER = "orders/FINISH_ORDER";
 // Создание заказа
 export const SELECTED_TOOTH = "order_wizard/SELECTED_TOOTH";
 export const MUTATE_SELECTED_TOOTH = "order_wizard/MUTATE_SELECTED_TOOTH";

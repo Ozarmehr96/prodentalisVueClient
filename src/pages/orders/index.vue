@@ -1,9 +1,5 @@
 <template>
-  <app-page
-    title="Заказы"
-    @onAddButtonClickEvent="() => $router.push('/orders/add')"
-    isShowAddButton
-  >
+  <app-page title="Заказы" @onAddButtonClickEvent="() => $router.push('/orders/add')" isShowAddButton>
     <div v-if="isLoading" class="my-5 spinner">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -11,7 +7,7 @@
     </div>
     <div class="row" v-else>
       <div class="col-12 mb-3" v-for="order in orders" :key="order.id" :id="`order-${order.id}`">
-        <OrderCardItem :order="order" />
+        <OrderCardItem :order="order" @statusChanged="() => loadOrders()" />
       </div>
       <div v-if="orders.length === 0" class="col-12">
         <p class="text-muted">Нет заказов</p>
@@ -41,11 +37,8 @@ export default {
       isLoading: false,
     };
   },
- async beforeMount() {
-    this.isLoading = true;
-    await this.loadOrders().then(() => {
-      this.isLoading = false;
-    });
+  async beforeMount() {
+    await this.loadOrders();
   },
   computed: {
     ...mapGetters({
@@ -54,8 +47,14 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadOrders: LOAD_ORDERS,
+      loadOrdersAction: LOAD_ORDERS,
     }),
+    async loadOrders() {
+      this.isLoading = true;
+      await this.loadOrdersAction().then(() => {
+        this.isLoading = false;
+      });
+    }
   },
 };
 </script>
