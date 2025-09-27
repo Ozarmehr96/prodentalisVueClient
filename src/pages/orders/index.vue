@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="row" v-else>
-      <div class="col-12 mb-3" v-for="order in orders" :key="order.id" :id="`order-${order.id}`">
+      <div class="col-12 mb-3 clickable" v-for="order in orders" :key="order.id" :id="`order-${order.id}`">
         <OrderCardItem :order="order" @statusChanged="() => loadOrders()" />
       </div>
       <div v-if="orders.length === 0" class="col-12">
@@ -59,6 +59,10 @@ export default {
 };
 </script>
 <style scoped>
+.card:hover {
+  border: 1px solid #007bff !important; /* синий цвет выделения */
+  border-radius: 1rem;
+}
 .spinner {
   display: flex;
   justify-content: center;

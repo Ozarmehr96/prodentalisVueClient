@@ -8,36 +8,45 @@
     </div>
 
     <div class="card-body d-flex justify-content-between align-items-start"
-      style="padding-bottom: 0 !important; margin-bottom: -15px">
+      style="padding-bottom: 0 !important; margin-bottom: -15px;  cursor: pointer;"
+      @click="() => $router.push(`/orders/view/${order.id}`)">
       <!-- Левая колонка: данные заказа -->
       <div class="main-data me-3" style="flex: 1 1 auto">
         <!-- Заказчик и пациент -->
-        <p class="mb-1">
-          Заказчик: {{ order.customer_name }}
-        </p>
-        <p class="mb-1">
-          Пациент: {{ order.patient_name }}
-        </p>
+        <div class="d-flex mb-2">
+          <span class="text-muted orderKey">Заказчик:</span>
+          <span class="fw-semibold">{{ order.customer_name }}</span>
+        </div>
+
+        <!-- Пациент -->
+        <div class="d-flex mb-2">
+          <span class="text-muted orderKey">Пациент:</span>
+          <span class="fw-semibold">{{ order.patient_name }}</span>
+        </div>
 
         <!-- Дата создания -->
-        <p class="mb-1">
-          Создан: {{ $toDateTimeFormat(order.created_at) }}
-        </p>
+        <div class="d-flex mb-2">
+          <span class="text-muted orderKey">Создан:</span>
+          <span class="fw-semibold">{{ $toDateTimeFormat(order.created_at) }}</span>
+        </div>
 
         <!-- Срок исполнения -->
-        <p class="mb-1 text-danger fw-bold" :title="formatDeadLine($toDateFormat(order.expired_at))">
-          Срок: {{ $toDateFormat(order.expired_at) }}
-        </p>
+        <div class="d-flex mb-2">
+          <span class="text-danger fw-bold orderKey">Срок:</span>
+          <span class="fw-semibold text-danger fw-bold">{{ $toDateFormat(order.expired_at) }}</span>
+        </div>
 
         <!-- Цена -->
-        <p class="mb-1" v-if="order.price">
-          Цена: {{ order.price }} сомони
-        </p>
+        <div class="d-flex mb-2" v-if="order.price">
+          <span class="text-muted orderKey">Цена:</span>
+          <span class="fw-semibold">{{ order.price }} TJS</span>
+        </div>
 
         <!-- Комментарий -->
-        <p v-if="order.description" class="mb-1">
-          {{ order.description }}
-        </p>
+        <div class="d-flex mb-2" v-if="order.description">
+          <span class="text-muted orderKey">Комментарии:</span>
+          <span class="fw-semibold">{{ order.description }} TJS</span>
+        </div>
 
         <!-- Типы работ -->
         <div>
@@ -253,6 +262,7 @@ export default {
 .ordercarItem {
   max-width: 1800px;
 }
+
 .footerButton {
   height: 28px;
   font-size: 0.75rem
@@ -279,5 +289,9 @@ export default {
   background: #f0f0f0;
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+.orderKey {
+  width: 110px;
 }
 </style>
