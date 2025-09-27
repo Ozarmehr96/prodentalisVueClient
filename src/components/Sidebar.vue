@@ -71,15 +71,17 @@
             class="nav-link link-dark"
             active-class="activee"
           >
-            <svg class="bi me-2" width="16" height="16">
+            <svg class="bi me-2" width="16" height="16" v-if="link.svg">
               <use :xlink:href="link.svg"></use>
             </svg>
+            <img v-if="link.path" :src="link.path" class="link-image"/>
             {{ link.label }}
           </router-link>
         </li>
       </ul>
 
       <hr />
+      <!--Данные сотрудника, всегда внизу должен быть, возможно нужен скрол чтобы не скрыть, всегда должен быть видимимым-->
       <div class="dropdown">
         <a
           href="#"
@@ -88,13 +90,9 @@
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          <img
-            src="https://github.com/mdo.png"
-            alt=""
-            width="32"
-            height="32"
-            class="rounded-circle me-2"
-          />
+          <svg class="bi me-2" width="32" height="32">
+              <use xlink:href="#people-circle"></use>
+            </svg>
           <strong>{{ currentUser.short_name }}</strong>
         </a>
         <ul
@@ -172,6 +170,10 @@ export default {
 </script>
 
 <style>
+.link-image {
+  width: 18px !important;
+  height: 18px !important;
+}
 .nav-link.activee {
   background-color: #0d6efd;
   color: black !important;

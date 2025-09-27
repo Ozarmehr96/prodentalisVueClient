@@ -1,0 +1,58 @@
+# Вариант B: через файл (tar)
+# docker save -o prodentalis-client.tar prodentalis-client:latest
+# docker save -o D:\Projects\ProDentalisClient\prodentalis-client.tar prodentalis-client-frontend:latest -- сохранение образа, из которого можно создать контейнер
+# Получится файл prodentalis-client.tar, его можно переслать.
+# Заказчик загружает так:
+# docker load -i prodentalis-client.tar
+# docker run -p 8080:80 prodentalis-client:latest
+
+отовый рабочий вариант передачи заказчику твоего Prodentalis клиента с образом и compose:
+
+1️⃣ Сборка образа
+
+На твоей машине:
+
+# Собираем образ из Dockerfile
+docker build -t prodentalis-client:latest .
+
+
+Проверяем, что образ есть:
+
+docker images
+
+2️⃣ Сохраняем образ в tar
+docker save -o D:\Projects\ProDentalisClient\prodentalis-client.tar prodentalis-client:latest
+
+
+prodentalis-client.tar — это файл, который передаёшь заказчику.
+
+3️⃣ docker-compose.yml для заказчика
+
+Можно передать вместе с tar-файлом:
+
+services:
+  prodentalis-client:
+    image: prodentalis-client:latest
+    container_name: prodentalis-client
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+Здесь уже не нужен build, потому что образ уже готов.
+Порт 8080 пробрасывается наружу.
+
+4️⃣ Инструкция для заказчика
+
+Сохраняет prodentalis-client.tar и docker-compose.yml в одну папку.
+Загружает образ в Docker:
+docker load -i prodentalis-client.tar
+Запускает контейнер:
+docker-compose up -d
+Открывает браузер:
+http://localhost:8080
+
+✅ Результат:
+
+SPA Vue + nginx запускается сразу.
+/login, /orders и другие маршруты работают.
+Заказчик не трогает Dockerfile — всё готово.

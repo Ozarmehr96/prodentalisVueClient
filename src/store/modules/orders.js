@@ -55,6 +55,26 @@ const actions = {
       console.error(e);
     }
   },
+
+  [types.START_ORDER]: async ({ commit }, orderId) => {
+    try {
+      const response = await api.put(`/orders/${orderId}/start`);
+      await commit(types.MUTATE_ORDER, response.data);
+      return response.data;
+    } catch (e) {
+      console.error(e);
+    }
+  },
+
+  [types.FINISH_ORDER]: async ({ commit }, orderId) => {
+    try {
+      const response = await api.put(`/orders/${orderId}/finish`);
+      await commit(types.MUTATE_ORDER, response.data);
+      return response.data;
+    } catch (e) {
+      console.error(e);
+    }
+  },
 };
 
 const getters = {
