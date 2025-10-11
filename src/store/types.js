@@ -3,6 +3,7 @@ export const DATE_FORMAT = "DD.MM.YYYY";
 export const DATE_TIME_FORMAT = "DD.MM.YYYY HH:mm";
 export const LOGIN = "auth/LOGIN";
 export const CURRENT_USER = "auth/CURRENT_USER";
+export const IS_SYSTEM_ADMIN = "auth/IS_SYSTEM_ADMIN";
 export const ACCESS_TOKEN = "auth/ACCESS_TOKEN";
 export const MUTATE_CURRENT_USER = "auth/MUTATE_CURRENT_USER";
 export const MUTATE_WEBSOCKET_TOKEN = "auth/MUTATE_WEBSOCKET_TOKEN";
@@ -63,6 +64,8 @@ export const LOAD_WORK_STEP = "workSteps/LOAD_WORK_STEP";
 export const LOAD_ORDERS = "orders/LOAD_ORDERS";
 export const MUTATE_ORDERS = "orders/MUTATE_ORDERS";
 export const ORDERS = "orders/ORDERS";
+export const IS_ORDER_LOADING = "orders/IS_ORDER_LOADING";
+export const MUTATE_IS_ORDER_LOADING = "orders/MUTATE_IS_ORDER_LOADING";
 export const LOAD_ORDER = "orders/LOAD_ORDER";
 export const MUTATE_ORDER = "orders/MUTATE_ORDER";
 export const ORDER = "orders/ORDER";
@@ -70,6 +73,12 @@ export const CREATE_ORDER = "orders/CREATE_ORDER";
 export const UPDATE_ORDER = "orders/UPDATE_ORDER";
 export const START_ORDER = "orders/START_ORDER";
 export const FINISH_ORDER = "orders/FINISH_ORDER";
+
+// Фильтр по заказу
+export const ORDER_FILTERS = "orders/ORDER_FILTERS";
+export const MUTATE_ORDER_FILTERS = "orders/MUTATE_ORDER_FILTERS";
+export const SET_ORDER_FILTERS = "orders/MUTATE_ORDER_FILTERS";
+
 // Создание заказа
 export const SELECTED_TOOTH = "order_wizard/SELECTED_TOOTH";
 export const MUTATE_SELECTED_TOOTH = "order_wizard/MUTATE_SELECTED_TOOTH";
@@ -77,3 +86,11 @@ export const SET_SELECTED_TOOTH = "order_wizard/SET_SELECTED_TOOTH";
 export const ORDER_SELECTED_TEETH = "order_wizard/ORDER_SELECTED_TEETH"; // выбранные зубы при создании задачи. У каждого зуба свои типы работ
 export const MUTATE_ORDER_SELECTED_TEETH = "order_wizard/MUTATE_ORDER_SELECTED_TEETH";
 export const SET_ORDER_SELECTED_TEETH = "order_wizard/SET_ORDER_SELECTED_TEETH";
+
+// Создание лаборатории
+export const SAVE_LAB = "labs/SAVE_LAB";
+export const UPDATE_LAB = "labs/UPDATE_LAB";
+export const LOAD_LABS = "labs/LOAD_LABS";
+export const LOAD_LAB = "labs/LOAD_LAB";
+export const LABS = "labs/LABS";
+export const MUTATE_LABS = "labs/MUTATE_LABS";

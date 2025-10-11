@@ -1,7 +1,7 @@
 <template>
   <div class="card h-100 shadow-sm mb-3 ordercarItem">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <span class="fw-bold">Заказ №{{ order.id }}</span>
+      <span class="fw-bold">Заказ №{{ order.number }}</span>
       <span class="badge" :class="getStatusClass(order.status.code)">
         {{ order.status.name }}
       </span>
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Цена -->
-        <div class="d-flex mb-2" v-if="order.price">
+        <div class="d-flex mb-2" v-if="(isSystemAdmin || isLabDirectory) && order.price">
           <span class="text-muted orderKey">Цена:</span>
           <span class="fw-semibold">{{ order.price }} TJS</span>
         </div>
@@ -106,10 +106,10 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { convertOrderTeethToWorkTypes } from "../helpers/order-helpers";
 import QrCode from "./QrCode.vue";
-import { FINISH_ORDER, START_ORDER } from "../store/types";
+import { FINISH_ORDER, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN, START_ORDER } from "../store/types";
 import dayjs from "dayjs";
 export default {
   name: "OrderCard",
@@ -121,6 +121,10 @@ export default {
     },
   },
   computed: {
+    ...mapGetters({
+      isLabDirectory: IS_LAB_DIRECTOR,
+      isSystemAdmin: IS_SYSTEM_ADMIN
+    }),
     // преобразование зубов в типы работ
     workTypes() {
       return convertOrderTeethToWorkTypes(this.order.teeth.slice());
@@ -133,7 +137,7 @@ export default {
   methods: {
     ...mapActions({
       startOrderAction: START_ORDER,
-      finishOrderAction: FINISH_ORDER
+      finishOrderAction: FINISH_ORDER,
     }),
     startOrder() {
       this.startOrderAction(this.order.id).then(() => this.$emit("statusChanged"));

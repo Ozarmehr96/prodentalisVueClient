@@ -56,7 +56,7 @@
             ></textarea>
           </div>
 
-          <!-- Тип работы -->
+          <!-- Этапы работы -->
           <div class="mb-3">
             <SelectWorkStepWizard
               @onUpdateSelectedSteps="
@@ -72,7 +72,7 @@
             class="btn btn-primary w-100 brand-style"
             :disabled="!isValid"
           >
-            Отправить
+            Сохранить
           </button>
         </form>
       </div>
@@ -171,6 +171,9 @@ export default {
       // Обновляем выбранные шаги в состоянии компонента
       this.setSelectedWorkTypeStep(this.selectedWorkSteps);
     }
+    else {
+      this.setSelectedWorkTypeStep([]);
+    }
   },
 
   methods: {
@@ -206,9 +209,12 @@ export default {
       }
     },
     async createWorkType() {
-      if (!confirm("Вы не выбрали ни один этап работы. Продолжить?")) {
-        return;
+      if (this.selectedWorkSteps.length == 0) {
+        if (!confirm("Вы не выбрали ни один этап работы. Продолжить?")) {
+          return;
+        }
       }
+      
       if (!this.workType.name.trim()) {
         alert("Пожалуйста, заполните все обязательные поля");
         return;

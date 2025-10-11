@@ -89,7 +89,7 @@
           <!-- Линия 3 -->
           <div
             class="row mb-3"
-            title="Логин должен начинаться с буквы и содержать 4–12 символов: буквы, цифры, '-', '_', '.'"
+            title="Логин должен начинаться с буквы и содержать от 4 до 20 символов (буквы, цифры, подчёркивания)"
           >
             <div class="col-md-5">
               <label for="login" class="form-label">Логин</label>
@@ -98,12 +98,12 @@
                 class="form-control"
                 id="login"
                 name="login"
-                pattern="^[a-zA-Z][a-zA-Z0-9_.-]{3,13}$"
+                pattern="^[A-Za-z][A-Za-z0-9_]{3,19}$"
                 placeholder="Придумайте логин"
                 required
               />
             </div>
-            <div class="col-md-7">
+            <div class="col-md-7" title="Пароль должен содержать минимум 8 символов, хотя бы одну букву и одну цифру, без пробелов">
               <label for="pass" class="form-label">Пароль</label>
               <div class="input-group">
                 <input
@@ -113,7 +113,7 @@
                   name="pass"
                   id="pass"
                   required
-                  pattern=".{8,}"
+                  pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
                 />
                 <button
                   class="btn btn-outline-secondary"
@@ -136,10 +136,21 @@
           <!-- Роль -->
           <div class="mb-3">
             <label for="role" class="form-label">Роль</label>
-            <select class="form-select" id="role" name="role" required>
+            <select class="form-select" id="role" name="role" v-model="selectedRole" required>
               <option value="">Выберите роль</option>
               <option v-for="role in roles" :value="role.code">
                 {{ role.title }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Лаборатория -->
+          <div class="mb-3" v-if="isSystemAdmin && selectedRole === 'LabDirector'">
+            <label for="lab" class="form-label">Лаборатория</label>
+            <select class="form-select" id="lab" name="lab_id" required>
+              <option value="">Укажите лабораторию</option>
+              <option v-for="lab in labs" :value="lab.id">
+                {{ lab.name }}
               </option>
             </select>
           </div>
@@ -178,8 +189,12 @@ import {
   LOAD_ROLES,
   ROLES,
   IS_LAB_DIRECTOR,
+  IS_SYSTEM_ADMIN,
+  LABS,
+  LOAD_LABS,
 } from "../store/types";
 import Spinner from "./Spinner.vue";
+import labs from "../store/modules/labs";
 
 /**
  * Компонент "Добавление нового сотрудника"
@@ -196,10 +211,14 @@ export default {
       isSaving: false,
       password: "",
       showPassword: false,
+      selectedRole: ""
     };
   },
   async beforeMount() {
     await this.loadRoles();
+    if (this.isSystemAdmin) {
+      await this.loadLabs();
+    }
   },
   computed: {
     ...mapGetters({
@@ -207,6 +226,8 @@ export default {
       accessToken: ACCESS_TOKEN,
       roles: ROLES,
       isLabDirector: IS_LAB_DIRECTOR,
+      isSystemAdmin: IS_SYSTEM_ADMIN,
+      labs: LABS
     }),
     maxDate() {
       const today = new Date();
@@ -228,10 +249,11 @@ export default {
     ...mapActions({
       createUser: ADD_USER,
       loadRoles: LOAD_ROLES,
+      loadLabs: LOAD_LABS
     }),
     generatePassword() {
       const chars =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#*";
+        "abcd123456789";
       let pass = "";
       for (let i = 0; i < 10; i++) {
         pass += chars.charAt(Math.floor(Math.random() * chars.length));
