@@ -29,7 +29,7 @@
             <label for="floatingInput">Пациент</label>
           </div>
 
-          <div class="form-floating mb-4">
+          <div class="form-floating mb-4" title="До какого числа необходимо выполнить заказ">
             <input
               type="date"
               v-model="expectedDate"
@@ -37,7 +37,7 @@
               id="floatingInput"
               :min="new Date().toISOString().split('T')[0]"
             />
-            <label for="floatingInput">Ожидаемая дата</label>
+            <label for="floatingInput">Срок</label>
           </div>
 
           <div class="form-floating mb-4">
@@ -169,6 +169,7 @@ export default {
       selectedToothId: null,
       isSaving: false,
       price: null,
+      isChanged: false,
     };
   },
   async beforeMount() {
@@ -238,10 +239,16 @@ export default {
     },
     calcPrice() {
       let total = 0;
+      if (this.isChanged) {
+      }
+      let steps = [];
       this.orderSelectedTeeth.forEach((t) => {
         t.workTypes.forEach((workType) => {
           workType.steps.forEach((step) => {
-            total += step.price;
+            if (!steps.some((s) => s.work_step_id == step.work_step_id)) {
+              total += step.price;
+              steps.push(step);
+            }
           });
         });
       });
@@ -268,9 +275,7 @@ export default {
       );
 
       // находим данные выбранного зуба
-      this.selectedTooth.workTypes = selectedWorkTypes
-        ? selectedWorkTypes.workTypes
-        : [];
+      this.selectedTooth.workTypes = selectedWorkTypes ? selectedWorkTypes.workTypes : [];
 
       // запоминаем цвет выделения зуба
       this.setSelectedTooth({
@@ -283,11 +288,7 @@ export default {
     },
     openSidePanelSelectWorkType() {},
     isSelectedWorkType(workType) {
-      return (
-        this.selectedWorkType &&
-        workType &&
-        this.selectedWorkType.id == workType.id
-      );
+      return this.selectedWorkType && workType && this.selectedWorkType.id == workType.id;
     },
     async createOrder() {
       this.isSaving = true;
@@ -323,11 +324,14 @@ export default {
       this.price = this.calcPrice;
       await this.$refs.toothSelection.applySelection();
       this.isVisibleSelectWorkType = false;
+      this.isChanged = !this.isChanged;
     },
-    copyToothData(fromToothId, toToothId) {
+    async copyToothData(fromToothId, toToothId) {
+      console.log("Клонирование зуба");
       let copyFromThoothId = this.orderSelectedTeeth.findIndex(
         (o) => o.toothId == fromToothId
       );
+
       if (copyFromThoothId >= 0) {
         let isExistsTargetTooth = this.orderSelectedTeeth.findIndex(
           (o) => o.toothId == toToothId
@@ -342,6 +346,13 @@ export default {
           this.orderSelectedTeeth.push(newTooth);
         }
       }
+      else {
+        // так как клонируется зуб, которого не выбирали, удаляем выбранный зуб (то есть перетаскивает пустой зуб к выбранному зубу) 
+        await this.setOrderSelectedTeeth(this.orderSelectedTeeth.filter(t => t.toothId !== toToothId));
+      }
+
+      this.isChanged = !this.isChanged;
+      this.price = this.calcPrice;
     },
   },
 };

@@ -1,4 +1,4 @@
-//export const baseHost = "http://192.168.100.6:5000";
+//export const baseHost = "http://192.168.1.122:5000";
 export const baseHost = "http://localhost:5000";
 export const baseURL = `${baseHost}/api/v1`;
 
@@ -56,44 +56,51 @@ export const taskStatuses = {
 
 let headerMenuItemsArray = [
   {
+    label: "Лаборатории",
+    link: "/labs",
+    includedRoles: ["SystemAdmin"],
+    svg: "#table",
+    path: null,
+  },
+  {
     label: "Заказы",
     link: "/orders",
-    includedRoles: ["LabDirector", "AdminLab"],
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
     svg: "#table",
     path: null,
   },
   {
     label: "Сотрудники",
     link: "/users",
-    includedRoles: ["LabDirector", "AdminLab"],
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
     svg: "#people-circle",
     path: null,
   },
   {
     label: "Запросы",
     link: "/requests",
-    includedRoles: ["LabDirector", "AdminLab"],
+    includedRoles: ["allRoles"],
     svg: "#requests",
     path: null,
   },
   {
     label: "Типы работ",
     link: "/work-types",
-    includedRoles: ["LabDirector", "AdminLab"],
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
     svg: null,
     path: "/src/assets/work-type.svg",
   },
   {
     label: "Этапы работ",
     link: "/work-steps",
-    includedRoles: ["LabDirector", "AdminLab"],
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
     svg: null,
     path: "/src/assets/work-steps.svg",
   },
   {
     label: "Приоритеты этапов",
     link: "/work-steps/priorities",
-    includedRoles: ["LabDirector", "AdminLab"],
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
     svg: null,
     path: "/src/assets/priority.svg",
   },

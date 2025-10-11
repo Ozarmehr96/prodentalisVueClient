@@ -139,7 +139,7 @@ export default {
     }),
     links() {
       return headerMenuItems.filter((l) =>
-        l.includedRoles.includes(this.currentUser.role)
+        l.includedRoles.includes(this.currentUser.role) || l.includedRoles.includes("allRoles")
       );
     },
   },

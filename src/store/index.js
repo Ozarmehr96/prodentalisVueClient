@@ -8,6 +8,7 @@ import workSteps from "./modules/workSteps";
 import workTypes from "./modules/workTypes";
 import orders from "./modules/orders";
 import order_wizard from "./modules/order_wizard";
+import labs from "./modules/labs";
 const store = createStore({
   modules: {
     auth,
@@ -18,6 +19,7 @@ const store = createStore({
     workTypes,
     orders,
     order_wizard,
+    labs
   },
 });
 

@@ -5,7 +5,7 @@
             <div class="col-md-4 mb-4">
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Заказ №{{ order.id }}</h5>
+                        <h5 class="card-title">Заказ №{{ order.number }}</h5>
                         <span class="badge bg-primary">{{ order.status.name }}</span>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                     </div>
                 </div>
 
-                <div class="card text-center">
+                <div class="card text-center" v-if="isSystemAdmin || isLabDirectory">
                     <div class="card-body">
                         <h5 class="card-title">Стоимость</h5>
                         <p class="fs-3">{{ order.price }} TJS</p>
@@ -57,8 +57,10 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import { convertOrderTeethToWorkTypes } from "../helpers/order-helpers";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
+import { IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../store/types";
 
 export default {
     name: "OrderView",
@@ -72,6 +74,10 @@ export default {
         },
     },
     computed: {
+        ...mapGetters({
+            isLabDirectory: IS_LAB_DIRECTOR,
+            isSystemAdmin: IS_SYSTEM_ADMIN
+        }),
         // Группировка зубов по типам работ
         filtredOrderSelectedTeethasWorktype() {
             return convertOrderTeethToWorkTypes(this.order.teeth);

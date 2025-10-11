@@ -3,12 +3,25 @@ import * as types from "../types";
 
 const state = {
   orders: [],
-  order: null
+  order: null,
+  isLoading: false,
+  filters: {
+    order_id: null,
+    customer_name: null,
+    created_from: null,
+    created_to: null,
+    status: "",
+    date_type: "",
+  },
 };
+
+let ordersController = null; // вне метода, чтобы хранить контроллер между вызовами
 
 const mutations = {
   [types.MUTATE_ORDERS]: (state, orders) => (state.orders = orders),
   [types.MUTATE_ORDER]: (state, order) => (state.order = order),
+  [types.MUTATE_ORDER_FILTERS]: (state, order) => (state.order = order),
+  [types.MUTATE_IS_ORDER_LOADING]: (state, isLoading) => (state.isLoading = isLoading),
 };
 
 const actions = {
@@ -30,21 +43,50 @@ const actions = {
       if (params.callback) {
         params.callback(response.data);
       }
+
       // обновляем список заказов
-      await commit(types.MUTATE_ORDERS, state.orders.map(order => order.id === response.data.id ? response.data : order));
+      await commit(
+        types.MUTATE_ORDERS,
+        state.orders.map((order) =>
+          order.id === response.data.id ? response.data : order
+        )
+      );
       return response.data;
     } catch (e) {
       console.error(e);
     }
   },
-  [types.LOAD_ORDERS]: async ({ commit }) => {
-    try {
-      const response = await api.get("/orders");
-      await commit(types.MUTATE_ORDERS, response.data);
-      return response.data;
-    } catch (e) {
-      console.error(e);
+  [types.LOAD_ORDERS]: async ({ commit }, params) => {
+    // Отменяем предыдущий, если есть
+    if (ordersController) {
+      ordersController.abort();
     }
+
+    const controller = new AbortController(); // новый контроллер для этого запроса
+    ordersController = controller;
+
+    commit(types.MUTATE_ORDERS, []); // очищаем старые данные
+    commit(types.MUTATE_IS_ORDER_LOADING, true);
+
+    api.get("/orders", { params, signal: controller.signal })
+      .then(response => {
+        // Проверяем, что этот запрос не был отменён другим новым
+        if (ordersController === controller) {
+          commit(types.MUTATE_ORDERS, response.data);
+        }
+      })
+      .catch(err => {
+        if (err.name !== "CanceledError") {
+          console.error(err);
+        }
+      })
+      .finally(() => {
+        // Сбрасываем контроллер только если это последний запрос
+        if (ordersController === controller) {
+          commit(types.MUTATE_IS_ORDER_LOADING, false);
+          ordersController = null;
+        } 
+      });
   },
   [types.LOAD_ORDER]: async ({ commit }, orderId) => {
     try {
@@ -75,11 +117,18 @@ const actions = {
       console.error(e);
     }
   },
+
+  [types.SET_ORDER_FILTERS]: async ({ commit }, filter) => {
+    await commit(types.MUTATE_ORDER_FILTERS, filter);
+    return filter;
+  },
 };
 
 const getters = {
   [types.ORDERS]: (state) => state.orders,
   [types.ORDER]: (state) => state.order,
+  [types.ORDER_FILTERS]: (state) => state.filters,
+  [types.IS_ORDER_LOADING]: (state) => state.isLoading,
 };
 
 export default {

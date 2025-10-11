@@ -75,6 +75,7 @@ const getters = {
   [types.CURRENT_USER]: (state) => state.currentUser,
   [types.IS_LAB_ADMIN]: (state) => state.currentUser.role === "Admin",
   [types.IS_LAB_DIRECTOR]: (state) => state.currentUser.role == "LabDirector",
+  [types.IS_SYSTEM_ADMIN]: (state) => state.currentUser.role == "SystemAdmin",
 };
 
 export default {

@@ -125,15 +125,6 @@ import { LOAD_WORK_STEPS, SELECTED_WORK_TYPE_STEPS, SET_SELECTED_WORK_TYPE_STEPS
 export default {
   data() {
     return {
-      allSteps: [
-        { id: 1, name: "Сканирование" },
-        { id: 2, name: "Моделирование" },
-        { id: 3, name: "Печать" },
-        { id: 4, name: "Полировка" },
-        { id: 5, name: "Контроль качества" },
-        { id: 6, name: "Сборка" },
-        { id: 7, name: "Финишная обработка" },
-      ],
       //selectedWorkTypeSteps: [],
       searchQuery: "",
       bsOffcanvas: null,

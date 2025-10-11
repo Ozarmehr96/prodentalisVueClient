@@ -69,6 +69,11 @@ api.interceptors.response.use(
 
       alert(`Ошибка ${error.response.status}. Попробуйте позднее`);
     } else if (error.config) {
+      if (error.name === 'CanceledError') {
+        console.warn("Запрос был отменен");
+        return;
+      }
+
       dispatch(types.ADD_ERROR, {
         title: "Неизвестная ошибка сервера",
         info: `
