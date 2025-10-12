@@ -5,7 +5,7 @@
       <OrderFilters @search="searchByFilter"/>
       <template v-if="orders.length > 0">
         <div class="col-12 mb-3 clickable" v-for="order in orders" :key="order.id" :id="`order-${order.id}`">
-          <OrderCardItem :order="order" @statusChanged="searchByFilter" />
+          <OrderCardItem :order="order" @statusChanged="searchByFilter" @onPrintOrder="printOrderEvent" />
         </div>
       </template>
       
@@ -26,8 +26,9 @@ import { mapActions, mapGetters } from "vuex";
 import AppPage from "../../components/AppPage.vue";
 import orders from "../../store/modules/orders";
 import { IS_ORDER_LOADING, LOAD_ORDERS, ORDER_FILTERS, ORDERS } from "../../store/types";
-import OrderCardItem from "../../components/OrderCardItem";
-import OrderFilters from "../../components/order/OrderFilters";
+import OrderCardItem from "../../components/OrderCardItem.vue";
+import OrderFilters from "../../components/order/OrderFilters.vue";
+import { printOrder } from "../../helpers/printService";
 /**
  * Страница "Запросы"
  *
@@ -56,6 +57,9 @@ export default {
     async searchByFilter() {
       this.orders.length = 0;
       await this.loadOrdersAction(this.orderFilters);
+    },
+    printOrderEvent(order) {
+      printOrder(order);
     }
   },
 };

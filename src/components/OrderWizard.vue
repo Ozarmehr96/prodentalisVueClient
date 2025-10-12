@@ -303,7 +303,7 @@ export default {
           work_type_ids: t.workTypes.map((wt) => wt.id),
         })),
         callback: (createdOrder) => {
-          this.$toast(`Заказ №${createdOrder.id} создан`, 7000);
+          this.$toast(`Заказ №${createdOrder.number} создан`, 7000);
           this.$router.push("/orders");
         },
       };
