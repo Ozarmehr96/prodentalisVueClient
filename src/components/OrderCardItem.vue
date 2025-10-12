@@ -7,7 +7,7 @@
       </span>
     </div>
 
-    <div class="card-body d-flex justify-content-between align-items-start"
+    <div class="card-body d-flex justify-content-between align-items-start" :id="`order-${order.id}-body`"
       style="padding-bottom: 0 !important; margin-bottom: -15px;  cursor: pointer;"
       @click="() => $router.push(`/orders/view/${order.id}`)">
       <!-- Левая колонка: данные заказа -->
@@ -97,7 +97,7 @@
           Редактировать
         </button>
         <!-- Кнопка справа -->
-        <button class="btn btn-sm btn-outline-primary footerButton" @click="printOrder(order.id)" title="Печать заказа">
+        <button class="btn btn-sm btn-outline-primary footerButton" @click="() => $emit('onPrintOrder', order)" title="Печать заказа">
           Печать
         </button>
       </div>
@@ -188,75 +188,6 @@ export default {
         default:
           return "bg-secondary";
       }
-    },
-
-    printOrder(orderId) {
-      console.log("--- Печать заказа ---", orderId);
-
-      const orderBlock = document.getElementById(`order-qr-${orderId}`);
-      if (!orderBlock) return console.log("Блок заказа не найден!");
-
-      // клонируем блок
-      const clone = orderBlock.cloneNode(true);
-
-      // ищем canvas QR в оригинальном блоке, берём его dataURL
-      const originalCanvas = orderBlock.querySelector("canvas");
-      if (originalCanvas) {
-        console.log("QR canvas найден, заменяем на img");
-        const img = document.createElement("img");
-        img.src = originalCanvas.toDataURL("image/png");
-
-        // сохраняем размеры canvas
-        img.style.width = originalCanvas.style.width || "150px";
-        img.style.height = originalCanvas.style.height || "150px";
-
-        // заменяем canvas в клоне на img
-        const clonedCanvas = clone.querySelector("canvas");
-        if (clonedCanvas) clonedCanvas.replaceWith(img);
-      } else {
-        console.log("QR canvas не найден, печатаем без QR");
-      }
-
-      // создаём скрытый iframe
-      const iframe = document.createElement("iframe");
-      iframe.style.position = "absolute";
-      iframe.style.left = "-9999px";
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      doc.open();
-      doc.write(`
-      <html>
-        <head>
-          <title>Печать заказа</title>
-          <link rel="stylesheet" href="/path-to-your-bootstrap.css">
-          <style>
-            @page { size: A4; margin: 10mm; }
-            body {
-              margin: 0;
-              padding: 0;
-              justify-content: center;
-              align-items: center;
-              height: 100vh;
-              font-family: Arial, sans-serif;
-            }
-          </style>
-        </head>
-        <body>
-          <h3>Заказ №${orderId}</h3>
-          ${clone.outerHTML}
-          </body>
-      </html>
-    `);
-      doc.close();
-
-      setTimeout(() => {
-        console.log("Вызов print()");
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-        document.body.removeChild(iframe);
-        console.log("Печать завершена, iframe удалён");
-      }, 200);
     },
   },
 };

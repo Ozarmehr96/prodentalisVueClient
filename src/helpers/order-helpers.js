@@ -25,6 +25,7 @@ export function convertOrderTeethToWorkTypes(orderSelectedTeeth) {
 
           // добавляем зуб в список
           existing.teeth.push(tooth.hasOwnProperty("toothId") ? tooth.toothId : tooth.tooth_id);
+          existing.teeth.sort((a, b) => a - b);
         });
       });
       return workTypes;
