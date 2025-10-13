@@ -1,5 +1,12 @@
 <template>
   <app-page title="Запросы">
+    <template v-slot:headerline>
+      <!-- Кнопка обновить в правом верхнем углу -->
+      <button class="btn btn-outline-primary position-absolute top-3 end-3 d-flex align-items-center me-3" @click="loadRequests"
+        style="gap: 5px; right:0px !important;">
+        Обновить
+      </button>
+    </template>
     <!-- Карточки -->
     <div class="row">
       <div class="col-12 mb-3 position-relative" v-for="request in filtresRequests">
@@ -78,6 +85,9 @@
         </div>
       </div>
 
+      <div v-if="filtresRequests && filtresRequests.length == 0" class="text-center py-2 text-muted">
+        Нет данных
+      </div>
       <!-- Пример карточки -->
       <!-- <div class="col-12 mb-3 position-relative">
         <div class="card h-100 border-warning">
@@ -171,131 +181,134 @@
 </template>
 
 <script>
-import AppPage from "../../components/AppPage.vue";
-import { mapGetters, mapActions } from "vuex";
-import {
-  INVOKE_USER_REQUEST,
-  IS_LAB_DIRECTOR,
-  LOAD_REQUESTS,
-} from "./../../store/types";
-/**
- * Страница "Запросы"
- *
- * @vue-computed {object} currentUser - Текущий пользователь
- */
-export default {
-  components: {
-    AppPage,
-  },
-  data() {
-    return {
-      requests: [],
-      isLoading: false,
-    };
-  },
-  async beforeMount() {
-    this.requests = await this.loadReqests();
-  },
-  computed: {
-    ...mapGetters({
-      isLabDirector: IS_LAB_DIRECTOR,
-    }),
-    filtresRequests() {
-      return this.requests;
+  import AppPage from "../../components/AppPage.vue";
+  import { mapGetters, mapActions } from "vuex";
+  import {
+    INVOKE_USER_REQUEST,
+    IS_LAB_DIRECTOR,
+    LOAD_REQUESTS,
+  } from "./../../store/types";
+  /**
+   * Страница "Запросы"
+   *
+   * @vue-computed {object} currentUser - Текущий пользователь
+   */
+  export default {
+    components: {
+      AppPage,
     },
-  },
-  methods: {
-    ...mapActions({
-      loadReqests: LOAD_REQUESTS,
-      invokeRequestAction: INVOKE_USER_REQUEST,
-    }),
-    async updateRequest(status, requestId) {
-      this.isLoading = true;
-      await this.invokeRequestAction({
-        id: requestId,
-        status: status,
-        comment: null,
-        callback: async () => {
-          this.requests = await this.loadReqests();
+    data() {
+      return {
+        requests: [],
+        isLoading: false
+      };
+    },
+    async beforeMount() {
+      await this.loadRequests();
+    },
+    computed: {
+      ...mapGetters({
+        isLabDirector: IS_LAB_DIRECTOR,
+      }),
+      filtresRequests() {
+        return this.requests;
+      },
+    },
+    methods: {
+      ...mapActions({
+        loadReqestsAction: LOAD_REQUESTS,
+        invokeRequestAction: INVOKE_USER_REQUEST,
+      }),
+      async loadRequests() {
+        this.requests = await this.loadReqestsAction();
+      },
+      async updateRequest(status, requestId) {
+        this.isLoading = true;
+        await this.invokeRequestAction({
+          id: requestId,
+          status: status,
+          comment: null,
+          callback: async () => {
+            await this.loadRequests();
+          }
+        });
+        this.isLoading = false;
+      },
+      getUserAction(action, status = "") {
+        let borderAndTextStyle = this.getBorderStyle(status);
+        switch (action) {
+          case "AddUser":
+            return {
+              text: "Добавление",
+              class: "badge bg-primary",
+              borderClass: borderAndTextStyle.borderColor,
+              textColor: borderAndTextStyle.textColor
+            };
+          case "EditUser":
+            return {
+              text: "Редактирование",
+              class: "badge bg-info",
+              borderClass: borderAndTextStyle.borderColor,
+              textColor: borderAndTextStyle.textColor
+            };
+          case "DeleteUser":
+            return {
+              text: "Удаление",
+              class: "badge bg-danger",
+              borderClass: borderAndTextStyle.borderColor,
+              textColor: borderAndTextStyle.textColor
+            };
+          default:
+            return {
+              text: "Неизвестное действие",
+              class: "badge bg-secondary",
+              borderClass: borderAndTextStyle.borderColor,
+              textColor: borderAndTextStyle.textColor
+            };
         }
-      });
-      this.isLoading = false;
+      },
+      getBorderStyle(status) {
+        switch (status) {
+          case "Approved":
+            return { textColor: "text-success", borderColor: "border-success" };
+          case "Rejected":
+            return { textColor: "text-danger", borderColor: "border-danger" };
+          case "Pending":
+            return { textColor: "text-warning", borderColor: "border-warning" };
+          default:
+            return { textColor: "text-dark", borderColor: "border-dark" };
+        }
+      },
     },
-    getUserAction(action, status = "") {
-      let borderAndTextStyle = this.getBorderStyle(status);
-      switch (action) {
-        case "AddUser":
-          return {
-            text: "Добавление",
-            class: "badge bg-primary",
-            borderClass: borderAndTextStyle.borderColor,
-            textColor: borderAndTextStyle.textColor
-          };
-        case "EditUser":
-          return {
-            text: "Редактирование",
-            class: "badge bg-info",
-            borderClass: borderAndTextStyle.borderColor,
-            textColor: borderAndTextStyle.textColor
-          };
-        case "DeleteUser":
-          return {
-            text: "Удаление",
-            class: "badge bg-danger",
-            borderClass: borderAndTextStyle.borderColor,
-            textColor: borderAndTextStyle.textColor
-          };
-        default:
-          return {
-            text: "Неизвестное действие",
-            class: "badge bg-secondary",
-            borderClass: borderAndTextStyle.borderColor,
-            textColor: borderAndTextStyle.textColor
-          };
-      }
-    },
-    getBorderStyle(status) {
-      switch (status) {
-        case "Approved":
-          return { textColor: "text-success", borderColor: "border-success" };
-        case "Rejected":
-          return { textColor: "text-danger", borderColor: "border-danger" };
-        case "Pending":
-          return { textColor: "text-warning", borderColor: "border-warning" };
-        default:
-          return { textColor: "text-dark", borderColor: "border-dark" };
-      }
-    },
-  },
-};
+  };
 </script>
 <style scoped>
-.card-legend {
-  position: absolute;
-  top: -0.6rem;
-  right: 1rem;
-  padding: 0.15rem 0.5rem;
-  font-size: 0.75rem;
-  border-radius: 0.25rem;
-}
-
-.card-text {
-  margin-bottom: 5px;
-}
-
-.data-val {
-  font-weight: 500;
-}
-
-/* По умолчанию на всю ширину */
-.custom-col {
-  width: 100%;
-}
-
-/* От 1296px и выше — 8/12 (≈66.66%) */
-@media (min-width: 1521px) {
-  .custom-col {
-    width: 66.6667% !important;
+  .card-legend {
+    position: absolute;
+    top: -0.6rem;
+    right: 1rem;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
   }
-}
+
+  .card-text {
+    margin-bottom: 5px;
+  }
+
+  .data-val {
+    font-weight: 500;
+  }
+
+  /* По умолчанию на всю ширину */
+  .custom-col {
+    width: 100%;
+  }
+
+  /* От 1296px и выше — 8/12 (≈66.66%) */
+  @media (min-width: 1521px) {
+    .custom-col {
+      width: 66.6667% !important;
+    }
+  }
 </style>

@@ -39,7 +39,7 @@
                     </div>
                 </div>
 
-                <div class="card text-center" v-if="isSystemAdmin || isLabDirectory">
+                <div class="card text-center" v-if="isSystemAdmin || isLabDirector">
                     <div class="card-body">
                         <h5 class="card-title">Стоимость</h5>
                         <p class="fs-3">{{ order.price }} TJS</p>
@@ -75,7 +75,7 @@ export default {
     },
     computed: {
         ...mapGetters({
-            isLabDirectory: IS_LAB_DIRECTOR,
+            isLabDirector: IS_LAB_DIRECTOR,
             isSystemAdmin: IS_SYSTEM_ADMIN
         }),
         // Группировка зубов по типам работ

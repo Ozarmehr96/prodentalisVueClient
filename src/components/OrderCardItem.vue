@@ -37,7 +37,7 @@
         </div>
 
         <!-- Цена -->
-        <div class="d-flex mb-2" v-if="(isSystemAdmin || isLabDirectory) && order.price">
+        <div class="d-flex mb-2" v-if="(isSystemAdmin || isLabDirector) && order.price">
           <span class="text-muted orderKey">Цена:</span>
           <span class="fw-semibold">{{ order.price }} TJS</span>
         </div>
@@ -82,23 +82,30 @@
 
       <div class="ms-auto" style="display: flex;">
 
-        <button v-if="order.status.code === 'Created'" class="btn btn-sm btn-success ms-auto me-2 footerButton"
+        <button v-if="canControl && order.status.code === 'Created'" class="btn btn-sm btn-success ms-auto me-2 footerButton"
           @click="startOrder" title="Начать выполнение заказа" style="min-width: 150px;">
           Начать
         </button>
 
-        <button v-if="order.status.code === 'Started'" class="btn btn-sm btn-danger ms-auto me-2 footerButton"
+        <button v-if="canControl && order.status.code === 'Started'" class="btn btn-sm btn-danger ms-auto me-2 footerButton"
           @click="finishOrder" title="Завершить выполнение заказа" style="min-width: 150px;">
           Завершить
         </button>
 
-        <button class="btn btn-sm btn-warning ms-auto me-2 footerButton"
+        <button
+          v-if="canControl"
+          class="btn btn-sm btn-warning ms-auto me-2 footerButton"
           @click="() => $router.push(`/orders/${order.id}`)" title="Редактировать">
           Редактировать
         </button>
         <!-- Кнопка справа -->
-        <button class="btn btn-sm btn-outline-primary footerButton" @click="() => $emit('onPrintOrder', order)" title="Печать заказа">
+        <button class="btn btn-sm btn-outline-primary me-2 footerButton" @click="() => $emit('onPrintOrder', order)" title="Печать заказа">
           Печать
+        </button>
+        <button 
+          v-if="canControl"
+          class="btn btn-sm btn-danger footerButton" @click="deleteOrder" title="Удалить">
+          Удалить
         </button>
       </div>
     </div>
@@ -109,7 +116,7 @@
 import { mapActions, mapGetters } from "vuex";
 import { convertOrderTeethToWorkTypes } from "../helpers/order-helpers";
 import QrCode from "./QrCode.vue";
-import { FINISH_ORDER, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN, START_ORDER } from "../store/types";
+import { FINISH_ORDER, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN, START_ORDER, DELETE_ORDER, IS_LAB_ADMIN, CURRENT_USER } from "../store/types";
 import dayjs from "dayjs";
 export default {
   name: "OrderCard",
@@ -122,9 +129,14 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isLabDirectory: IS_LAB_DIRECTOR,
-      isSystemAdmin: IS_SYSTEM_ADMIN
+      isLabDirector: IS_LAB_DIRECTOR,
+      isSystemAdmin: IS_SYSTEM_ADMIN,
+      isLabAdmin: IS_LAB_ADMIN,
+      currentUser: CURRENT_USER
     }),
+    canControl() {
+      return this.isSystemAdmin || this.isLabAdmin || this.isLabDirector;
+    },
     // преобразование зубов в типы работ
     workTypes() {
       return convertOrderTeethToWorkTypes(this.order.teeth.slice());
@@ -138,9 +150,14 @@ export default {
     ...mapActions({
       startOrderAction: START_ORDER,
       finishOrderAction: FINISH_ORDER,
+      deleteOrderAction: DELETE_ORDER,
     }),
     startOrder() {
       this.startOrderAction(this.order.id).then(() => this.$emit("statusChanged"));
+    },
+    async deleteOrder() {
+      if (!confirm(`Вы уверены, что хотите удалить заказ №${this.order.number}?`)) return;
+      await this.deleteOrderAction(this.order.id);
     },
     async finishOrder() {
       if (confirm(`Вы действительно хотите завершить выполнение заказа №${this.order.id}?`)) {

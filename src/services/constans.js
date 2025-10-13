@@ -38,8 +38,8 @@ export const VITA_COLORS = [
 ];
 
 export const userRoles = new Map([
-  ["AdminLab", "/users"],
-  ["LabDirector", "/users"],
+  ["AdminLab", "/orders"],
+  ["LabDirector", "/orders"],
 ]);
 
 export const taskStatuses = {
@@ -65,7 +65,7 @@ let headerMenuItemsArray = [
   {
     label: "Заказы",
     link: "/orders",
-    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
+    includedRoles: ["allRoles"],
     svg: "#table",
     path: null,
   },

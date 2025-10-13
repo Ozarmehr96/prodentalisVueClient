@@ -2,9 +2,9 @@
   <div style="margin-bottom: 16px;">
     <form @submit.prevent class="d-flex flex-wrap align-items-end gap-2">
       <!-- ID заказа -->
-      <div class="col-auto">
-        <label for="order_id" class="form-label small">Номер заказа</label>
-        <input type="number" id="order_id" class="form-control" v-model="filters.order_id" placeholder="№"
+      <div class="col-auto" style="max-width:150px">
+        <label for="number" class="form-label small">Номер заказа</label>
+        <input type="number" id="number" class="form-control" v-model="filters.number" placeholder="№"
           @input="applyFilter" />
       </div>
 
@@ -98,7 +98,7 @@
         this.$emit("search", { ...this.filters });
       },
       async resetFilter() {
-        this.filters.order_id = null;
+        this.filters.number = null;
         this.filters.customer_name = null
         this.filters.created_from = null;
         this.filters.created_to = null;
@@ -131,6 +131,7 @@
           case 'period':
             from = '';
             to = '';
+            return;
             break;
           default:
             from = '';

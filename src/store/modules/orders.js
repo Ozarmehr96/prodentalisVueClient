@@ -6,7 +6,7 @@ const state = {
   order: null,
   isLoading: false,
   filters: {
-    order_id: null,
+    number: null,
     customer_name: null,
     created_from: null,
     created_to: null,
@@ -21,7 +21,8 @@ const mutations = {
   [types.MUTATE_ORDERS]: (state, orders) => (state.orders = orders),
   [types.MUTATE_ORDER]: (state, order) => (state.order = order),
   [types.MUTATE_ORDER_FILTERS]: (state, order) => (state.order = order),
-  [types.MUTATE_IS_ORDER_LOADING]: (state, isLoading) => (state.isLoading = isLoading),
+  [types.MUTATE_IS_ORDER_LOADING]: (state, isLoading) =>
+    (state.isLoading = isLoading),
 };
 
 const actions = {
@@ -68,14 +69,15 @@ const actions = {
     commit(types.MUTATE_ORDERS, []); // очищаем старые данные
     commit(types.MUTATE_IS_ORDER_LOADING, true);
 
-    api.get("/orders", { params, signal: controller.signal })
-      .then(response => {
+    api
+      .get("/orders", { params, signal: controller.signal })
+      .then((response) => {
         // Проверяем, что этот запрос не был отменён другим новым
         if (ordersController === controller) {
           commit(types.MUTATE_ORDERS, response.data);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.name !== "CanceledError") {
           console.error(err);
         }
@@ -85,9 +87,42 @@ const actions = {
         if (ordersController === controller) {
           commit(types.MUTATE_IS_ORDER_LOADING, false);
           ordersController = null;
-        } 
+        }
       });
   },
+  [types.LOAD_ORDERS_PAGED]: async ({ commit }, params) => {
+    if (ordersController) {
+      ordersController.abort();
+    }
+
+    const controller = new AbortController();
+    ordersController = controller;
+    commit(types.MUTATE_IS_ORDER_LOADING, true);
+
+    try {
+      if (params.page === 1) {
+        await commit(types.MUTATE_ORDERS, []);
+      }
+      const response = await api.get(`/orders/page/${params.page}`, {
+        params,
+        signal: controller.signal,
+      });
+
+      if (ordersController === controller) {
+        // commit(types.MUTATE_ORDERS, response.data.items);
+        return response.data; // ⚡ важно — вернём в компонент
+      }
+    } catch (err) {
+      if (err.name !== "CanceledError") console.error(err);
+      throw err;
+    } finally {
+      if (ordersController === controller) {
+        commit(types.MUTATE_IS_ORDER_LOADING, false);
+        ordersController = null;
+      }
+    }
+  },
+
   [types.LOAD_ORDER]: async ({ commit }, orderId) => {
     try {
       const response = await api.get(`/orders/${orderId}`);
@@ -108,6 +143,15 @@ const actions = {
     }
   },
 
+  [types.DELETE_ORDER]: async ({ commit }, orderId) => {
+    try {
+      await api.delete(`/orders/${orderId}`);
+      await commit(types.MUTATE_ORDERS, state.orders.filter(o => o.id !== orderId));
+    } catch (e) {
+      console.error(e);
+    }
+  },
+
   [types.FINISH_ORDER]: async ({ commit }, orderId) => {
     try {
       const response = await api.put(`/orders/${orderId}/finish`);
@@ -121,6 +165,10 @@ const actions = {
   [types.SET_ORDER_FILTERS]: async ({ commit }, filter) => {
     await commit(types.MUTATE_ORDER_FILTERS, filter);
     return filter;
+  },
+
+  [types.SET_ORDER_LOADING]: async ({ commit }, isLoading) => {
+    await commit(types.MUTATE_IS_ORDER_LOADING, isLoading);
   },
 };
 

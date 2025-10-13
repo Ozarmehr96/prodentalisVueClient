@@ -2,7 +2,7 @@
   <app-page
     title="Сотрудники"
     @onAddButtonClickEvent="() => $router.push('/users/add')"
-    isShowAddButton
+    :isShowAddButton="canControl"
   >
     <!-- Main content -->
     <div class="content-body">
@@ -54,7 +54,7 @@
 <script>
 import AppPage from "../../components/AppPage.vue";
 import { mapGetters, mapActions } from "vuex";
-import { CURRENT_USER, LOAD_ROLES, LOAD_USERS } from "./../../store/types";
+import { CURRENT_USER, IS_LAB_ADMIN, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN, LOAD_ROLES, LOAD_USERS } from "./../../store/types";
 export default {
   components: {
     AppPage,
@@ -70,7 +70,13 @@ export default {
   computed: {
     ...mapGetters({
       currentUser: CURRENT_USER,
+      isSystemAdmin: IS_SYSTEM_ADMIN,
+      isLabAdmin: IS_LAB_ADMIN,
+      isLabDirector: IS_LAB_DIRECTOR
     }),
+    canControl() {
+      this.isLabAdmin || this.isLabDirector || this.isSystemAdmin;
+    },
     filtresUsers() {
       return this.users;
     },

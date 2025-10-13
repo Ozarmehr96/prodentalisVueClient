@@ -28,8 +28,8 @@ export const ERRORS = "errors/ERRORS";
 export const ERRORS_SHOWED = "errors/ERRORS_SHOWED";
 
 // Пользователи и роли
-export const IS_LAB_DIRECTOR = "users/IS_LAB_DIRECTOR";
-export const IS_LAB_ADMIN = "users/IS_LAB_ADMIN";
+export const IS_LAB_DIRECTOR = "auth/IS_LAB_DIRECTOR";
+export const IS_LAB_ADMIN = "auth/IS_LAB_ADMIN";
 export const ADD_USER = "users/ADD_USER";
 export const ROLES = "users/ROLES";
 export const MUTATE_ROLES = "users/MUTATE_ROLES";
@@ -62,15 +62,18 @@ export const LOAD_WORK_STEP = "workSteps/LOAD_WORK_STEP";
 
 // Заказы
 export const LOAD_ORDERS = "orders/LOAD_ORDERS";
+export const LOAD_ORDERS_PAGED = "orders/LOAD_ORDERS_PAGED";
 export const MUTATE_ORDERS = "orders/MUTATE_ORDERS";
 export const ORDERS = "orders/ORDERS";
 export const IS_ORDER_LOADING = "orders/IS_ORDER_LOADING";
+export const SET_ORDER_LOADING = "orders/SET_ORDER_LOADING";
 export const MUTATE_IS_ORDER_LOADING = "orders/MUTATE_IS_ORDER_LOADING";
 export const LOAD_ORDER = "orders/LOAD_ORDER";
 export const MUTATE_ORDER = "orders/MUTATE_ORDER";
 export const ORDER = "orders/ORDER";
 export const CREATE_ORDER = "orders/CREATE_ORDER";
 export const UPDATE_ORDER = "orders/UPDATE_ORDER";
+export const DELETE_ORDER = "orders/DELETE_ORDER";
 export const START_ORDER = "orders/START_ORDER";
 export const FINISH_ORDER = "orders/FINISH_ORDER";
 

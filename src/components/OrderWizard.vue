@@ -90,7 +90,7 @@
           @onCopyToothData="copyToothData"
         />
       </div>
-      <div class="col-md-8" style="margin-top: -50px">
+      <div class="col-md-8 saveOrderButton">
         <ButtonWithLoader
           :isLoading="isSaving"
           title="Сохранить"
@@ -311,6 +311,10 @@ export default {
       // если режим редактирования, обновляем заказ
       if (this.isEditMode) {
         newOrder.id = this.orderToEdit.id;
+        newOrder.callback = (createdOrder) => {
+          this.$toast(`Заказ №${createdOrder.number} обновлен`, 7000);
+          this.$router.push("/orders");
+        };
         await this.updateOrderAction(newOrder);
         this.isSaving = false;
         return;
@@ -361,5 +365,11 @@ export default {
 .selected {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.25) !important;
   border-color: #999 !important;
+}
+/* если ширина больше 1400px */
+@media (min-width: 1400px) {
+  .saveOrderButton {
+    margin-top: -50px;
+  }
 }
 </style>

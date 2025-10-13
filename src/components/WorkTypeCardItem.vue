@@ -91,7 +91,7 @@ export default {
   cursor: pointer;
   transition: 0.2s;
   border: 1px solid #ccc;
-  height: 70px; /* фиксированная высота блока */
+  min-height: 70px; /* фиксированная высота блока */
 }
 
 .work-type-card:hover {

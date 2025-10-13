@@ -39,6 +39,7 @@
         @onClickEvent="() => $emit('onAddButtonClickEvent')"
         class="ms-auto"
       />
+      <slot name="headerline"></slot>
     </div>
 
     <slot></slot>

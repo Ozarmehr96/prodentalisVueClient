@@ -1,5 +1,5 @@
 <template>
-  <section class="h-100 gradient-form" style="background-color: #eee">
+  <section v-if="canShow && !currentUser.hasOwnProperty('id')" class="h-100 gradient-form" style="background-color: #eee">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-xl-10">
@@ -38,13 +38,15 @@
                     </div>
 
                     <div class="text-center">
-                      <button
+                      <ButtonWithLoader
+                        :isLoading="isLogging"
+                        title="Вход"
+                        :customClasses="['btn-primary fa-lg gradient-custom-2 mb-3 w-100']"
+                        :loadingText="'Авторизация...'"
                         @click="auth"
-                        class="btn btn-primary fa-lg gradient-custom-2 mb-3 w-100"
-                        type="button"
-                      >
-                        Вход
-                      </button>
+                        :isValid="true"
+                        style=""
+                      />
                     </div>
                   </form>
                 </div>
@@ -52,15 +54,15 @@
               <div
                 class="col-md-6 col-lg-6 d-flex align-items-center gradient-custom-2"
               >
-                <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                <div class="text-black px-3 py-4 p-md-5 mx-md-4">
                   <h4 class="mb-4">
                     Cистема автоматизации зуботехнической лаборатории
                   </h4>
-                  <p class="small mb-0">
+                  <p class="mb-0">
                     Добро пожаловать в ProDentalis — современную систему,
                     созданную для упрощения и оптимизации работы зуботехнической
                     лаборатории. Управляйте заказами, контролируйте производство
-                    и повышайте качество работы вместе с нами.
+                    и повышайте качество работы.
                   </p>
                 </div>
               </div>
@@ -74,9 +76,10 @@
 
 <script>
 import { mapActions } from "vuex";
-import { LOGIN } from "../../store/types";
+import { CURRENT_USER, LOGIN } from "../../store/types";
 import { userRoles } from "../../services/constans";
 import auth from "../../store/modules/auth";
+import ButtonWithLoader from "../../components/ButtonWithLoader.vue";
 
 /**
  * Страница "Логин"
@@ -84,10 +87,15 @@ import auth from "../../store/modules/auth";
  * @vue-computed {string} accessToken - Токен доступа к системе
  */
 export default {
+  components: {
+    ButtonWithLoader
+  },
   data() {
     return {
       login: null,
       pass: null,
+      isLogging: false,
+      canShow: true
     };
   },
   computed: {},
@@ -95,16 +103,21 @@ export default {
   methods: {
     ...mapActions({
       loginAction: LOGIN,
+      currentUser: CURRENT_USER
     }),
     async auth() {
+      this.isLogging = true;
       await this.loginAction({
         login: this.login,
         pass: this.pass,
         callback: (user) => {
+          this.isLogging = true;
           let path = userRoles.get(user.role);
-          window.location.href = path;
+          this.canShow = false;
+          this.$router.push(`/orders`); // у всех есть доступ сюда
         },
       });
+      this.isLogging = false;
     },
   },
 };
@@ -112,25 +125,14 @@ export default {
 
 <style>
 .gradient-custom-2 {
-  /* fallback for old browsers */
-  background: #fccb90;
-
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: -webkit-linear-gradient(
-    to right,
-    #ee7724,
-    #d8363a,
-    #dd3675,
-    #b44593
-  );
-
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background: linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
+  background: linear-gradient(135deg, #3dd2cc, #11998e);
+  transition: background 0.3s ease; /* плавный переход */
 }
 
 .gradient-custom-2:hover {
-  background: linear-gradient(45deg, #b44593, #d8363a);
+  background: linear-gradient(135deg, #11998e, #3dd2cc); /* инвертируем цвета */
 }
+
 @media (min-width: 768px) {
   .gradient-form {
     height: 100vh !important;
