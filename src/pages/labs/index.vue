@@ -5,7 +5,7 @@
     isShowAddButton
   >
     <!-- Main content -->
-    <div class="content-body">
+    <div class="content-body" v-if="isSystemAdmin">
       <table class="table table-hover align-middle">
         <thead>
           <tr>
@@ -30,7 +30,7 @@
 <script>
 import AppPage from "../../components/AppPage.vue";
 import { mapGetters, mapActions } from "vuex";
-import { CURRENT_USER, LOAD_LABS } from "../../store/types";
+import { CURRENT_USER, IS_SYSTEM_ADMIN, LOAD_LABS } from "../../store/types";
 export default {
   components: {
     AppPage,
@@ -46,6 +46,7 @@ export default {
   computed: {
     ...mapGetters({
       currentUser: CURRENT_USER,
+      isSystemAdmin: IS_SYSTEM_ADMIN
     }),
   },
   methods: {

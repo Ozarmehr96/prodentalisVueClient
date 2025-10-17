@@ -31,11 +31,15 @@ export const ERRORS_SHOWED = "errors/ERRORS_SHOWED";
 export const IS_LAB_DIRECTOR = "auth/IS_LAB_DIRECTOR";
 export const IS_LAB_ADMIN = "auth/IS_LAB_ADMIN";
 export const ADD_USER = "users/ADD_USER";
+export const UPDATE_USER = "users/UPDATE_USER";
+export const DELETE_USER = "users/DELETE_USER";
 export const ROLES = "users/ROLES";
 export const MUTATE_ROLES = "users/MUTATE_ROLES";
 export const LOAD_ROLES = "users/ROLES";
 export const LOAD_USERS = "users/LOAD_USERS";
 export const LOAD_USER = "users/LOAD_USER";
+export const MUTATE_LOADED_USER = "users/MUTATE_LOADED_USER";
+export const LOADED_USER = "users/LOADED_USER";
 
 export const LOAD_REQUESTS = "requests/LOAD_REQUESTS";
 export const INVOKE_USER_REQUEST = "requests/INVOKE_USER_REQUEST";

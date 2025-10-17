@@ -52,6 +52,7 @@
         </div>
         <div
           class="card-header d-flex justify-content-between align-items-center"
+          v-if="isLabDirector"
         >
           <button
             type="button"
@@ -69,6 +70,7 @@
 import AppPage from "../../components/AppPage.vue";
 import { mapActions, mapGetters } from "vuex";
 import {
+  IS_LAB_DIRECTOR,
   LOAD_WORK_STEPS,
   SAVE_WORK_STEP_PRIORITY,
   SELECTED_WORK_TYPE_STEPS,
@@ -93,6 +95,7 @@ export default {
   computed: {
     ...mapGetters({
       selectedWorkTypeSteps: SELECTED_WORK_TYPE_STEPS,
+      isLabDirector: IS_LAB_DIRECTOR
     }),
     filteredSteps() {
       return this.workSteps.filter((step) =>

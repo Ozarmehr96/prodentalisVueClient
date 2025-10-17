@@ -15,7 +15,7 @@
               Цена по умолчанию
             </th>
             <th scope="col" class="d-none d-sm-table-cell">Комментарии</th>
-            <th scope="col">Действия</th>
+            <th scope="col" v-if="isLabDirector">Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -31,7 +31,7 @@
               {{ step.price }}
             </td>
             <td class="d-none d-sm-table-cell">{{ step.description }}</td>
-            <td>
+            <td v-if="isLabDirector">
               <button
                 class="btn btn-danger btn-sm"
                 @click.stop="deleteWorkStep(step.id)"
@@ -49,9 +49,9 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import AppPage from "../../components/AppPage.vue";
-import { DELETE_WORK_STEP, LOAD_WORK_STEPS } from "../../store/types";
+import { DELETE_WORK_STEP, IS_LAB_DIRECTOR, LOAD_WORK_STEPS } from "../../store/types";
 
 /**
  * Страница "Добавление этапа работ"
@@ -71,6 +71,9 @@ export default {
     this.workSteps = await this.loadWorkSteps();
   },
   computed: {
+    ...mapGetters({
+      isLabDirector: IS_LAB_DIRECTOR
+    }),
     filtredWorkSteps() {
       return this.workSteps;
     },

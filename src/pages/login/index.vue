@@ -44,7 +44,7 @@
                         :customClasses="['btn-primary fa-lg gradient-custom-2 mb-3 w-100']"
                         :loadingText="'Авторизация...'"
                         @click="auth"
-                        :isValid="true"
+                        :isValid="isValid"
                         style=""
                       />
                     </div>
@@ -98,8 +98,11 @@ export default {
       canShow: true
     };
   },
-  computed: {},
-
+  computed: {
+    isValid() {
+      return this.login && this.pass;
+    }
+  },
   methods: {
     ...mapActions({
       loginAction: LOGIN,

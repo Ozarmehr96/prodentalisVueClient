@@ -23,5 +23,13 @@ export default {
         console.warn("Toast компонент не инициализирован");
       }
     };
+
+    app.config.globalProperties.$toastError = (message, delay = 5000, title = '') => {
+      if (toastRef.value) {
+        toastRef.value.showToast(message, delay, 'danger', title);
+      } else {
+        console.warn("Toast компонент не инициализирован");
+      }
+    };
   },
 };
