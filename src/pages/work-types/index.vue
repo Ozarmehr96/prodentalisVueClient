@@ -11,7 +11,7 @@
           <tr>
             <th scope="col">Название</th>
             <th scope="col">Комментарии</th>
-            <th scope="col">Действия</th>
+            <th scope="col" v-if="isLabDirector">Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -23,7 +23,7 @@
               <WorkTypeCardItem :workType="workType" />
             </td>
             <td>{{ workType.description }}</td>
-            <td>
+            <td v-if="isLabDirector">
               <button
                 class="btn btn-danger btn-sm"
                 @click.stop="deleteWorkType(workType.id)"
@@ -43,7 +43,7 @@
 <script>
 import { mapActions } from "vuex";
 import AppPage from "../../components/AppPage.vue";
-import { DELETE_WORK_TYPE, LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
+import { DELETE_WORK_TYPE, IS_LAB_DIRECTOR, LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
 import { mapGetters } from "vuex/dist/vuex.cjs.js";
 import WorkTypeCardItem from "../../components/WorkTypeCardItem.vue";
 
@@ -64,6 +64,7 @@ export default {
   computed: {
     ...mapGetters({
       workTypes: WORK_TYPES,
+      isLabDirector: IS_LAB_DIRECTOR
     }),
     filtredWorkTypes() {
       return this.workTypes;

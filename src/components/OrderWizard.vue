@@ -228,7 +228,8 @@ export default {
         this.patient &&
         this.patient.trim().length > 0 &&
         this.expectedDate &&
-        this.orderSelectedTeeth.length > 0
+        this.orderSelectedTeeth.length > 0 &&
+        this.filtredOrderSelectedTeethasWorktype.length > 0
       );
     },
     filteredWorkTypes() {

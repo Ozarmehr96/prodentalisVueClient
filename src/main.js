@@ -20,9 +20,8 @@ const app = createApp(App);
 dayjs.locale('ru')
 
 // Глобальный метод
-app.config.globalProperties.$toDateFormat = (d) => {
-  const DATE_FORMAT = 'DD.MM.YYYY' 
-  return dayjs(d).local().format(DATE_FORMAT)
+app.config.globalProperties.$toDateFormat = (d, format = 'DD.MM.YYYY') => {
+  return dayjs(d).local().format(format)
 };
 
 app.config.globalProperties.$toDateTimeFormat = (d) => {

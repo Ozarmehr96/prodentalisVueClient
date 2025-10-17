@@ -1,5 +1,5 @@
 <template>
-  <div class="card p-3 mb-3">
+  <div class="card p-3 mb-3" v-if="isSystemAdmin">
     <form @submit.prevent="handleSubmit">
       <div class="mb-3">
         <label for="labName" class="form-label">Название лаборатории</label>
@@ -18,8 +18,8 @@
 </template>
 
 <script>
-  import { mapActions } from "vuex";
-  import { SAVE_LAB, UPDATE_LAB } from "../../store/types";
+  import { mapActions, mapGetters } from "vuex";
+  import { IS_SYSTEM_ADMIN, SAVE_LAB, UPDATE_LAB } from "../../store/types";
 
   export default {
     name: "LabForm",
@@ -40,6 +40,11 @@
           name: "",
         },
       };
+    },
+    computed: {
+      ...mapGetters({
+        isSystemAdmin: IS_SYSTEM_ADMIN
+      }),
     },
     watch: {
       existingLab: {

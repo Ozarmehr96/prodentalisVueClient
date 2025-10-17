@@ -143,7 +143,7 @@ export default {
     },
     host() {
       return `${window.location.protocol}//${window.location.hostname}${window.location.port ? ":" + window.location.port : ""
-        }/orders/${this.order.id}`;
+        }/orders/view/${this.order.id}`;
     },
   },
   methods: {
