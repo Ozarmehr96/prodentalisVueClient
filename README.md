@@ -1,5 +1,71 @@
-# Vue 3 + Vite
+# Настройка клиентской части ProDentalis (Vue.js + Nginx)
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 1. Сборка Vue.js проекта для продакшн
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+В папке вашего проекта выполните команду:
+
+```bash
+npm install      # Установка зависимостей
+npm run build    # Сборка проекта для продакшн
+```
+
+По умолчанию сборка попадет в папку `dist/`. Для удобства скопируйте содержимое в директорию на сервере, например:
+
+```bash
+sudo mkdir -p /var/www/prodentalis/prodentalis-client
+sudo cp -r dist/* /var/www/prodentalis/prodentalis-client/
+```
+
+## 2. Настройка Nginx
+
+Создайте файл конфигурации для Nginx:
+
+```bash
+sudo nano /etc/nginx/sites-available/prodentalis-client
+```
+
+Пример содержимого:
+
+```nginx
+server {
+    listen 80;
+    server_name your_domain_or_ip;  # замените на свой домен или публичный IP
+
+    root /var/www/prodentalis/prodentalis-client;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+Создайте символическую ссылку в `sites-enabled`:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/prodentalis-client /etc/nginx/sites-enabled/
+```
+
+## 3. Проверка конфигурации и перезапуск Nginx
+
+```bash
+sudo nginx -t        # Проверка конфигурации
+sudo systemctl restart nginx
+sudo systemctl enable nginx  # Автозапуск при старте системы
+```
+
+## 4. Настройка прав доступа
+
+Убедитесь, что директория с клиентом имеет правильного владельца:
+
+```bash
+sudo chown -R www-data:www-data /var/www/prodentalis/prodentalis-client
+sudo chmod -R 755 /var/www/prodentalis/prodentalis-client
+```
+
+## 5. Проверка
+
+Откройте ваш домен или публичный IP в браузере. Должна отобразиться клиентская часть вашего Vue.js приложения.
+
+> Все запросы на маршруты будут корректно обрабатываться благодаря `try_files /index.html;` в конфигурации Nginx.
+
