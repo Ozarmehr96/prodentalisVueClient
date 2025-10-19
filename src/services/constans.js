@@ -91,21 +91,21 @@ let headerMenuItemsArray = [
     link: "/work-types",
     includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
     svg: null,
-    path: "/src/assets/work-type.svg",
+    path: "/images/work-type.svg",
   },
   {
     label: "Этапы работ",
     link: "/work-steps",
     includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
     svg: null,
-    path: "/src/assets/work-steps.svg",
+    path: "/images/work-steps.svg",
   },
   {
     label: "Приоритеты этапов",
     link: "/work-steps/priorities",
     includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
     svg: null,
-    path: "/src/assets/priority.svg",
+    path: "/images/priority.svg",
   },
 ];
 
