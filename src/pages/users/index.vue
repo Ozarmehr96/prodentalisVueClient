@@ -9,7 +9,7 @@
       <table class="table table-hover align-middle">
         <thead>
           <tr>
-            <th scope="col">ФИО</th>
+            <th scope="col" class="d-none d-sm-table-cell">ФИО</th>
             <th scope="col" class="d-none d-sm-table-cell">Роль</th>
             <th scope="col" class="d-none d-sm-table-cell">Специализация</th>
             <th scope="col" class="d-none d-sm-table-cell">Логин</th>
@@ -26,10 +26,10 @@
                 v-if="user.avatar_url"
                 :src="user.avatar_url"
                 alt=""
-                class="rounded-circle me-2"
+                class="rounded-circle me-2 d-none d-sm-table-cell"
                 style="width: 32px; height: 32px"
               />
-              <svg v-else class="avatar bi me-2">
+              <svg v-else class="avatar bi me-2 d-none d-sm-table-cell">
                 <use xlink:href="#people-circle"></use>
               </svg>
               <span>{{ user.full_name }}</span>

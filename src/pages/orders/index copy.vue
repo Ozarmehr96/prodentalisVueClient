@@ -95,3 +95,24 @@ export default {
     /* или высота контента */
   }
 </style>
+[Unit]
+Description=ASP.NET Core RestAPI Автоматизация зуботехнической лаборатории
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/prodentalis/prodentalis-back
+ExecStart=/usr/bin/dotnet /var/www/prodentalis/prodentalis-back/ProDentalis.RestAPI.dll
+Restart=always
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target
+
+#для доступа со своего компа 
+sudo ufw allow 3306/tcp
+sudo ufw reload
+#отключение 
+udo ufw delete allow 3306/tcp
+sudo ufw reload

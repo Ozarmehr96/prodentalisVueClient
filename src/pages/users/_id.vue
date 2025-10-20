@@ -1,5 +1,5 @@
 <template>
-  <app-page title="Редактирование данных сотрудника" :showBackButton="true">
+  <app-page title="Редактирование сотрудника" :showBackButton="true">
     <UserFromCRUD v-if="user" :existingUser="user" />
   </app-page>
 </template>
