@@ -2,16 +2,17 @@
   <app-page title="Запросы">
     <template v-slot:headerline>
       <!-- Кнопка обновить в правом верхнем углу -->
-      <button class="btn btn-outline-primary position-absolute top-3 end-3 d-flex align-items-center me-3" @click="loadRequests"
-        style="gap: 5px; right:0px !important;">
+      <button class="btn btn-outline-primary position-absolute top-3 end-3 d-flex align-items-center me-3"
+        @click="loadRequests" style="gap: 5px; right:0px !important;">
         Обновить
       </button>
     </template>
     <!-- Карточки -->
     <div class="row">
       <div class="col-12 mb-3 position-relative" v-for="request in filtresRequests">
-        <div class="card h-100" :class="getUserAction(request.request_type, request.status_code).borderClass
-          " v-if="request.request_type === 'ApproveTelegram'">
+        <!-- Карточка для подтверждения Telegram аккаунта -->
+        <div class="card h-100" :class="getUserAction(request.request_type, request.status_code).borderClass"
+          v-if="request.request_type === 'ApproveTelegram'">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h5 class="card-title mb-0">Подтверждение Telegram аккаунта</h5>
@@ -35,20 +36,57 @@
             </div>
           </div>
         </div>
-        <div class="card h-100" :class="getUserAction(request.request_type, request.status_code).borderClass
-          " v-if="request.is_user_type">
+
+        <!-- Карточка для подтверждения или отклонения удаления -->
+        <div class="card h-100" :class="getUserAction(request.request_type, request.status_code).borderClass"
+          v-if="request.request_type === 'DeleteOrder'">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="card-title mb-0">Запрос на удаление заказа №{{ request.order.number }}</h5>
+              <span :class="getUserAction(request.request_type).class">{{ request.status }}</span>
+            </div>
+
+            <p class="me-2 mb-1" v-if="request.requested_by == currentUser.id">
+              Вы запросил удаление заказа.
+            </p>
+            <p class="me-2 mb-1" v-else>
+              {{ request.requested_by_name }} запросил удаление заказа.
+            </p>
+
+            <!-- Подсказка (по желанию) -->
+            <small class="text-muted me-2 mb-1" v-if="isLabDirector">
+              После выбора действия заказ будет либо удалён, либо останется активным.
+            </small>
+
+            <div class="d-flex gap-2 mt-2" v-if="isLabDirector && request.status_code == 'Pending'">
+              <button class="btn btn-success btn-sm" @click="updateRequest('Approved', request.id)">
+                Одобрить
+              </button>
+              <button class="btn btn-danger btn-sm" @click="updateRequest('Rejected', request.id)">
+                Отклонить
+              </button>
+              <button class="btn btn-primary btn-sm" @click="() => $router.push(`/orders/view/${request.order.id}`)">
+                Посмотреть заказ
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Карточка добавления сотрудника -->
+        <div class="card h-100" :class="getUserAction(request.request_type, request.status_code).borderClass"
+          v-if="request.is_user_type">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h5 class="card-title mb-0">{{ request.user.full_name }}</h5>
               <span :class="getUserAction(request.request_type).class">{{
                 getUserAction(request.request_type).text
-              }}</span>
+                }}</span>
             </div>
             <p class="card-text">{{ request.user.phone_number }}</p>
             <p class="card-text">
               <small>Дата рождения: </small><span class="data-val">{{
                 $toDateFormat(request.user.date_birth)
-              }}</span>
+                }}</span>
             </p>
             <p class="card-text">
               <small>Логин: </small><span class="data-val">{{ request.user.login }}</span>
@@ -63,12 +101,12 @@
               <small>Статус:
                 <span class="data-val" :class="getUserAction(request.request_type, request.status_code).textColor">{{
                   request.status
-                }}</span></small>
+                  }}</span></small>
             </p>
             <p class="card-text">
               <small>Дата: </small><span class="data-val">{{
                 $toDateTimeFormat(request.created_at)
-              }}</span>
+                }}</span>
             </p>
             <p class="card-text">
               <small>Инициатор: </small><span class="data-val">{{ request.requested_by_name }}</span>
@@ -184,6 +222,7 @@
   import AppPage from "../../components/AppPage.vue";
   import { mapGetters, mapActions } from "vuex";
   import {
+    CURRENT_USER,
     INVOKE_USER_REQUEST,
     IS_LAB_DIRECTOR,
     LOAD_REQUESTS,
@@ -209,6 +248,7 @@
     computed: {
       ...mapGetters({
         isLabDirector: IS_LAB_DIRECTOR,
+        currentUser: CURRENT_USER
       }),
       filtresRequests() {
         return this.requests;

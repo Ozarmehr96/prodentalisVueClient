@@ -146,7 +146,6 @@ const actions = {
   [types.DELETE_ORDER]: async ({ commit }, orderId) => {
     try {
       await api.delete(`/orders/${orderId}`);
-      await commit(types.MUTATE_ORDERS, state.orders.filter(o => o.id !== orderId));
     } catch (e) {
       console.error(e);
     }

@@ -103,7 +103,7 @@
           Печать
         </button>
         <button 
-          v-if="canControl"
+          v-if="canDelete"
           class="btn btn-sm btn-danger footerButton" @click="deleteOrder" title="Удалить">
           Удалить
         </button>
@@ -137,6 +137,13 @@ export default {
     canControl() {
       return this.isSystemAdmin || this.isLabAdmin || this.isLabDirector;
     },
+    canDelete() {
+      if (this.order.status.code === 'DeletionRequest') {
+        return false;
+      }
+
+      return this.isSystemAdmin || this.isLabAdmin || this.isLabDirector;
+    },
     // преобразование зубов в типы работ
     workTypes() {
       return convertOrderTeethToWorkTypes(this.order.teeth.slice());
@@ -157,7 +164,16 @@ export default {
     },
     async deleteOrder() {
       if (!confirm(`Вы уверены, что хотите удалить заказ №${this.order.number}?`)) return;
-      await this.deleteOrderAction(this.order.id);
+
+      let message = "Заказ успешно удалён.";
+      if (this.isLabAdmin) {
+        message = "Запрос на удаление заказа отправлен на рассмотрение директору.";
+      }
+
+      await this.deleteOrderAction(this.order.id).then(() => {
+        this.$emit("statusChanged");
+        this.$toast(message);
+      });
     },
     async finishOrder() {
       if (confirm(`Вы действительно хотите завершить выполнение заказа №${this.order.id}?`)) {
@@ -201,6 +217,7 @@ export default {
         case "Finished":
           return "bg-secondary";
         case "Canceled":
+        case "PendingDeletion":
           return "bg-danger";
         default:
           return "bg-secondary";
