@@ -10,42 +10,45 @@
     <!-- Карточки -->
     <div class="row">
       <div class="col-12 mb-3 position-relative" v-for="request in filtresRequests">
+        <!-- Карточка редактирования заказа -->
+        <UserRequestWizard 
+          :request="request" 
+          requestType="UpdateOrder"
+          @update-request="(e) => updateRequest(e.status, e.id)" 
+          :title="`Редактирование заказа № ${request?.order?.number}`"
+        >
+          <OrderDiffView :order="request.order" :oldOrder="request.old_order" />
+           <template v-slot:buttons>
+              <button class="btn btn-primary btn-sm" v-if="isLabDirector" @click="() => $router.push(`/orders/view/${request.order.id}`)">
+                Посмотреть заказ
+              </button>
+            </template>
+        </UserRequestWizard>
+
         <!-- Карточка для подтверждения Telegram аккаунта -->
-        <div class="card h-100" :class="getUserAction(request.request_type, request.status_code).borderClass"
-          v-if="request.request_type === 'ApproveTelegram'">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h5 class="card-title mb-0">Подтверждение Telegram аккаунта</h5>
-              <span :class="getUserAction(request.request_type).class">{{ request.status }}</span>
-            </div>
-            <p class="me-2 mb-1">
-              Мы получили запрос на привязку вашего Telegram. Подтвердите, что это вы.
-            </p>
+        <UserRequestWizard 
+          :request="request" 
+          requestType="ApproveTelegram"
+          @update-request="(e) => updateRequest(e.status, e.id)" 
+          title="Подтверждение Telegram аккаунта"
+        >
+          <p class="me-2 mb-1">
+            Мы получили запрос на привязку вашего Telegram. Подтвердите, что это вы.
+          </p>
 
-            <!-- Подсказка про уведомления -->
-            <small class="text-muted me-2 mb-1">
-              После привязки вы будете получать уведомления о статусах задач прямо в Telegram.
-            </small>
-            <div class="d-flex gap-2 mt-2" v-if="request.status_code == 'Pending'">
-              <button class="btn btn-success btn-sm" @click="updateRequest('Approved', request.id)">
-                Подтвердить
-              </button>
-              <button class="btn btn-danger btn-sm" @click="updateRequest('Rejected', request.id)">
-                Отклонить
-              </button>
-            </div>
-          </div>
-        </div>
+          <!-- Подсказка про уведомления -->
+          <small class="text-muted me-2 mb-1">
+            После привязки вы будете получать уведомления о статусах задач прямо в Telegram.
+          </small>
+        </UserRequestWizard>
 
-        <!-- Карточка для подтверждения или отклонения удаления -->
-        <div class="card h-100" :class="getUserAction(request.request_type, request.status_code).borderClass"
-          v-if="request.request_type === 'DeleteOrder'">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h5 class="card-title mb-0">Запрос на удаление заказа №{{ request.order.number }}</h5>
-              <span :class="getUserAction(request.request_type).class">{{ request.status }}</span>
-            </div>
-
+        <!-- Карточка для подтверждения или отклонения удаления заказа -->
+        <UserRequestWizard 
+          :request="request" 
+          requestType="DeleteOrder"
+          @update-request="(e) => updateRequest(e.status, e.id)" 
+          :title="`Удаление заказа №${request?.order?.number}`"
+        >
             <p class="me-2 mb-1" v-if="request.requested_by == currentUser.id">
               Вы запросил удаление заказа.
             </p>
@@ -54,35 +57,30 @@
             </p>
 
             <!-- Подсказка (по желанию) -->
-            <small class="text-muted me-2 mb-1" v-if="isLabDirector">
+            <small class="text-muted me-2 mb-1" v-if="isLabDirector && request.status_code == 'Pending'">
               После выбора действия заказ будет либо удалён, либо останется активным.
             </small>
-
-            <div class="d-flex gap-2 mt-2" v-if="isLabDirector && request.status_code == 'Pending'">
-              <button class="btn btn-success btn-sm" @click="updateRequest('Approved', request.id)">
-                Одобрить
-              </button>
-              <button class="btn btn-danger btn-sm" @click="updateRequest('Rejected', request.id)">
-                Отклонить
-              </button>
-              <button class="btn btn-primary btn-sm" @click="() => $router.push(`/orders/view/${request.order.id}`)">
+            <template v-slot:buttons>
+              <button class="btn btn-primary btn-sm" v-if="isLabDirector" @click="() => $router.push(`/orders/view/${request.order.id}`)">
                 Посмотреть заказ
               </button>
-            </div>
-          </div>
-        </div>
+            </template>
+        </UserRequestWizard>
 
         <!-- Карточка добавления сотрудника -->
-        <div class="card h-100" :class="getUserAction(request.request_type, request.status_code).borderClass"
-          v-if="request.is_user_type">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h5 class="card-title mb-0">{{ request.user.full_name }}</h5>
-              <span :class="getUserAction(request.request_type).class">{{
-                getUserAction(request.request_type).text
-                }}</span>
-            </div>
-            <p class="card-text">{{ request.user.phone_number }}</p>
+        <UserRequestWizard 
+          :request="request"
+          v-if="request.request_type === `AddUser`"
+          requestType="AddUser"
+          @update-request="(e) => updateRequest(e.status, e.id)" 
+          title="Добавление нового сотрудника"
+        >
+            <p class="card-text">
+              <small>ФИО: </small><span class="data-val">{{ request.user.full_name }}</span>
+            </p>
+            <p class="card-text">
+              <small>Номер телефона: </small><span class="data-val">{{ request.user.phone_number }}</span>
+            </p>
             <p class="card-text">
               <small>Дата рождения: </small><span class="data-val">{{
                 $toDateFormat(request.user.date_birth)
@@ -98,12 +96,6 @@
               <small>Специализация: </small><span class="data-val">{{ request.user.specialuzation }}</span>
             </p>
             <p class="card-text">
-              <small>Статус:
-                <span class="data-val" :class="getUserAction(request.request_type, request.status_code).textColor">{{
-                  request.status
-                  }}</span></small>
-            </p>
-            <p class="card-text">
               <small>Дата: </small><span class="data-val">{{
                 $toDateTimeFormat(request.created_at)
                 }}</span>
@@ -111,16 +103,7 @@
             <p class="card-text">
               <small>Инициатор: </small><span class="data-val">{{ request.requested_by_name }}</span>
             </p>
-            <div class="d-flex gap-2" v-if="isLabDirector && request.status_code == 'Pending'">
-              <button class="btn btn-success btn-sm" @click="updateRequest('Approved', request.id)">
-                Подтвердить
-              </button>
-              <button class="btn btn-danger btn-sm" @click="updateRequest('Rejected', request.id)">
-                Отклонить
-              </button>
-            </div>
-          </div>
-        </div>
+        </UserRequestWizard>
       </div>
 
       <div v-if="filtresRequests && filtresRequests.length == 0" class="text-center py-2 text-muted">
@@ -166,54 +149,6 @@
           </div>
         </div>
       </div> -->
-
-      <!-- Редактирование, Подтверждено -->
-      <!-- <div class="col-12 mb-3">
-        <div class="card h-100 border-success">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h5 class="card-title mb-0">Пётр Петров</h5>
-              <span class="badge bg-info">Редактирование</span>
-            </div>
-            <p class="card-text">petr@example.com</p>
-            <p class="card-text">
-              <small
-                >Статус: <span class="text-success">Подтверждено</span></small
-              >
-            </p>
-            <p class="card-text"><small>Дата: 17.08.2025 15:30</small></p>
-            <div class="d-flex gap-2">
-              <button class="btn btn-success btn-sm" disabled>
-                Подтвердить
-              </button>
-              <button class="btn btn-danger btn-sm" disabled>Отклонить</button>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-      <!-- Удаление, Отклонено -->
-      <!-- <div class="col-12 mb-3">
-        <div class="card h-100 border-danger">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h5 class="card-title mb-0">Светлана Сидорова</h5>
-              <span class="badge bg-dark">Удаление</span>
-            </div>
-            <p class="card-text">svetlana@example.com</p>
-            <p class="card-text">
-              <small>Статус: <span class="text-danger">Отклонено</span></small>
-            </p>
-            <p class="card-text"><small>Дата: 16.08.2025 10:45</small></p>
-            <div class="d-flex gap-2">
-              <button class="btn btn-success btn-sm" disabled>
-                Подтвердить
-              </button>
-              <button class="btn btn-danger btn-sm" disabled>Отклонить</button>
-            </div>
-          </div>
-        </div>
-      </div> -->
     </div>
   </app-page>
 </template>
@@ -227,6 +162,8 @@
     IS_LAB_DIRECTOR,
     LOAD_REQUESTS,
   } from "./../../store/types";
+  import OrderDiffView from "../../components/order/OrderDiffView.vue";
+  import UserRequestWizard from "../../components/UserRequestWizard.vue";
   /**
    * Страница "Запросы"
    *
@@ -235,6 +172,8 @@
   export default {
     components: {
       AppPage,
+      OrderDiffView,
+      UserRequestWizard
     },
     data() {
       return {
@@ -314,7 +253,7 @@
           case "Rejected":
             return { textColor: "text-danger", borderColor: "border-danger" };
           case "Pending":
-            return { textColor: "text-warning", borderColor: "border-warning" };
+            return { textColor: "text-primary", borderColor: "border-primary" };
           default:
             return { textColor: "text-dark", borderColor: "border-dark" };
         }
