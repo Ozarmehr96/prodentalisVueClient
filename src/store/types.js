@@ -33,17 +33,21 @@ export const IS_LAB_ADMIN = "auth/IS_LAB_ADMIN";
 export const ADD_USER = "users/ADD_USER";
 export const UPDATE_USER = "users/UPDATE_USER";
 export const DELETE_USER = "users/DELETE_USER";
-export const ROLES = "users/ROLES";
-export const MUTATE_ROLES = "users/MUTATE_ROLES";
-export const LOAD_ROLES = "users/ROLES";
+export const MAIN_ROLES = "users/MAIN_ROLES";
+export const MUTATE_MAIN_ROLES = "users/MUTATE_MAIN_ROLES";
+export const LOAD_MAIN_ROLES = "users/MAIN_ROLES";
 export const LOAD_USERS = "users/LOAD_USERS";
 export const LOAD_USER = "users/LOAD_USER";
 export const MUTATE_LOADED_USER = "users/MUTATE_LOADED_USER";
 export const LOADED_USER = "users/LOADED_USER";
 
 export const LOAD_REQUESTS = "requests/LOAD_REQUESTS";
+export const LOAD_ACTIVE_REQUEST_BY_TYPE = "requests/LOAD_ACTIVE_REQUEST_BY_TYPE";
 export const INVOKE_USER_REQUEST = "requests/INVOKE_USER_REQUEST";
 
+export const LOAD_ROLES = "users/LOAD_ROLES";
+export const ROLES = "users/ROLES";
+export const MUTATE_ROLES = "users/MUTATE_ROLES";
 // Типы работ
 export const WORK_TYPES = "workTypes/WORK_TYPES";
 export const MUTATE_WORK_TYPES = "workTypes/MUTATE_WORK_TYPES";

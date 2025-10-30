@@ -65,7 +65,7 @@
 <script>
 import AppPage from "../../components/AppPage.vue";
 import { mapGetters, mapActions } from "vuex";
-import { CURRENT_USER, DELETE_USER, IS_LAB_ADMIN, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN, LOAD_ROLES, LOAD_USERS } from "./../../store/types";
+import { CURRENT_USER, DELETE_USER, IS_LAB_ADMIN, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN, LOAD_MAIN_ROLES, LOAD_USERS } from "./../../store/types";
 export default {
   components: {
     AppPage,
@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadRoles: LOAD_ROLES,
+      loadMainRoles: LOAD_MAIN_ROLES,
       loadUsers: LOAD_USERS,
       deleteUserAction: DELETE_USER
     }),

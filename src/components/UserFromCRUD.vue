@@ -174,8 +174,8 @@ import {
   ADD_USER,
   UPDATE_USER,
   ACCESS_TOKEN,
-  LOAD_ROLES,
-  ROLES,
+  LOAD_MAIN_ROLES,
+  MAIN_ROLES,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
   LABS,
@@ -210,7 +210,7 @@ export default {
     };
   },
   async beforeMount() {
-    await this.loadRoles();
+    await this.loadMainRoles();
     if (this.isSystemAdmin) await this.loadLabs();
 
     if (this.existingUser) {
@@ -226,7 +226,7 @@ export default {
     ...mapGetters({
       currentUser: CURRENT_USER,
       accessToken: ACCESS_TOKEN,
-      roles: ROLES,
+      roles: MAIN_ROLES,
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
       labs: LABS,
@@ -240,7 +240,7 @@ export default {
     ...mapActions({
       createUser: ADD_USER,
       updateUser: UPDATE_USER,
-      loadRoles: LOAD_ROLES,
+      loadMainRoles: LOAD_MAIN_ROLES,
       loadLabs: LOAD_LABS,
     }),
     generatePassword() {

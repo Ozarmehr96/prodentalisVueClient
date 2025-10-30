@@ -127,6 +127,8 @@ import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 import ToothSelection from "./ToothSelection.vue";
 import {
   CREATE_ORDER,
+  IS_LAB_DIRECTOR,
+  IS_SYSTEM_ADMIN,
   LOAD_WORK_TYPES,
   ORDER_SELECTED_TEETH,
   SELECTED_TOOTH,
@@ -170,11 +172,13 @@ export default {
       isSaving: false,
       price: null,
       isChanged: false,
+      oldOrderData: null,
     };
   },
   async beforeMount() {
     // если режим редактирования, заполняем поля
     if (this.isEditMode) {
+      this.oldOrderData = JSON.parse(JSON.stringify(this.orderToEdit));
       this.orderToEdit.teeth.forEach((t) => {
         t.toothId = t.tooth_id;
         t.workTypes = t.work_types;
@@ -220,9 +224,11 @@ export default {
       workTypes: WORK_TYPES,
       selectedTooth: SELECTED_TOOTH,
       orderSelectedTeeth: ORDER_SELECTED_TEETH,
+      isLabDirector: IS_LAB_DIRECTOR,
+      isSystemAdmin: IS_SYSTEM_ADMIN,
     }),
     isValid() {
-      return (
+      let isValidData = (
         this.customer &&
         this.customer.trim().length > 0 &&
         this.patient &&
@@ -231,6 +237,21 @@ export default {
         this.orderSelectedTeeth.length > 0 &&
         this.filtredOrderSelectedTeethasWorktype.length > 0
       );
+ 
+      if (this.isEditMode) {
+        if (isValidData) {
+          return this.customer.trim() !== this.oldOrderData.customer_name ||
+            this.patient.trim() !== this.oldOrderData.patient_name ||
+            this.price !== this.oldOrderData.price ||
+            this.expectedDate !== (this.oldOrderData.expired_at ? this.oldOrderData.expired_at.split("T")[0] : null) ||
+            (this.description ? this.description.trim() : null) !== this.oldOrderData.description ||
+            this.hasTeethChanged(this.orderSelectedTeeth, this.oldOrderData.teeth);
+        }
+
+        return false;
+      }
+
+      return isValidData;
     },
     filteredWorkTypes() {
       return this.workTypes;
@@ -313,7 +334,11 @@ export default {
       if (this.isEditMode) {
         newOrder.id = this.orderToEdit.id;
         newOrder.callback = (createdOrder) => {
-          this.$toast(`Заказ №${createdOrder.number} обновлен`, 7000);
+          if (this.isLabDirector || this.isSystemAdmin) {
+            this.$toast(`Заказ №${createdOrder.number} обновлен`, 7000);
+          } else {
+            this.$toast(`Запрос на удаление заказа ${createdOrder.number} отправлен на рассмотрение директору.`, 7000);
+          }
           this.$router.push("/orders");
         };
         await this.updateOrderAction(newOrder);
@@ -359,6 +384,30 @@ export default {
       this.isChanged = !this.isChanged;
       this.price = this.calcPrice;
     },
+    /**
+     * Проверяет, изменились ли выбранные зубы и их типы работ
+     * @param {Array} newTeeth - текущие выбранные зубы
+     * @param {Array} oldTeeth - исходные выбранные зубы
+     * @returns {Boolean} - true, если есть изменения, false - если нет
+     */
+    hasTeethChanged(newTeeth, oldTeeth) {
+      console.log("oldTeeth:", oldTeeth);
+      // Приводим массив к единой структуре и сортируем
+      const normalizedNew = newTeeth.map(t => ({
+        tooth_id: t.toothId,
+        work_type_ids: t.workTypes?.map(wt => wt.id).sort((a, b) => a - b)
+      }))
+        .sort((a, b) => a.tooth_id - b.tooth_id);
+
+      const normalizedOld = oldTeeth.map(t => ({
+        tooth_id: t.tooth_id,
+        work_type_ids: t.work_types?.map(wt => wt.id).sort((a, b) => a - b)
+      }))
+      .sort((a, b) => a.tooth_id - b.tooth_id);
+
+      // Сравниваем через JSON
+      return JSON.stringify(normalizedNew) !== JSON.stringify(normalizedOld);
+  },
   },
 };
 </script>

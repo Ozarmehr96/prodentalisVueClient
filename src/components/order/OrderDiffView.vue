@@ -44,6 +44,13 @@
         </span>
       </div>
 
+      <div class="d-flex mb-2">
+        <span class="text-muted orderKey">Статус:</span>
+        <span class="fw-bold">
+          {{ order.status.name }}
+        </span>
+      </div>
+
       <!-- Цена -->
       <div class="d-flex mb-2">
         <span class="text-muted orderKey">Цена:</span>

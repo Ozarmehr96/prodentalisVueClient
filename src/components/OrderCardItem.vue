@@ -1,7 +1,20 @@
 <template>
   <div class="card h-100 shadow-sm mb-3 ordercarItem">
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
       <span class="fw-bold">Заказ №{{ order.number }}</span>
+
+      <template v-if="currentUser.id === order.created_user_id">
+        <button v-if="order.has_update_request && !order.has_delete_request"
+          class="btn btn-outline-danger btn-sm ms-auto me-2" @click.stop="cancelRequest('UpdateOrder', 'редактирование', order.id)">
+          Отменить запрос на редактирование
+        </button>
+
+        <button v-if="order.has_delete_request" class="btn btn-outline-danger btn-sm ms-auto me-2"
+          @click.stop="cancelRequest('DeleteOrder', 'удаление', order.id)">
+          Отменить запрос на удаление
+        </button>
+      </template>
+
       <span class="badge" :class="getStatusClass(order.status.code)">
         {{ order.status.name }}
       </span>
@@ -77,35 +90,34 @@
       style="max-height: 38px; padding: 0.25rem 0.5rem; overflow: hidden">
       <!-- Текст слева -->
       <span class="text-truncate">
-        Создано пользователем: {{ order.created_user_name }}
+        Создал: {{ order.created_user_name }}
       </span>
 
       <div class="ms-auto" style="display: flex;">
-
-        <button v-if="canControl && order.status.code === 'Created'" class="btn btn-sm btn-success ms-auto me-2 footerButton"
-          @click="startOrder" title="Начать выполнение заказа" style="min-width: 150px;">
+        <button v-if="canControl && order.status.code === 'Created'"
+          class="btn btn-sm btn-success ms-auto me-2 footerButton" @click="startOrder" title="Начать выполнение заказа"
+          style="min-width: 150px;">
           Начать
         </button>
 
-        <button v-if="canControl && order.status.code === 'Started'" class="btn btn-sm btn-danger ms-auto me-2 footerButton"
-          @click="finishOrder" title="Завершить выполнение заказа" style="min-width: 150px;">
+        <button v-if="canControl && order.status.code === 'Started'"
+          class="btn btn-sm btn-danger ms-auto me-2 footerButton" @click="finishOrder"
+          title="Завершить выполнение заказа" style="min-width: 150px;">
           Завершить
         </button>
 
-        <button
-          v-if="canControl"
-          class="btn btn-sm btn-warning ms-auto me-2 footerButton"
+        <button v-if="order.status.code !== 'Finished' && canControl && !order.has_delete_request && !order.has_update_request" class="btn btn-sm btn-warning ms-auto me-2 footerButton"
           @click="() => $router.push(`/orders/${order.id}`)" title="Редактировать">
           Редактировать
         </button>
-        <!-- Кнопка справа -->
-        <button class="btn btn-sm btn-outline-primary me-2 footerButton" @click="() => $emit('onPrintOrder', order)" title="Печать заказа">
-          Печать
-        </button>
-        <button 
-          v-if="canDelete"
-          class="btn btn-sm btn-danger footerButton" @click="deleteOrder" title="Удалить">
+        
+        <button v-if="canDelete && !order.has_delete_request" class="btn btn-sm btn-outline-danger me-2 footerButton" @click="deleteOrder" title="Удалить">
           Удалить
+        </button>
+        <!-- Кнопка справа -->
+        <button class="btn btn-sm btn-outline-primary footerButton" @click="() => $emit('onPrintOrder', order)"
+          title="Печать заказа">
+          Печать
         </button>
       </div>
     </div>
@@ -116,7 +128,7 @@
 import { mapActions, mapGetters } from "vuex";
 import { convertOrderTeethToWorkTypes } from "../helpers/order-helpers";
 import QrCode from "./QrCode.vue";
-import { FINISH_ORDER, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN, START_ORDER, DELETE_ORDER, IS_LAB_ADMIN, CURRENT_USER } from "../store/types";
+import { FINISH_ORDER, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN, START_ORDER, DELETE_ORDER, IS_LAB_ADMIN, CURRENT_USER, INVOKE_USER_REQUEST, LOAD_ACTIVE_REQUEST_BY_TYPE } from "../store/types";
 import dayjs from "dayjs";
 export default {
   name: "OrderCard",
@@ -158,6 +170,8 @@ export default {
       startOrderAction: START_ORDER,
       finishOrderAction: FINISH_ORDER,
       deleteOrderAction: DELETE_ORDER,
+      invokeRequestAction: INVOKE_USER_REQUEST,
+      loadActiveUserRequestByType: LOAD_ACTIVE_REQUEST_BY_TYPE
     }),
     startOrder() {
       this.startOrderAction(this.order.id).then(() => this.$emit("statusChanged"));
@@ -182,30 +196,29 @@ export default {
         });
       }
     },
-    formatDeadLine(date) {
-      const expiredDate = dayjs(date);
-      const now = dayjs();
+    async cancelRequest(requestType, requestTypeText, orderId) {
+      if (!confirm(`Вы уверены, что хотите отменить запрос на ${requestTypeText} заказа №${this.order.number}?`)) {
+        return;
+      }
 
-      const diffDays = expiredDate.diff(now, "day"); // разница в днях
+      // загрузка активного запроса пользователя по типу
+      let request = await this.loadActiveUserRequestByType({requestType, objectId : orderId});
 
-      if (diffDays < 0 && this.order.status.code !== "Finished") {
-        // просрочено
-        return `${expiredDate.format("DD.MM.YYYY")} (Просрочено ${Math.abs(diffDays)} дн.)`;
-      } else {
-        if (this.order.status.code === "Finished") {
-          return date;
+      // проверка наличия запроса и соответствия заказа
+      if (!request || (request.order && request.order.id !== orderId)) {
+        this.$toastError(`Активный запрос на ${requestTypeText} заказа №${this.order.number} не найден.`);
+        return;
+      }
+
+      this.invokeRequestAction({
+        id: request.id,
+        status: 'Cancelled',
+        comment: null,
+        callback: async () => {
+          this.$emit("statusChanged");
+          this.$toast(`Запрос на ${requestTypeText} заказа №${this.order.number} успешно отменён.`);
         }
-        // ещё не просрочено
-        return `${expiredDate.format("DD.MM.YYYY")} (осталось ${diffDays} дн.)`;
-      }
-    },
-    // парсинг зубов (они приходят строкой)
-    parseTeeth(teethStr) {
-      try {
-        return JSON.parse(teethStr);
-      } catch {
-        return [];
-      }
+      });
     },
     // стили для статуса
     getStatusClass(statusCode) {

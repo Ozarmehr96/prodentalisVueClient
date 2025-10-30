@@ -12,14 +12,16 @@
       <div class="col-12 mb-3 position-relative" v-for="request in filtresRequests">
         <!-- Карточка редактирования заказа -->
         <UserRequestWizard 
-          :request="request" 
+          :request="request"
           requestType="UpdateOrder"
           @update-request="(e) => updateRequest(e.status, e.id)" 
-          :title="`Редактирование заказа № ${request?.order?.number}`"
+          :title="`Редактирование заказа №${request?.order?.number}`"
+          :canShowCancelButton="true"
+          :confirmText="`Вы уверены, что хотите отменить запрос на редактирование заказа №${request?.order?.number}?`"
         >
           <OrderDiffView :order="request.order" :oldOrder="request.old_order" />
            <template v-slot:buttons>
-              <button class="btn btn-primary btn-sm" v-if="isLabDirector" @click="() => $router.push(`/orders/view/${request.order.id}`)">
+              <button class="btn btn-primary btn-sm" @click="() => $router.push(`/orders/view/${request.order.id}`)">
                 Посмотреть заказ
               </button>
             </template>
@@ -48,20 +50,15 @@
           requestType="DeleteOrder"
           @update-request="(e) => updateRequest(e.status, e.id)" 
           :title="`Удаление заказа №${request?.order?.number}`"
+          :canShowCancelButton="true"
+          :confirmText="`Вы уверены, что хотите отменить запрос на удаление заказа №${request?.order?.number}?`"
         >
-            <p class="me-2 mb-1" v-if="request.requested_by == currentUser.id">
-              Вы запросил удаление заказа.
-            </p>
-            <p class="me-2 mb-1" v-else>
-              {{ request.requested_by_name }} запросил удаление заказа.
-            </p>
-
             <!-- Подсказка (по желанию) -->
             <small class="text-muted me-2 mb-1" v-if="isLabDirector && request.status_code == 'Pending'">
               После выбора действия заказ будет либо удалён, либо останется активным.
             </small>
             <template v-slot:buttons>
-              <button class="btn btn-primary btn-sm" v-if="isLabDirector" @click="() => $router.push(`/orders/view/${request.order.id}`)">
+              <button class="btn btn-primary btn-sm" @click="() => $router.push(`/orders/view/${request.order.id}`)">
                 Посмотреть заказ
               </button>
             </template>
@@ -212,51 +209,6 @@
           }
         });
         this.isLoading = false;
-      },
-      getUserAction(action, status = "") {
-        let borderAndTextStyle = this.getBorderStyle(status);
-        switch (action) {
-          case "AddUser":
-            return {
-              text: "Добавление",
-              class: "badge bg-primary",
-              borderClass: borderAndTextStyle.borderColor,
-              textColor: borderAndTextStyle.textColor
-            };
-          case "EditUser":
-            return {
-              text: "Редактирование",
-              class: "badge bg-info",
-              borderClass: borderAndTextStyle.borderColor,
-              textColor: borderAndTextStyle.textColor
-            };
-          case "DeleteUser":
-            return {
-              text: "Удаление",
-              class: "badge bg-danger",
-              borderClass: borderAndTextStyle.borderColor,
-              textColor: borderAndTextStyle.textColor
-            };
-          default:
-            return {
-              text: "Неизвестное действие",
-              class: "badge bg-secondary",
-              borderClass: borderAndTextStyle.borderColor,
-              textColor: borderAndTextStyle.textColor
-            };
-        }
-      },
-      getBorderStyle(status) {
-        switch (status) {
-          case "Approved":
-            return { textColor: "text-success", borderColor: "border-success" };
-          case "Rejected":
-            return { textColor: "text-danger", borderColor: "border-danger" };
-          case "Pending":
-            return { textColor: "text-primary", borderColor: "border-primary" };
-          default:
-            return { textColor: "text-dark", borderColor: "border-dark" };
-        }
       },
     },
   };

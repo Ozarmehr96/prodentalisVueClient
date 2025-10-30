@@ -57,3 +57,10 @@ export default {
   },
 };
 </script>
+<style scoped>
+.btn:disabled {
+ color: black !important;
+    border-color: #6c757d !important;
+    background-color: transparent !important;
+}
+</style>

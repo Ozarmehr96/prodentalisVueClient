@@ -54,6 +54,12 @@
           Отклонить
         </button>
 
+        <button class="btn btn-outline-danger btn-sm" 
+          v-if="canShowCancelButton && currentUser.id === request.requested_by && request.status_code === 'Pending'" 
+          @click="updateRequest('Cancelled', request.id)">
+          Отменить запрос
+        </button>
+
         <!-- Слот для кастомных кнопок -->
         <slot name="buttons"></slot>
       </div>
@@ -70,8 +76,10 @@ export default {
   props: {
     request: { type: Object, required: true },
     cardClass: { type: String, default: "" },
+    confirmText: { type: String, default: null },
     title: { type: String, required: true },
     canShow: { type: Boolean, default: true },
+    canShowCancelButton: { type: Boolean, default: false },
     requestType: { type: String, required: true },
   },
   computed:{
@@ -82,6 +90,12 @@ export default {
   },
   methods: {
     updateRequest(status, id) {
+      if (this.confirmText && status === 'Cancelled') {
+        if (!confirm(this.confirmText)) {
+          return;
+        }
+      }
+
       this.$emit("update-request", { status, id });
     },
     getBorderStyle(status) {
@@ -90,6 +104,8 @@ export default {
           return { textColor: "badge bg-success", borderColor: "border-success" };
         case "Rejected":
           return { textColor: "badge bg-secondary", borderColor: "border-secondary" };
+        case "Cancelled":  // добавляем для отменённых
+          return { textColor: "badge bg-danger", borderColor: "border-danger" }; // ярко-красный
         case "Pending":
           return { textColor: "badge bg-warning", borderColor: "border-warning" };
         default:
