@@ -45,9 +45,6 @@ export const LOAD_REQUESTS = "requests/LOAD_REQUESTS";
 export const LOAD_ACTIVE_REQUEST_BY_TYPE = "requests/LOAD_ACTIVE_REQUEST_BY_TYPE";
 export const INVOKE_USER_REQUEST = "requests/INVOKE_USER_REQUEST";
 
-export const LOAD_ROLES = "users/LOAD_ROLES";
-export const ROLES = "users/ROLES";
-export const MUTATE_ROLES = "users/MUTATE_ROLES";
 // Типы работ
 export const WORK_TYPES = "workTypes/WORK_TYPES";
 export const MUTATE_WORK_TYPES = "workTypes/MUTATE_WORK_TYPES";
@@ -105,3 +102,16 @@ export const LOAD_LABS = "labs/LOAD_LABS";
 export const LOAD_LAB = "labs/LOAD_LAB";
 export const LABS = "labs/LABS";
 export const MUTATE_LABS = "labs/MUTATE_LABS";
+
+// РОЛИ
+export const LOAD_ROLES = "roles/LOAD_ROLES";
+export const LOAD_ROLE = "roles/LOAD_ROLE";
+export const ROLES = "roles/ROLES";
+export const MUTATE_ROLES = "roles/MUTATE_ROLES";
+export const MUTATE_ROLE = "roles/MUTATE_ROLE";
+export const SAVE_ROLE = "roles/SAVE_ROLE";
+export const UPDATE_ROLE = "roles/UPDATE_ROLE";
+export const DELETE_ROLE = "roles/DELETE_ROLE";
+export const IS_ROLES_LOADING = "roles/IS_ROLES_LOADING";
+export const MUTATE_IS_ROLES_LOADING = "roles/MUTATE_IS_ROLES_LOADING";
+export const SET_IS_ROLES_LOADING = "roles/SET_IS_ROLES_LOADING";

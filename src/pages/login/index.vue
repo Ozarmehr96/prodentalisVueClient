@@ -20,10 +20,10 @@
                         type="text"
                         v-model="login"
                         class="form-control"
-                        id="floatingInput"
+                        id="login"
                         placeholder="342"
                       />
-                      <label for="floatingInput">Введите логин</label>
+                      <label for="login">Введите логин</label>
                     </div>
 
                     <div class="form-floating mb-4">
@@ -44,7 +44,7 @@
                         :customClasses="['btn-primary fa-lg gradient-custom-2 mb-3 w-100']"
                         :loadingText="'Авторизация...'"
                         @click="auth"
-                        :isValid="isValid"
+                        :isValid="isValid === true"
                         style=""
                       />
                     </div>
@@ -100,7 +100,9 @@ export default {
   },
   computed: {
     isValid() {
-      return this.login && this.pass;
+      const loginValid = this.login && this.login.trim().length > 0;
+      const passValid = this.pass && this.pass.trim().length > 0;
+      return loginValid && passValid;
     }
   },
   methods: {

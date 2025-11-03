@@ -12,7 +12,7 @@
     <button :class="['btn', ...customClasses]" type="button" disabled>
       <span
         class="spinner-border spinner-border-sm"
-        style="border-right-color: white !important;"
+        style="border-right-color: white !important"
         role="status"
         aria-hidden="true"
       ></span>
@@ -59,8 +59,11 @@ export default {
 </script>
 <style scoped>
 .btn:disabled {
- color: black !important;
-    border-color: #6c757d !important;
-    background-color: transparent !important;
+  color: black !important;
+  border-color: #6c757d !important;
+  background-color: transparent !important;
+}
+.brand-style {
+  color: white !important;
 }
 </style>

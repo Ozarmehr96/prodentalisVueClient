@@ -73,6 +73,13 @@ let headerMenuItemsArray = [
     path: null,
   },
   {
+    label: "Запросы",
+    link: "/requests",
+    includedRoles: ["allRoles"],
+    svg: "#requests",
+    path: null,
+  },
+  {
     label: "Сотрудники",
     link: "/users",
     includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
@@ -80,10 +87,10 @@ let headerMenuItemsArray = [
     path: null,
   },
   {
-    label: "Запросы",
-    link: "/requests",
-    includedRoles: ["allRoles"],
-    svg: "#requests",
+    label: "Роли",
+    link: "/roles",
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
+    svg: "#roles",
     path: null,
   },
   {

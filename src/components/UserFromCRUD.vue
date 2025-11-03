@@ -100,33 +100,51 @@
                   @blur="validateField('pass')"
                   placeholder="Введите пароль"
                 />
-                <button class="btn btn-outline-secondary" type="button" @click="generatePassword">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  @click="generatePassword"
+                >
                   🔑
                 </button>
-                <button class="btn btn-outline-secondary" type="button" @click="togglePassword">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  @click="togglePassword"
+                >
                   👁
                 </button>
                 <div class="invalid-feedback">{{ errors.pass }}</div>
               </div>
-              
             </div>
           </div>
 
-          <!-- Роль -->
-          <div class="mb-3">
-            <label class="form-label">Роль</label>
-            <select
-              class="form-select"
-              v-model="user.role"
-              :class="{ 'is-invalid': errors.role }"
-              @blur="validateField('role')"
-            >
-              <option value="">Выберите роль</option>
-              <option v-for="role in roles" :key="role.code" :value="role.code">
-                {{ role.title }}
-              </option>
-            </select>
-            <div class="invalid-feedback">{{ errors.role }}</div>
+          <div class="row mb-3">
+            <!-- Основная роль -->
+            <div class="col-md-5">
+              <label class="form-label">Основная роль</label>
+              <select
+                class="form-select"
+                v-model="user.role"
+                :class="{ 'is-invalid': errors.role }"
+                @blur="validateField('role')"
+              >
+                <option value="">Выберите роль</option>
+                <option v-for="role in mainRoles" :key="role.code" :value="role.code">
+                  {{ role.title }}
+                </option>
+              </select>
+              <div class="invalid-feedback">{{ errors.role }}</div>
+            </div>
+
+            <div class="col-md-7">
+              <label class="form-label">Дополнительная роль</label>
+              <MultiSelect
+                v-model="user.roles"
+                :options="roles.map((r) => ({ value: r.id, label: r.name }))"
+                placeholder="Выберите доп. роль"
+              />
+            </div>
           </div>
 
           <!-- Лаборатория -->
@@ -180,13 +198,16 @@ import {
   IS_SYSTEM_ADMIN,
   LABS,
   LOAD_LABS,
+  ROLES,
+  LOAD_ROLES,
 } from "../store/types";
 import Spinner from "./Spinner.vue";
 import errors from "../store/modules/errors";
+import MultiSelect from "./MultiSelect.vue";
 
 export default {
   name: "UserFormCRUD",
-  components: { Spinner },
+  components: { Spinner, MultiSelect },
   props: {
     existingUser: { type: Object, default: null },
   },
@@ -203,6 +224,7 @@ export default {
         role: "",
         lab_id: "",
         specialization: "",
+        roles: [],
       },
       errors: {},
       isSaving: false,
@@ -211,6 +233,7 @@ export default {
   },
   async beforeMount() {
     await this.loadMainRoles();
+    await this.loadRoles();
     if (this.isSystemAdmin) await this.loadLabs();
 
     if (this.existingUser) {
@@ -219,6 +242,7 @@ export default {
       // принудительно триггерим обновление select
       this.$nextTick(() => {
         this.user.role = this.user.role; // принудительно триггерим обновление select
+        this.user.roles = this.user.roles;
       });
     }
   },
@@ -226,14 +250,18 @@ export default {
     ...mapGetters({
       currentUser: CURRENT_USER,
       accessToken: ACCESS_TOKEN,
-      roles: MAIN_ROLES,
+      mainRoles: MAIN_ROLES,
+      roles: ROLES,
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
       labs: LABS,
     }),
     maxDate() {
       const today = new Date();
-      return `${today.getFullYear() - 16}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      return `${today.getFullYear() - 16}-${String(today.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}-${String(today.getDate()).padStart(2, "0")}`;
     },
   },
   methods: {
@@ -242,6 +270,7 @@ export default {
       updateUser: UPDATE_USER,
       loadMainRoles: LOAD_MAIN_ROLES,
       loadLabs: LOAD_LABS,
+      loadRoles: LOAD_ROLES,
     }),
     generatePassword() {
       const chars = "abcde123456789";
@@ -260,7 +289,8 @@ export default {
         case "last_name":
         case "name":
           if (!value) this.errors[field] = "Поле обязательно для заполнения";
-          else if (!/^[A-Za-zА-Яа-яЁё\s-]+$/.test(value)) this.errors[field] = "Допускаются только буквы и дефисы";
+          else if (!/^[A-Za-zА-Яа-яЁё\s-]+$/.test(value))
+            this.errors[field] = "Допускаются только буквы и дефисы";
           else this.errors[field] = "";
           break;
 
@@ -284,13 +314,15 @@ export default {
         case "login":
           if (!value) this.errors[field] = "Введите логин";
           else if (!/^[A-Za-z][A-Za-z0-9_]{3,19}$/.test(value))
-            this.errors[field] = "Логин должен начинаться с буквы и содержать 4–20 символов";
+            this.errors[field] =
+              "Логин должен начинаться с буквы и содержать 4–20 символов";
           else this.errors[field] = "";
           break;
 
         case "pass": {
           if (!value && this.existingUser) break;
-          if (!value) this.errors[field] = "Минимум 8 символов, хотя бы одна буква и цифра";
+          if (!value)
+            this.errors[field] = "Минимум 8 символов, хотя бы одна буква и цифра";
           else if (!/(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/.test(value))
             this.errors[field] = "Минимум 8 символов, хотя бы одна буква и цифра";
           else this.errors[field] = "";
@@ -330,6 +362,7 @@ export default {
         if (this.existingUser) {
           await this.updateUser({
             ...this.user,
+
             callback: (u) => {
               if (!this.isLabDirector)
                 this.$toast(`Данные сотрудника успешно обновлены.`);
@@ -337,6 +370,7 @@ export default {
             },
           });
         } else {
+          console.log("Создание пользователя", this.user);
           await this.createUser({
             ...this.user,
             callback: (u) => {
