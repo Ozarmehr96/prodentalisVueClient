@@ -1,5 +1,9 @@
 <template>
-  <section v-if="canShow && !currentUser.hasOwnProperty('id')" class="h-100 gradient-form" style="background-color: #eee">
+  <section
+    v-if="canShow && !currentUser.hasOwnProperty('id')"
+    class="h-100 gradient-form"
+    style="background-color: #eee"
+  >
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-xl-10">
@@ -41,7 +45,9 @@
                       <ButtonWithLoader
                         :isLoading="isLogging"
                         title="Вход"
-                        :customClasses="['btn-primary fa-lg gradient-custom-2 mb-3 w-100']"
+                        :customClasses="[
+                          'btn-primary fa-lg gradient-custom-2 mb-3 w-100',
+                        ]"
                         :loadingText="'Авторизация...'"
                         @click="auth"
                         :isValid="isValid === true"
@@ -51,18 +57,13 @@
                   </form>
                 </div>
               </div>
-              <div
-                class="col-md-6 col-lg-6 d-flex align-items-center gradient-custom-2"
-              >
+              <div class="col-md-6 col-lg-6 d-flex align-items-center gradient-custom-2">
                 <div class="text-black px-3 py-4 p-md-5 mx-md-4">
-                  <h4 class="mb-4">
-                    Cистема автоматизации зуботехнической лаборатории
-                  </h4>
+                  <h4 class="mb-4">Cистема автоматизации зуботехнической лаборатории</h4>
                   <p class="mb-0">
-                    Добро пожаловать в ProDentalis — современную систему,
-                    созданную для упрощения и оптимизации работы зуботехнической
-                    лаборатории. Управляйте заказами, контролируйте производство
-                    и повышайте качество работы.
+                    Добро пожаловать в ProDentalis — современную систему, созданную для
+                    упрощения и оптимизации работы зуботехнической лаборатории. Управляйте
+                    заказами, контролируйте производство и повышайте качество работы.
                   </p>
                 </div>
               </div>
@@ -88,14 +89,14 @@ import ButtonWithLoader from "../../components/ButtonWithLoader.vue";
  */
 export default {
   components: {
-    ButtonWithLoader
+    ButtonWithLoader,
   },
   data() {
     return {
       login: null,
       pass: null,
       isLogging: false,
-      canShow: true
+      canShow: true,
     };
   },
   computed: {
@@ -103,12 +104,12 @@ export default {
       const loginValid = this.login && this.login.trim().length > 0;
       const passValid = this.pass && this.pass.trim().length > 0;
       return loginValid && passValid;
-    }
+    },
   },
   methods: {
     ...mapActions({
       loginAction: LOGIN,
-      currentUser: CURRENT_USER
+      currentUser: CURRENT_USER,
     }),
     async auth() {
       this.isLogging = true;
@@ -119,7 +120,8 @@ export default {
           this.isLogging = true;
           let path = userRoles.get(user.role);
           this.canShow = false;
-          this.$router.push(`/orders`); // у всех есть доступ сюда
+          //this.$router.push(`/orders`); // у всех есть доступ сюда
+          window.location.href = "/orders";
         },
       });
       this.isLogging = false;
@@ -150,9 +152,9 @@ export default {
   }
 }
 .logo-big {
-    background-image: url('./../../logo-big.svg');
-    width: 80px;
-    height: 80px;
-    display: inline-block;
+  background-image: url("./../../logo-big.svg");
+  width: 80px;
+  height: 80px;
+  display: inline-block;
 }
 </style>

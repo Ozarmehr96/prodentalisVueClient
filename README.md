@@ -61,6 +61,47 @@ sudo systemctl enable nginx  # Автозапуск при старте сист
 ```bash
 sudo chown -R www-data:www-data /var/www/prodentalis/prodentalis-client
 sudo chmod -R 755 /var/www/prodentalis/prodentalis-client
+sudo systemctl restart nginx
+```
+
+```bash NGNIX
+
+############################################################
+# 1️⃣ prodentalis.ru — лэндинг
+############################################################
+
+server {
+    listen 80;  # Порт HTTP
+    server_name prodentalis.ru www.prodentalis.ru;
+
+    # Корневая папка лэндинга
+    root /var/www/prodentalis/landing;
+    index index.html;
+
+    # SPA роутинг (если нужно)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+############################################################
+# 2️⃣ app.prodentalis.ru — клиент Vue (собранный)
+############################################################
+
+server {
+    listen 80;
+    server_name app.prodentalis.ru;
+
+    # Корень собранного Vue проекта (dist)
+    root /var/www/prodentalis/prodentalis-client;
+    index index.html;
+
+    # SPA роутинг (чтобы все пути обрабатывались Vue)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
 ```
 
 ## 5. Проверка

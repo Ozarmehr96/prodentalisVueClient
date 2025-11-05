@@ -103,7 +103,6 @@ export function printOrder(order) {
         <body>
             <h3>Заказ №${order.number}</h3>
             ${clone.outerHTML}
-            <p style="padding-top:10px;">Создано пользователем: ${order.created_user_name}</p>
         </body>
         </html>
     `);

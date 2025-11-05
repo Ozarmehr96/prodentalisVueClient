@@ -3,14 +3,38 @@
     <form @submit.prevent="handleSubmit">
       <div class="mb-3">
         <label for="labName" class="form-label">Название лаборатории</label>
-        <input type="text" id="labName" class="form-control" v-model="lab.name"
-          placeholder="Введите название лаборатории" required />
+        <input
+          type="text"
+          id="labName"
+          class="form-control"
+          v-model="lab.name"
+          placeholder="Введите название лаборатории"
+          required
+        />
+      </div>
+
+      <!-- Сброс номера заказа каждый месяц -->
+      <div class="form-check mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="resetOrderNumber"
+          v-model="lab.reset_order_num_each_month"
+        />
+        <label class="form-check-label" for="resetOrderNumber">
+          Сбрасывать номер заказа каждый месяц
+        </label>
       </div>
 
       <button type="submit" class="btn btn-primary">
         {{ editMode ? "Сохранить изменения" : "Создать" }}
       </button>
-      <button v-if="editMode" type="button" class="btn btn-secondary ms-2" @click="cancelEdit">
+      <button
+        v-if="editMode"
+        type="button"
+        class="btn btn-secondary ms-2"
+        @click="cancelEdit"
+      >
         Отмена
       </button>
     </form>
@@ -18,92 +42,87 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters } from "vuex";
-  import { IS_SYSTEM_ADMIN, SAVE_LAB, UPDATE_LAB } from "../../store/types";
+import { mapActions, mapGetters } from "vuex";
+import { IS_SYSTEM_ADMIN, SAVE_LAB, UPDATE_LAB } from "../../store/types";
 
-  export default {
-    name: "LabForm",
-    props: {
-      editMode: {
-        type: Boolean,
-        default: false,
+export default {
+  name: "LabForm",
+  props: {
+    editMode: {
+      type: Boolean,
+      default: false,
+    },
+    existingLab: {
+      type: Object,
+      default: null,
+    },
+  },
+  data() {
+    return {
+      lab: {
+        id: null,
+        name: "",
+        reset_order_num_each_month: false,
       },
-      existingLab: {
-        type: Object,
-        default: null,
-      },
-    },
-    data() {
-      return {
-        lab: {
-          id: null,
-          name: "",
-        },
-      };
-    },
-    computed: {
-      ...mapGetters({
-        isSystemAdmin: IS_SYSTEM_ADMIN
-      }),
-    },
-    watch: {
-      existingLab: {
-        immediate: true,
-        handler(newVal) {
-          if (newVal) {
-            this.lab = { ...newVal };
-          } else {
-            this.lab = { id: null, name: "" };
-          }
-        },
-      },
-    },
-    methods: {
-      ...mapActions({
-        saveLab: SAVE_LAB,
-        updateLab: UPDATE_LAB,
-      }),
-
-      async handleSubmit() {
-        if (this.editMode) {
-          await this.updateLab({
-            ...this.lab,
-            callback: (l) => {
-              this.$toast(
-                `Лаборатория изменена.`,
-                5000
-              );
-
-              this.$router.push('/labs');
-              return;
-            }
-          });
+    };
+  },
+  computed: {
+    ...mapGetters({
+      isSystemAdmin: IS_SYSTEM_ADMIN,
+    }),
+  },
+  watch: {
+    existingLab: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          this.lab = { ...newVal };
         } else {
-          this.saveLab({
-            ...this.lab,
-            callback: (l) => {
-              this.$toast(
-                `Лаборатория '${l.name}' добавлена.`,
-                5000
-              );
-
-              this.$router.push('/labs');
-              return;
-            }
-          });
+          this.lab = { id: null, name: "" };
         }
       },
-
-      cancelEdit() {
-        this.lab = { id: null, name: "" };
-         this.$router.push('/labs');
-      },
     },
-  };
+  },
+  methods: {
+    ...mapActions({
+      saveLab: SAVE_LAB,
+      updateLab: UPDATE_LAB,
+    }),
+
+    async handleSubmit() {
+      if (this.editMode) {
+        await this.updateLab({
+          ...this.lab,
+          callback: (l) => {
+            this.$toast(`Лаборатория изменена.`, 5000);
+
+            this.$router.push("/labs");
+            return;
+          },
+        });
+      } else {
+        this.saveLab({
+          ...this.lab,
+          callback: (l) => {
+            this.$toast(`Лаборатория '${l.name}' добавлена.`, 5000);
+
+            this.$router.push("/labs");
+            return;
+          },
+        });
+      }
+    },
+
+    cancelEdit() {
+      this.lab = { id: null, name: "" };
+      this.$router.push("/labs");
+    },
+  },
+};
 </script>
 
 <style scoped>
-  .card {
-    max-width: 500px;
-  }
+.card {
+  max-width: 500px;
+}
 </style>
