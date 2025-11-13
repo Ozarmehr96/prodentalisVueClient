@@ -46,6 +46,7 @@ server {
 sudo ln -s /etc/nginx/sites-available/prodentalis-client /etc/nginx/sites-enabled/
 ```
 
+cp -r /var/www/prodentalis /var/www/backups/prodentalis051125
 ## 3. Проверка конфигурации и перезапуск Nginx
 
 ```bash
