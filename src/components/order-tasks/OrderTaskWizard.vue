@@ -9,13 +9,13 @@
             <h5 class="card-title mb-1">{{ orderTask.work_step.name }}</h5>
             <p class="text-muted small mb-3">{{ orderTask.work_type.name }}</p>
           </div>
-
           <!-- Правая часть: статус -->
           <span :class="getStatusClass(orderTask.status.code)" class="badge mb-3">
             {{ orderTask.status.name }}
           </span>
         </div>
-        {{ currentExecutor }}
+
+        <!-- Информация о заказе -->
         <div class="bg-light rounded p-3 mb-3">
           <div class="d-flex justify-content-between mb-1">
             <small class="text-muted">Заказ</small>
@@ -56,22 +56,27 @@
           </button>
         </div>
 
-        <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Started'">
-          <button @click="pauseTask(orderTask.id)" class="btn btn-warning flex-fill">
-            <i class="bi bi-pause-fill"></i> Пауза
-          </button>
-          <button @click="finishTask(orderTask.id)" class="btn btn-secondary flex-fill">
-            <i class="bi bi-check-circle-fill"></i> Завершить
-          </button>
-        </div>
+        <template v-if="currentExecutor">
+          <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Started'">
+            <button @click="pauseTask(orderTask.id)" class="btn btn-warning flex-fill">
+              <i class="bi bi-pause-fill"></i> Пауза
+            </button>
+            <button @click="finishTask(orderTask.id)" class="btn btn-secondary flex-fill">
+              <i class="bi bi-check-circle-fill"></i> Завершить
+            </button>
+          </div>
 
-        <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Paused'">
-          <button @click="startTask(orderTask.id)" class="btn btn-success flex-fill">
-            <i class="bi bi-play-fill"></i> Продолжить
-          </button>
-          <button @click="finishTask(orderTask.id)" class="btn btn-secondary flex-fill">
-            <i class="bi bi-check-circle-fill"></i> Завершить
-          </button>
+          <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Paused'">
+            <button @click="startTask(orderTask.id)" class="btn btn-success flex-fill">
+              <i class="bi bi-play-fill"></i> Продолжить
+            </button>
+            <button @click="finishTask(orderTask.id)" class="btn btn-secondary flex-fill">
+              <i class="bi bi-check-circle-fill"></i> Завершить
+            </button>
+          </div>
+        </template>
+        <div v-else-if="anotherExecutor" class="d-flex justify-content-between">
+          <small>Взят в работу: {{ anotherExecutor.executor.name }}</small>
         </div>
 
         <div class="d-grid" v-if="orderTask.status === 'Finished'">
@@ -95,7 +100,7 @@ import {
 import { convertOrderTeethToWorkTypes } from "../../helpers/order-helpers";
 
 export default {
-  name: "OrderStages",
+  name: "OrderTaskWizard",
   props: {
     orderTask: {
       type: Object,
@@ -175,11 +180,24 @@ export default {
       return this.workTypesWithTeeth.find((w) => w.id == this.orderTask.work_type.id)
         .teeth;
     },
+    /**
+     * Текущий исполнитель задачи
+     */
     currentExecutor() {
-      let executor = this.orderTask.executors.find((e) => e.id === this.currentUser.id);
-      console.log("Current Executor:", executor);
-      console.log("this.currentUser.id:", this.currentUser.id);
-      console.log("this.orderTask.executors:", this.orderTask.executors);
+      let executor = this.orderTask.executors.find(
+        (e) => e.executor.id === this.currentUser.id
+      );
+
+      return executor;
+    },
+    /**
+     * Другой исполнитель, если есть
+     */
+    anotherExecutor() {
+      let executor = this.orderTask.executors.find(
+        (e) => e.executor.id.trim() !== this.currentUser.id.trim()
+      );
+
       return executor;
     },
   },
@@ -192,19 +210,19 @@ export default {
     async startTask(orderTaskId) {
       await this.startOrderTaskAction({
         orderTaskId,
-        callback: (orderTask) => this.$emit("updateTask", orderTask),
+        callback: (orderTask) => this.$emit("refreshTasks"),
       });
     },
     async pauseTask(orderTaskId) {
       await this.pauseOrderTaskAction({
         orderTaskId,
-        callback: (orderTask) => this.$emit("updateTask", orderTask),
+        callback: (orderTask) => this.$emit("refreshTasks"),
       });
     },
     async finishTask(orderTaskId) {
       await this.finishOrderTaskAction({
         orderTaskId,
-        callback: (orderTask) => this.$emit("updateTask", orderTask),
+        callback: (orderTask) => this.$emit("refreshTasks"),
       });
     },
     getStatusClass(status) {
@@ -213,7 +231,7 @@ export default {
         Pending: "bg-secondary",
         Started: "bg-success",
         Paused: "bg-warning",
-        Finished: "bg-success",
+        Finished: "bg-secondary",
         Canceled: "bg-danger",
       };
       return classes[status] || "bg-secondary";

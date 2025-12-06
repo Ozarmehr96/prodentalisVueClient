@@ -5,7 +5,7 @@
         v-for="task in orderTasks"
         :key="task.id"
         :orderTask="task"
-        @updateTask="refreshTask"
+        @refreshTasks="refreshTasks"
       />
     </template>
     <div
@@ -41,7 +41,7 @@ import "v3-infinite-loading/lib/style.css";
 import orderTasks from "../../store/modules/orderTasks";
 
 export default {
-  name: "OrderStages",
+  name: "OrderTasksList",
   components: {
     OrderTaskWizard,
     InfiniteLoading,
@@ -87,13 +87,12 @@ export default {
       setOrderTaskLoading: SET_ORDER_TASKS_LOADING,
     }),
 
-    refreshTask(updatedTask) {
-      const index = this.orderTasks.findIndex((task) => task.id === updatedTask.id);
-      if (index !== -1) {
-        this.orderTasks[index] = updatedTask;
-      }
+    async refreshTasks() {
+      this.page = 1;
+      this.hasMore = true;
+      this.orderTasks.length = 0;
+      await this.loadMore();
     },
-
     async loadMore($state) {
       if (this.isLoading || !this.hasMore) {
         console.log("[LOAD] Защита или больше данных нет", this.page);
