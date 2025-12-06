@@ -114,6 +114,13 @@ let headerMenuItemsArray = [
     svg: null,
     path: "/images/priority.svg",
   },
+  {
+    label: "Задачи",
+    link: "/tasks",
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab", "Worker"],
+    svg: null,
+    path: "/images/priority.svg",
+  },
 ];
 
 export const headerMenuItems = headerMenuItemsArray;

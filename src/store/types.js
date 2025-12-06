@@ -115,3 +115,16 @@ export const DELETE_ROLE = "roles/DELETE_ROLE";
 export const IS_ROLES_LOADING = "roles/IS_ROLES_LOADING";
 export const MUTATE_IS_ROLES_LOADING = "roles/MUTATE_IS_ROLES_LOADING";
 export const SET_IS_ROLES_LOADING = "roles/SET_IS_ROLES_LOADING";
+
+// Задачи заказов
+export const ORDER_TASKS = "orderTasks/ORDER_TASKS"; // Все задачи по заказу
+export const MUTATE_ORDER_TASKS = "orderTasks/MUTATE_ORDER_TASKS"; // Все задачи по заказу
+export const IS_LOADING_ORDER_TASKS = "orderTasks/IS_LOADING_ORDER_TASKS"; // Флаг загрузки задач по заказу
+export const MUTATE_IS_LOADING_ORDER_TASKS = "orderTasks/IS_LOADING_ORDER_TASKS"; // Флаг загрузки задач по заказу
+export const SET_ORDER_TASKS_LOADING = "orderTasks/SET_ORDER_TASKS_LOADING"; // Установка флага загрузки задач по заказу
+export const LOAD_ORDER_TASKS_PAGED = "orderTasks/LOAD_ORDER_TASKS_PAGED"; // Загрузка задач по заказу
+export const ORDER_TASK = "orderTasks/ORDER_TASK"; // Одна задача заказа
+export const MUTATE_ORDER_TASK = "orderTasks/MUTATE_ORDER_TASK"; // Мутация одной задачи заказа
+export const START_ORDER_TASK = "orderTasks/START_ORDER_TASK"; // Запуск задачи заказа
+export const PAUSE_ORDER_TASK = "orderTasks/PAUSE_ORDER_TASK"; // Пауза задачи заказа
+export const FINISH_ORDER_TASK = "orderTasks/FINISH_ORDER_TASK"; // Завершение задачи заказа

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex" style="height: 100%">
+  <div class="d-flex main-sidebar" style="height: 100%">
     <div
       class="desktop-sidebar sidebar-fixed-left"
       style="min-height: 100vh; height: 100vh"
@@ -122,34 +122,35 @@
     <!-- Контент + верхняя панель -->
     <div class="flex-grow-1 d-flex flex-column">
       <!-- Рабочая область -->
-      <div class="p-3 flex-grow-1 overflow-auto">
+      <div class="workcontent p-3 flex-grow-1 overflow-auto">
         <slot></slot>
       </div>
     </div>
 
     <!-- Нижнее меню для мобильных устройств -->
     <div class="bottom-menu bg-light">
-      <template
-        v-for="link in links.filter((l) => mobileLinks.includes(l.link))"
-        :key="link.link"
-      >
-        <router-link :to="link.link" class="menu-item" active-class="activee">
-          <svg width="20" height="20" v-if="link.svg">
-            <use :xlink:href="link.svg"></use>
-          </svg>
-          <img v-if="link.path" :src="link.path" class="link-image" />
-          {{ link.label }}
-        </router-link>
-      </template>
-      <!-- <a href="#">
-        <i class="fas fa-info-circle icon"></i> О нас
-      </a>
-      <a href="#">
-        <i class="fas fa-cogs icon"></i> Сервисы
-      </a>
-      <a href="#">
-        <i class="fas fa-phone icon"></i> Контакты
-      </a> -->
+      <router-link to="/tasks" class="menu-item" active-class="activee">
+        <img src="/images/priority.svg" class="link-image" />
+        Задачи
+      </router-link>
+      <router-link to="/orders" class="menu-item" active-class="activee">
+        <svg width="20" height="20">
+          <use xlink:href="#table"></use>
+        </svg>
+        Заказы
+      </router-link>
+      <router-link to="/requests" class="menu-item" active-class="activee">
+        <svg width="20" height="20">
+          <use xlink:href="#requests"></use>
+        </svg>
+        Запросы
+      </router-link>
+      <router-link to="/profile" class="menu-item" active-class="activee">
+        <svg width="20" height="20">
+          <use xlink:href="#people-circle"></use>
+        </svg>
+        Профиль
+      </router-link>
     </div>
   </div>
 </template>
@@ -166,7 +167,6 @@ export default {
       userAvatar: "https://via.placeholder.com/40",
       isMobile: false,
       sidebarOpen: true,
-      mobileLinks: ["/orders", "/users", "/requests"],
     };
   },
   computed: {
@@ -366,6 +366,13 @@ nav {
 
   .bottom-menu {
     display: flex;
+  }
+
+  .workcontent {
+    display: none;
+  }
+  .main-sidebar {
+    padding-left: 1rem !important;
   }
 }
 
