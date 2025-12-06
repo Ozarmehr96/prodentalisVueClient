@@ -2,9 +2,9 @@
   <app-page title="Приоритеты этапов">
     <div>
       <div class="form-text mb-2">
-        Укажите приоритеты этапов, чтобы система знала, в каком порядке
-        формировать задачи. При разных типах работ приоритеты помогут
-        автоматически объединить этапы в правильной последовательности.
+        Укажите приоритеты этапов, чтобы система знала, в каком порядке формировать
+        задачи. При разных типах работ приоритеты помогут автоматически объединить этапы в
+        правильной последовательности.
       </div>
       <!-- Таблица выбранных этапов -->
       <div class="card shadow-sm mb-3">
@@ -20,7 +20,13 @@
             </thead>
             <tbody>
               <tr v-for="(step, index) in selectedWorkTypeSteps" :key="step.id">
-                <td>{{ step.hasOwnProperty("order_in_step") ? step.order_in_step : step.priority }}</td>
+                <td>
+                  {{
+                    step.hasOwnProperty("order_in_step")
+                      ? step.order_in_step
+                      : step.priority
+                  }}
+                </td>
                 <td>{{ step.name }}</td>
                 <td>{{ step.price }}</td>
                 <td>
@@ -43,16 +49,14 @@
                 </td>
               </tr>
               <tr v-if="selectedWorkTypeSteps.length === 0">
-                <td colspan="4" class="text-center text-muted">
-                  Этапы не выбраны
-                </td>
+                <td colspan="4" class="text-center text-muted">Этапы не выбраны</td>
               </tr>
             </tbody>
           </table>
         </div>
         <div
           class="card-header d-flex justify-content-between align-items-center"
-          v-if="isLabDirector"
+          v-if="isLabDirector || isSystemAdmin"
         >
           <button
             type="button"
@@ -71,6 +75,7 @@ import AppPage from "../../components/AppPage.vue";
 import { mapActions, mapGetters } from "vuex";
 import {
   IS_LAB_DIRECTOR,
+  IS_SYSTEM_ADMIN,
   LOAD_WORK_STEPS,
   SAVE_WORK_STEP_PRIORITY,
   SELECTED_WORK_TYPE_STEPS,
@@ -95,7 +100,8 @@ export default {
   computed: {
     ...mapGetters({
       selectedWorkTypeSteps: SELECTED_WORK_TYPE_STEPS,
-      isLabDirector: IS_LAB_DIRECTOR
+      isLabDirector: IS_LAB_DIRECTOR,
+      isSystemAdmin: IS_SYSTEM_ADMIN,
     }),
     filteredSteps() {
       return this.workSteps.filter((step) =>
@@ -111,10 +117,7 @@ export default {
     }),
     moveUp(index) {
       if (index === 0) return;
-      [
-        this.selectedWorkTypeSteps[index - 1],
-        this.selectedWorkTypeSteps[index],
-      ] = [
+      [this.selectedWorkTypeSteps[index - 1], this.selectedWorkTypeSteps[index]] = [
         this.selectedWorkTypeSteps[index],
         this.selectedWorkTypeSteps[index - 1],
       ];
@@ -123,10 +126,7 @@ export default {
     },
     moveDown(index) {
       if (index === this.selectedWorkTypeSteps.length - 1) return;
-      [
-        this.selectedWorkTypeSteps[index],
-        this.selectedWorkTypeSteps[index + 1],
-      ] = [
+      [this.selectedWorkTypeSteps[index], this.selectedWorkTypeSteps[index + 1]] = [
         this.selectedWorkTypeSteps[index + 1],
         this.selectedWorkTypeSteps[index],
       ];

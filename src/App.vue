@@ -52,4 +52,16 @@ export default {
 .brand-style:hover {
   background-color: #36bfba !important;
 }
+.teeth {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tooth {
+  font-size: 14px;
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
 </style>
