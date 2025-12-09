@@ -1,10 +1,7 @@
 <template>
   <!-- Main content -->
   <div class="content flex-grow-1 me-3">
-    <div
-      class="content-header d-flex align-items-center"
-      style="margin-bottom: 16px"
-    >
+    <div class="content-header d-flex align-items-center" style="margin-bottom: 16px">
       <!-- Кнопка назад с иконкой -->
       <span
         v-if="showBackButton"
@@ -72,7 +69,6 @@ export default {
 <style>
 .content-header {
   border-bottom: var(--bs-border-width) solid;
-  padding-top: 10px;
   height: 58px;
   max-height: 58px;
   border-bottom-color: rgb(194 196 197);

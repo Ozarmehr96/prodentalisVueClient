@@ -85,7 +85,7 @@
                 class="workTypeBlock me-2"
                 :style="`background-color:${wt.background_color};`"
               ></div>
-              <span class="me-2">{{ wt.name }} :</span>
+              <span class="me-2 text-nowrap">{{ wt.name }} :</span>
               <span class="text-muted">
                 <div class="teeth d-inline-flex">
                   <span v-for="tooth in wt.teeth" :key="tooth" class="tooth">
@@ -99,19 +99,16 @@
       </div>
 
       <!-- Правая колонка: QR код -->
-      <div class="qr-code" style="flex: 0 0 auto; min-width: 120px">
+      <div class="qr-code d-none d-lg-block" style="flex: 0 0 auto; min-width: 120px">
         <QrCode :link="host" :maxSize="150" :id="`order-qr-${order.id}`" />
       </div>
     </div>
 
-    <div
-      class="card-footer text-muted small d-flex align-items-center"
-      style="max-height: 38px; padding: 0.25rem 0.5rem; overflow: hidden"
-    >
+    <div class="card-footer text-muted small d-flex align-items-center order-item-footer">
       <!-- Текст слева -->
       <span class="text-truncate"> Создал: {{ order.created_user_name }} </span>
 
-      <div class="ms-auto" style="display: flex">
+      <div class="ms-auto d-none d-sm-flex">
         <button
           v-if="canControl && order.status.code === 'Created'"
           class="btn btn-sm btn-success ms-auto me-2 footerButton"
@@ -169,7 +166,10 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { convertOrderTeethToWorkTypes } from "../helpers/order-helpers";
+import {
+  convertOrderTeethToWorkTypes,
+  getOrderStatusClass,
+} from "../helpers/order-helpers";
 import QrCode from "./QrCode.vue";
 import {
   FINISH_ORDER,
@@ -182,7 +182,7 @@ import {
   INVOKE_USER_REQUEST,
   LOAD_ACTIVE_REQUEST_BY_TYPE,
 } from "../store/types";
-import dayjs from "dayjs";
+
 export default {
   name: "OrderCard",
   components: { QrCode },
@@ -289,19 +289,7 @@ export default {
     },
     // стили для статуса
     getStatusClass(statusCode) {
-      switch (statusCode) {
-        case "Created":
-          return "bg-primary";
-        case "Started":
-          return "bg-success text-white";
-        case "Finished":
-          return "bg-secondary";
-        case "Canceled":
-        case "PendingDeletion":
-          return "bg-danger";
-        default:
-          return "bg-secondary";
-      }
+      return getOrderStatusClass(statusCode);
     },
   },
 };
@@ -320,6 +308,8 @@ export default {
 .workTypeBlock {
   width: 20px;
   height: 20px;
+  min-width: 20px;
+  min-height: 20px;
   display: inline-flex;
 }
 
