@@ -27,7 +27,7 @@
       Все заказы загружены
     </div>
     <!-- Компонент бесконечной подгрузки -->
-    <InfiniteLoading ref="infiniteLoading" @infinite="loadMore" />
+    <InfiniteLoading ref="infiniteLoading" @infinite="loadMore" style="display: inline" />
   </div>
 </template>
 
@@ -131,7 +131,12 @@ export default {
           this.page++;
           this.hasMore = result.has_more;
 
-          console.log("[LOAD] Получено заказов:", result.items.length, "Текущая страница:", this.page - 1);
+          console.log(
+            "[LOAD] Получено заказов:",
+            result.items.length,
+            "Текущая страница:",
+            this.page - 1
+          );
 
           // Вместо $state.loaded() можно вообще не вызывать, контролируем через hasMore
           if (!this.hasMore) console.log("[LOAD] Больше данных нет");
@@ -153,17 +158,7 @@ export default {
   },
 };
 </script>
-<style>
-.v3-infinite-loading > div {
-  display: none !important;
-}
-.v3-infinite-loading > span {
-  display: none !important;
-}
-.infinite-loading-no-more {
-  display: none !important;
-}
-</style>
+
 <style scoped>
 .card:hover {
   border: 1px solid #007bff !important;

@@ -30,3 +30,21 @@ export function convertOrderTeethToWorkTypes(orderSelectedTeeth) {
       });
       return workTypes;
   }
+
+export function getOrderStatusClass(statusCode) {
+  switch (statusCode) {
+    case "Created":
+      return "bg-primary";
+    case "Started":
+      return "bg-success text-white";
+    case "Stopped":
+      return "bg-warning";
+    case "Finished":
+      return "bg-secondary";
+    case "Canceled":
+    case "PendingDeletion":
+      return "bg-danger";
+    default:
+      return "bg-secondary";
+  }
+}

@@ -29,7 +29,10 @@
             <label for="floatingInput">Пациент</label>
           </div>
 
-          <div class="form-floating mb-4" title="До какого числа необходимо выполнить заказ">
+          <div
+            class="form-floating mb-4"
+            title="До какого числа необходимо выполнить заказ"
+          >
             <input
               type="date"
               v-model="expectedDate"
@@ -44,7 +47,8 @@
             <input
               type="number"
               v-model="price"
-              min="0"
+              min="0.01"
+              step="0.01"
               max="10000"
               class="form-control"
               id="floatingInput"
@@ -228,24 +232,29 @@ export default {
       isSystemAdmin: IS_SYSTEM_ADMIN,
     }),
     isValid() {
-      let isValidData = (
+      let isValidData =
         this.customer &&
         this.customer.trim().length > 0 &&
         this.patient &&
         this.patient.trim().length > 0 &&
         this.expectedDate &&
         this.orderSelectedTeeth.length > 0 &&
-        this.filtredOrderSelectedTeethasWorktype.length > 0
-      );
- 
+        this.filtredOrderSelectedTeethasWorktype.length > 0;
+
       if (this.isEditMode) {
         if (isValidData) {
-          return this.customer.trim() !== this.oldOrderData.customer_name ||
+          return (
+            this.customer.trim() !== this.oldOrderData.customer_name ||
             this.patient.trim() !== this.oldOrderData.patient_name ||
             this.price !== this.oldOrderData.price ||
-            this.expectedDate !== (this.oldOrderData.expired_at ? this.oldOrderData.expired_at.split("T")[0] : null) ||
-            (this.description ? this.description.trim() : null) !== this.oldOrderData.description ||
-            this.hasTeethChanged(this.orderSelectedTeeth, this.oldOrderData.teeth);
+            this.expectedDate !==
+              (this.oldOrderData.expired_at
+                ? this.oldOrderData.expired_at.split("T")[0]
+                : null) ||
+            (this.description ? this.description.trim() : null) !==
+              this.oldOrderData.description ||
+            this.hasTeethChanged(this.orderSelectedTeeth, this.oldOrderData.teeth)
+          );
         }
 
         return false;
@@ -337,7 +346,10 @@ export default {
           if (this.isLabDirector || this.isSystemAdmin) {
             this.$toast(`Заказ №${createdOrder.number} обновлен`, 7000);
           } else {
-            this.$toast(`Запрос на удаление заказа ${createdOrder.number} отправлен на рассмотрение директору.`, 7000);
+            this.$toast(
+              `Запрос на удаление заказа ${createdOrder.number} отправлен на рассмотрение директору.`,
+              7000
+            );
           }
           this.$router.push("/orders");
         };
@@ -375,10 +387,11 @@ export default {
         } else {
           this.orderSelectedTeeth.push(newTooth);
         }
-      }
-      else {
-        // так как клонируется зуб, которого не выбирали, удаляем выбранный зуб (то есть перетаскивает пустой зуб к выбранному зубу) 
-        await this.setOrderSelectedTeeth(this.orderSelectedTeeth.filter(t => t.toothId !== toToothId));
+      } else {
+        // так как клонируется зуб, которого не выбирали, удаляем выбранный зуб (то есть перетаскивает пустой зуб к выбранному зубу)
+        await this.setOrderSelectedTeeth(
+          this.orderSelectedTeeth.filter((t) => t.toothId !== toToothId)
+        );
       }
 
       this.isChanged = !this.isChanged;
@@ -393,21 +406,23 @@ export default {
     hasTeethChanged(newTeeth, oldTeeth) {
       console.log("oldTeeth:", oldTeeth);
       // Приводим массив к единой структуре и сортируем
-      const normalizedNew = newTeeth.map(t => ({
-        tooth_id: t.toothId,
-        work_type_ids: t.workTypes?.map(wt => wt.id).sort((a, b) => a - b)
-      }))
+      const normalizedNew = newTeeth
+        .map((t) => ({
+          tooth_id: t.toothId,
+          work_type_ids: t.workTypes?.map((wt) => wt.id).sort((a, b) => a - b),
+        }))
         .sort((a, b) => a.tooth_id - b.tooth_id);
 
-      const normalizedOld = oldTeeth.map(t => ({
-        tooth_id: t.tooth_id,
-        work_type_ids: t.work_types?.map(wt => wt.id).sort((a, b) => a - b)
-      }))
-      .sort((a, b) => a.tooth_id - b.tooth_id);
+      const normalizedOld = oldTeeth
+        .map((t) => ({
+          tooth_id: t.tooth_id,
+          work_type_ids: t.work_types?.map((wt) => wt.id).sort((a, b) => a - b),
+        }))
+        .sort((a, b) => a.tooth_id - b.tooth_id);
 
       // Сравниваем через JSON
       return JSON.stringify(normalizedNew) !== JSON.stringify(normalizedOld);
-  },
+    },
   },
 };
 </script>

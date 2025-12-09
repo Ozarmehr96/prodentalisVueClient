@@ -63,17 +63,19 @@
       <!-- Sidebar -->
       <div
         class="d-flex flex-column flex-shrink-0 p-3 bg-light"
-        style="width: 250px; height: 100vh; padding-top: 10px !important"
+        style="width: 250px; height: 100vh; padding-top: 5px !important"
       >
-        <a
-          href="/"
-          class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none"
-          style="margin-bottom: 0px !important"
-        >
-          <div class="logo"></div>
-          <span class="fs-4">ProDentalis</span>
-        </a>
-        <hr style="margin-top: 10px" />
+        <div>
+          <a
+            href="/"
+            class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none"
+            style="margin-bottom: 0px !important"
+          >
+            <div class="logo"></div>
+            <span class="fs-4">ProDentalis</span>
+          </a>
+          <hr style="margin-top: 10px" />
+        </div>
         <ul class="nav nav-pills flex-column mb-auto">
           <li v-for="link in links" :key="link.link">
             <router-link
@@ -110,7 +112,9 @@
             aria-labelledby="dropdownUser2"
             style=""
           >
-            <li><a class="dropdown-item" href="#">Профиль</a></li>
+            <li>
+              <a class="dropdown-item" @click="() => $router.push(`/profile`)">Профиль</a>
+            </li>
             <li>
               <hr class="dropdown-divider" />
             </li>
@@ -120,7 +124,7 @@
       </div>
     </div>
     <!-- Контент + верхняя панель -->
-    <div class="flex-grow-1 d-flex flex-column">
+    <div class="flex-grow-1 d-flex flex-column main-work-content">
       <!-- Рабочая область -->
       <div class="workcontent p-3 flex-grow-1 overflow-auto">
         <slot></slot>
@@ -130,7 +134,7 @@
     <!-- Нижнее меню для мобильных устройств -->
     <div class="bottom-menu bg-light">
       <router-link to="/tasks" class="menu-item" active-class="activee">
-        <img src="/images/priority.svg" class="link-image" />
+        <img src="/images/tasks.svg" class="link-image" width="20" height="20" />
         Задачи
       </router-link>
       <router-link to="/orders" class="menu-item" active-class="activee">
@@ -359,7 +363,7 @@ nav {
 }
 
 /* Медиазапрос для мобильных устройств */
-@media (max-width: 800px) {
+@media (max-width: 991px) {
   .desktop-sidebar {
     display: none;
   }
@@ -374,10 +378,18 @@ nav {
   .main-sidebar {
     padding-left: 1rem !important;
   }
+
+  #app {
+    margin-bottom: 50px !important; /* Отступ снизу для видимости контента */
+  }
 }
 
 /* Медиазапрос для десктопных устройств */
-@media (min-width: 801px) {
+@media (min-width: 992px) {
+  #app {
+    margin-bottom: 0 !important; /* Отступ снизу для видимости контента */
+  }
+
   .desktop-sidebar {
     display: block;
   }

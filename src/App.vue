@@ -39,6 +39,9 @@ export default {
 };
 </script>
 <style>
+body {
+  min-width: 320px !important;
+}
 .logo {
   background-image: url("./logo.svg");
   width: 50px;
@@ -63,5 +66,26 @@ export default {
   background: #f0f0f0;
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+.v3-infinite-loading {
+  height: 0px !important;
+}
+.v3-infinite-loading > div {
+  display: none !important;
+}
+.v3-infinite-loading > span {
+  display: none !important;
+}
+.infinite-loading-no-more {
+  display: none !important;
+}
+
+/* Стили для OrderCardItem.vue */
+.order-item-footer {
+  min-width: 250px;
+  max-height: 38px;
+  padding: 0.25rem 0.5rem;
+  overflow: hidden;
 }
 </style>

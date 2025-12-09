@@ -137,17 +137,7 @@ export default {
   },
 };
 </script>
-<style>
-.v3-infinite-loading > div {
-  display: none !important;
-}
-.v3-infinite-loading > span {
-  display: none !important;
-}
-.infinite-loading-no-more {
-  display: none !important;
-}
-</style>
+
 <style scoped>
 .table td {
   vertical-align: middle;
