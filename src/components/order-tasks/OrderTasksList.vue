@@ -1,5 +1,6 @@
 <template>
   <div>
+    <OrderTasksFilter @search="searchByFilter" />
     <template v-if="orderTasks && orderTasks.length > 0">
       <OrderTaskWizard
         v-for="task in orderTasks"
@@ -33,18 +34,21 @@ import OrderTaskWizard from "./OrderTaskWizard.vue";
 import {
   IS_LOADING_ORDER_TASKS,
   LOAD_ORDER_TASKS_PAGED,
+  ORDER_TASK_FILTERS,
   ORDER_TASKS,
   SET_ORDER_TASKS_LOADING,
 } from "../../store/types";
 import InfiniteLoading from "v3-infinite-loading";
 import "v3-infinite-loading/lib/style.css";
 import orderTasks from "../../store/modules/orderTasks";
+import OrderTasksFilter from "./OrderTasksFilter.vue";
 
 export default {
   name: "OrderTasksList",
   components: {
     OrderTaskWizard,
     InfiniteLoading,
+    OrderTasksFilter,
   },
   data() {
     return {
@@ -79,6 +83,7 @@ export default {
     ...mapGetters({
       isLoading: IS_LOADING_ORDER_TASKS,
       orderTasks: ORDER_TASKS,
+      orderTaskFilters: ORDER_TASK_FILTERS,
     }),
   },
   methods: {
@@ -93,6 +98,7 @@ export default {
       this.orderTasks.length = 0;
       await this.loadMore();
     },
+
     async loadMore($state) {
       if (this.isLoading || !this.hasMore) {
         console.log("[LOAD] Защита или больше данных нет", this.page);
@@ -106,7 +112,7 @@ export default {
         const result = await this.loadOrderTasks({
           page: this.page,
           page_size: this.pageSize,
-          ...this.orderFilters,
+          ...this.orderTaskFilters,
         });
 
         if (result?.items?.length > 0) {
@@ -133,6 +139,15 @@ export default {
       } finally {
         await this.setOrderTaskLoading(false);
       }
+    },
+
+    async searchByFilter() {
+      console.log("[FILTER] Фильтр изменен");
+
+      await new Promise((resolve) => setTimeout(resolve, 300)); // небольшая задержка для корректного фильтра
+
+      // Загружаем первую страницу напрямую
+      await this.refreshTasks();
     },
   },
 };

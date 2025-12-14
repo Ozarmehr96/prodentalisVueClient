@@ -119,7 +119,7 @@ let headerMenuItemsArray = [
     link: "/tasks",
     includedRoles: ["SystemAdmin", "LabDirector", "AdminLab", "Worker"],
     svg: null,
-    path: "/images/priority.svg",
+    path: "/images/tasks.svg",
   },
 ];
 

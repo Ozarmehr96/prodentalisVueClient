@@ -4,11 +4,14 @@ import {
  IS_LOADING_ORDER_TASKS,
  LOAD_ORDER_TASKS_PAGED,
  MUTATE_IS_LOADING_ORDER_TASKS,
+ MUTATE_ORDER_FILTERS,
  MUTATE_ORDER_TASK,
  MUTATE_ORDER_TASKS,
  ORDER_TASK,
+ ORDER_TASK_FILTERS,
  ORDER_TASKS,
  PAUSE_ORDER_TASK,
+ SET_ORDER_TASK_FILTERS,
  SET_ORDER_TASKS_LOADING,
  START_ORDER_TASK,
 } from "../types";
@@ -17,6 +20,10 @@ const state = {
  orderTasks: [],
  orderTask: null,
  isLoadingOrderTasks: false,
+ filters: {
+    order_number: null,
+    status: "",
+  },
 };
 
 let orderTasksController = null; // вне метода, чтобы хранить контроллер между вызовами
@@ -26,11 +33,16 @@ const mutations = {
   (state.isLoadingOrderTasks = isLoadingOrderTasks),
  [MUTATE_ORDER_TASKS]: (state, tasks) => (state.orderTasks = tasks),
  [MUTATE_ORDER_TASK]: (state, task) => (state.orderTask = task),
+ [MUTATE_ORDER_FILTERS]: (state, filter) => (state.filters = filter),
 };
 
 const actions = {
  [SET_ORDER_TASKS_LOADING]: ({ commit }, isLoading) => {
   commit(MUTATE_IS_LOADING_ORDER_TASKS, isLoading);
+ },
+
+ [SET_ORDER_TASK_FILTERS]: ({ commit }, filters) => {
+  commit(MUTATE_ORDER_FILTERS, filters);
  },
 
  [LOAD_ORDER_TASKS_PAGED]: async ({ commit }, params) => {
@@ -111,6 +123,7 @@ const getters = {
  [IS_LOADING_ORDER_TASKS]: (state) => state.isLoadingOrderTasks,
  [ORDER_TASKS]: (state) => state.orderTasks,
  [ORDER_TASK]: (state) => state.orderTask,
+ [ORDER_TASK_FILTERS]: (state) => state.filters,
 };
 
 export default {

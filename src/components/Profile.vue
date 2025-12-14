@@ -26,22 +26,20 @@
 
         <!-- Основная роль -->
         <div class="mb-2">
-          <span class="badge bg-primary me-1">Основная роль</span>
           <span class="badge bg-success">{{ employee.role_title }}</span>
         </div>
 
         <!-- Дополнительные роли -->
-        <div v-if="employee.roles && employee.roles.length > 0" class="mb-2">
+        <div v-if="userRoles && userRoles.length > 0" class="mb-2">
           <span class="badge bg-secondary me-1">Доп. роли:</span>
           <span
-            v-for="(r, index) in employee.roles"
+            v-for="(r, index) in userRoles"
             :key="index"
             class="badge bg-info text-dark me-1 mb-1"
           >
             {{ r }}
           </span>
         </div>
-
         <!-- Версия программы -->
         <p class="mt-2 text-primary fw-semibold">Версия программы: {{ version }}</p>
       </div>
@@ -50,8 +48,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { CURRENT_USER } from "../store/types";
+import { mapGetters, mapActions } from "vuex";
+import { CURRENT_USER, LOAD_ROLES, ROLES } from "../store/types";
 
 export default {
   name: "EmployeeProfile",
@@ -66,9 +64,29 @@ export default {
       defaultAvatar: null, // Замени на свой путь
     };
   },
+  async beforeMount() {
+    await this.loadRoles();
+  },
   computed: {
     ...mapGetters({
       employee: CURRENT_USER,
+      roles: ROLES,
+    }),
+    userRoles() {
+      console.log("Employee roles:", this.employee.roles);
+      console.log("All roles:", this.roles);
+      console.log(
+        "dddd",
+        this.roles.filter((role) => this.employee.roles.includes(role.id))
+      );
+      return this.roles
+        .filter((role) => this.employee.roles.includes(role.id))
+        .map((role) => role.name);
+    },
+  },
+  methods: {
+    ...mapActions({
+      loadRoles: LOAD_ROLES,
     }),
   },
 };

@@ -48,6 +48,18 @@
               </div></small
             >
           </div>
+          <div
+            class="d-flex"
+            v-if="
+              currentExecutor &&
+              (orderTask.status.code === 'Started' || orderTask.status.code === 'Paused')
+            "
+          >
+            <timer
+              :elapsedTime="currentExecutor ? currentExecutor.elapsedTime : 0"
+              :running="orderTask.status.code === 'Started' && currentExecutor"
+            />
+          </div>
         </div>
 
         <div class="d-grid gap-2" v-if="orderTask.status.code === 'NotStarted'">
@@ -97,10 +109,17 @@ import {
   PAUSE_ORDER_TASK,
   START_ORDER_TASK,
 } from "../../store/types";
-import { convertOrderTeethToWorkTypes } from "../../helpers/order-helpers";
+import {
+  convertOrderTeethToWorkTypes,
+  getTaskStatusClass,
+} from "../../helpers/order-helpers";
+import Timer from "../order/Timer.vue";
 
 export default {
   name: "OrderTaskWizard",
+  components: {
+    Timer,
+  },
   props: {
     orderTask: {
       type: Object,
@@ -173,6 +192,13 @@ export default {
     ...mapGetters({
       currentUser: CURRENT_USER,
     }),
+    canShowTimer() {
+      return (
+        this.orderTask.status.code != "Pending" &&
+        this.orderTask.status.code != "NotStarted" &&
+        this.currentExecutor
+      );
+    },
     workTypesWithTeeth() {
       return convertOrderTeethToWorkTypes(this.orderTask.order.teeth.slice());
     },
@@ -226,15 +252,7 @@ export default {
       });
     },
     getStatusClass(status) {
-      const classes = {
-        NotStarted: "bg-secondary",
-        Pending: "bg-secondary",
-        Started: "bg-success",
-        Paused: "bg-warning",
-        Finished: "bg-secondary",
-        Canceled: "bg-danger",
-      };
-      return classes[status] || "bg-secondary";
+      return getTaskStatusClass(status);
     },
   },
 };

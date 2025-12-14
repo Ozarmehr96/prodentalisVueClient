@@ -2,8 +2,8 @@
   <div>
     <div class="row">
       <!-- Левая колонка: данные заказа и стоимость -->
-      <div class="col-md-4 mb-4">
-        <div class="card mb-3">
+      <div class="col-md-4">
+        <div>
           <div class="card-body">
             <!-- Верхняя строка: слева текст, справа статус -->
             <div class="d-flex justify-content-between align-items-start">
@@ -48,7 +48,7 @@
           </div>
         </div>
 
-        <div class="card text-center" v-if="isSystemAdmin || isLabDirector">
+        <div class="card text-center mb-3" v-if="isSystemAdmin || isLabDirector">
           <div class="card-body">
             <h5 class="card-title">Стоимость</h5>
             <p class="fs-3">{{ order.price }} TJS</p>
@@ -65,6 +65,10 @@
           style="margin-bottom: 10px"
         />
       </div>
+
+      <div class="col-12">
+        <OrderTasksGraphView :order="order" />
+      </div>
     </div>
   </div>
 </template>
@@ -77,11 +81,13 @@ import {
 } from "../helpers/order-helpers";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 import { IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../store/types";
+import OrderTasksGraphView from "./order-tasks/OrderTasksGraphView.vue";
 
 export default {
   name: "OrderView",
   components: {
     WorkTypeCardItem,
+    OrderTasksGraphView,
   },
   props: {
     order: {

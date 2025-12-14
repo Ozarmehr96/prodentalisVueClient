@@ -48,3 +48,71 @@ export function getOrderStatusClass(statusCode) {
       return "bg-secondary";
   }
 }
+
+/**
+ * Получить класс или HEX цвет статуса задачи
+ * @param {string} statusCode — код статуса
+ * @param {string} returnHex — если true, вернуть HEX, иначе CSS-класс
+ * @returns {string} если returnHex true, вернуть HEX, иначе CSS-класс
+ */
+export function getTaskStatusClass(statusCode, returnHex = false) {
+  console.log("statusCode", statusCode);
+
+  const map = {
+    NotStarted: {
+      class: "bg-secondary",
+      hex: "#6c757d",
+    },
+    Pending: {
+      class: "bg-secondary",
+      hex: "#6c757d",
+    },
+    Started: {
+      class: "bg-success",
+      hex: "#198754",
+    },
+    Paused: {
+      class: "bg-warning",
+      hex: "#ffc107",
+    },
+    Finished: {
+      class: "bg-secondary",
+      hex: "#adb5bd",
+    },
+    Canceled: {
+      class: "bg-danger",
+      hex: "#dc3545",
+    },
+  };
+
+  const status = map[statusCode];
+
+  if (!status) {
+    // Значение по умолчанию
+    return returnHex ? "#6c757d" : "bg-secondary";
+  }
+
+  return returnHex ? status.hex : status.class;
+}
+
+/**
+ * Конвертирует миллисекунды в строку формата ЧЧ:ММ:СС
+ * @param {number} ms — время в миллисекундах
+ * @returns {string} время в формате ЧЧ:ММ:СС
+ */
+export  function msToTime(ms) {
+  if (!ms || ms < 0) return "00:00:00";
+
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return (
+    String(hours).padStart(2, "0") +
+    ":" +
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0")
+  );
+}
