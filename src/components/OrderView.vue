@@ -1,8 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <!-- Левая колонка: данные заказа и стоимость -->
-      <div class="col-md-4">
+      <div class="col-12 col-lg-8">
         <div>
           <div class="card-body">
             <!-- Верхняя строка: слева текст, справа статус -->
@@ -18,7 +17,9 @@
             </div>
           </div>
         </div>
-
+      </div>
+      <!-- Левая колонка: данные заказа и стоимость -->
+      <div class="col-md-8 col-md-6">
         <div class="card mb-3 shadow-sm">
           <div class="card-body">
             <div class="d-flex justify-content-between mb-2">
@@ -51,13 +52,13 @@
         <div class="card text-center mb-3" v-if="isSystemAdmin || isLabDirector">
           <div class="card-body">
             <h5 class="card-title">Стоимость</h5>
-            <p class="fs-3">{{ order.price }} TJS</p>
+            <p class="fs-3" style="margin-bottom: 0">{{ order.price }} TJS</p>
           </div>
         </div>
       </div>
 
       <!-- Правая колонка: зубы по типам работ -->
-      <div class="col-md-8" style="max-width: 700px">
+      <div class="col-md-4 col-md-8 col-md-6 col-lg-8">
         <WorkTypeCardItem
           v-for="workType in filtredOrderSelectedTeethasWorktype"
           :workType="workType"
@@ -66,7 +67,7 @@
         />
       </div>
 
-      <div class="col-12">
+      <div class="col-md-4 col-md-6 col-lg-8">
         <OrderTasksGraphView :order="order" />
       </div>
     </div>

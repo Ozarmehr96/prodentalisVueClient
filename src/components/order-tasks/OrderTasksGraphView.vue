@@ -19,9 +19,9 @@
               <!-- Соединительная линия к карточке -->
               <line
                 :x1="lineX"
-                :y1="topMargin + index * nodeSpacing"
+                :y1="getTaskY(index)"
                 :x2="lineX + 30"
-                :y2="topMargin + index * nodeSpacing"
+                :y2="getTaskY(index)"
                 stroke="#cbd5e1"
                 stroke-width="2"
               />
@@ -29,9 +29,9 @@
               <!-- Точка на линии -->
               <circle
                 :cx="lineX"
-                :cy="topMargin + index * nodeSpacing"
+                :cy="getTaskY(index)"
                 r="10"
-                :fill="getStatusClass(task.status.code, true)"
+                :fill="getNodeColor(task)"
                 stroke="white"
                 stroke-width="3"
               />
@@ -39,11 +39,14 @@
               <!-- Карточка задачи -->
               <foreignObject
                 :x="lineX + 40"
-                :y="topMargin + index * nodeSpacing - 25"
+                :y="getTaskY(index) - 25"
                 :width="svgWidth - lineX - 50"
                 :height="maxCardHeight(task)"
               >
-                <div class="card task-card shadow-sm mb-2">
+                <div
+                  class="card task-card shadow-sm mb-2"
+                  :ref="(el) => setTaskRef(el, index)"
+                >
                   <div class="card-body p-1">
                     <!-- Заголовок -->
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -77,7 +80,7 @@
                         </span>
                       </div>
 
-                      <div class="task-line" v-if="executor.status.code != 'Finished'">
+                      <div class="task-line" v-if="executor.status.code == 'Finished'">
                         <span class="text-muted">Завершен:</span>
                         <span>
                           {{ $toDateTimeFormat(executor.started_at) }}
@@ -116,16 +119,31 @@ export default {
       nodeSpacing: 200,
       topMargin: 40,
       svgWidth: 250,
+      taskHeights: [], // 👈 реальные высоты карточек
     };
   },
 
   computed: {
     tasks() {
-      return this.order.tasks;
+      return this.order.tasks.sort((a, b) => {
+        // 1️⃣ по типу работы
+        if (a.work_type.id !== b.work_type.id) {
+          return a.work_type.id - b.work_type.id;
+        }
+
+        // 2️⃣ внутри типа — по приоритету этапа
+        return a.priority - b.priority;
+      });
     },
 
     svgHeight() {
-      return this.topMargin * 2 + this.tasks.length * this.nodeSpacing;
+      let height = this.topMargin;
+
+      for (let i = 0; i < this.tasks.length; i++) {
+        height += (this.taskHeights[i] || 200) + 20; // 20 — тот же отступ
+      }
+
+      return height + this.topMargin;
     },
 
     lineX() {
@@ -149,6 +167,10 @@ export default {
       }
     },
 
+    getNodeColor(task) {
+      return task.status.code === "Finished" ? "#198754" : "#6c757d";
+    },
+
     getStatusClass(status, returnHex = false) {
       return getTaskStatusClass(status, returnHex);
     },
@@ -162,6 +184,26 @@ export default {
       const baseHeight = 200;
       const extra = task.executors.length > 1 ? (task.executors.length - 1) * 20 : 0;
       return baseHeight + extra;
+    },
+
+    setTaskRef(el, index) {
+      if (!el) return;
+
+      this.$nextTick(() => {
+        this.taskHeights[index] = el.offsetHeight;
+      });
+    },
+
+    getTaskY(index) {
+      console.log("Вычисление Y для задачи", index);
+      console.log("Вычисление this.topMargin для задачи", this.topMargin);
+      let y = this.topMargin;
+
+      for (let i = 0; i < index; i++) {
+        y += (this.taskHeights[i] || 200) + 20; // 20 — минимальный отступ
+      }
+
+      return y;
     },
   },
 };
@@ -177,7 +219,6 @@ export default {
   padding: 1rem;
 }
 .graph-container {
-  overflow-x: auto;
   width: 100%;
 }
 .graph-svg {
