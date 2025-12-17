@@ -63,6 +63,9 @@ sudo systemctl enable nginx  # Автозапуск при старте сист
 sudo chown -R www-data:www-data /var/www/prodentalis/prodentalis-client
 sudo chmod -R 755 /var/www/prodentalis/prodentalis-client
 sudo systemctl restart nginx
+sudo nginx -t        # Проверка конфигурации
+sudo systemctl restart nginx
+sudo systemctl enable nginx  # Автозапуск при старте системы
 ```
 
 ```bash NGNIX

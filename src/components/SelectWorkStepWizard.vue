@@ -7,15 +7,9 @@
 
     <!-- Таблица выбранных этапов -->
     <div class="card shadow-sm mb-3">
-      <div
-        class="card-header d-flex justify-content-between align-items-center"
-      >
+      <div class="card-header d-flex justify-content-between align-items-center">
         <span>Выбранные этапы</span>
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          @click="openOffcanvas"
-        >
+        <button type="button" class="btn btn-primary btn-sm" @click="openOffcanvas">
           Добавить этап
         </button>
       </div>
@@ -33,12 +27,13 @@
             <tr v-for="(step, index) in selectedWorkTypeSteps" :key="step.id">
               <td>{{ step.order_in_step }}</td>
               <td>{{ step.name }}</td>
-              
+
               <td>
                 <input
                   type="number"
                   min="0"
-                  max="100000"
+                  step="0.01"
+                  max="10000"
                   class="form-control form-control-sm"
                   v-model.number="step.price"
                   @input="emitUpdate"
@@ -72,9 +67,7 @@
               </td>
             </tr>
             <tr v-if="selectedWorkTypeSteps.length === 0">
-              <td colspan="4" class="text-center text-muted">
-                Этапы не выбраны
-              </td>
+              <td colspan="4" class="text-center text-muted">Этапы не выбраны</td>
             </tr>
           </tbody>
         </table>
@@ -119,8 +112,12 @@
 
 <script>
 import * as bootstrap from "bootstrap";
-import { mapActions , mapGetters} from "vuex";
-import { LOAD_WORK_STEPS, SELECTED_WORK_TYPE_STEPS, SET_SELECTED_WORK_TYPE_STEPS } from "../store/types";
+import { mapActions, mapGetters } from "vuex";
+import {
+  LOAD_WORK_STEPS,
+  SELECTED_WORK_TYPE_STEPS,
+  SET_SELECTED_WORK_TYPE_STEPS,
+} from "../store/types";
 
 export default {
   data() {
@@ -141,16 +138,15 @@ export default {
       selectedWorkTypeSteps: SELECTED_WORK_TYPE_STEPS,
     }),
     filteredSteps() {
-      return this.workSteps.filter(
-        (step) =>
-          step.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      return this.workSteps.filter((step) =>
+        step.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
   },
   methods: {
     ...mapActions({
       loadWorkSteps: LOAD_WORK_STEPS,
-      setSelectedWorkTypeStep: SET_SELECTED_WORK_TYPE_STEPS
+      setSelectedWorkTypeStep: SET_SELECTED_WORK_TYPE_STEPS,
     }),
     openOffcanvas() {
       this.bsOffcanvas.show();
