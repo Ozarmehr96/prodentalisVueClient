@@ -36,11 +36,11 @@
             </div>
             <div class="d-flex justify-content-between mb-2">
               <span class="text-muted">Дата создания:</span>
-              <span class="fw-semibold">{{ formatDate(order.created_at) }}</span>
+              <span class="fw-semibold">{{ $toDateTimeFormat(order.created_at) }}</span>
             </div>
             <div class="d-flex justify-content-between">
               <span class="text-muted">Срок сдачи:</span>
-              <span class="fw-semibold">{{ formatDate(order.expired_at) }}</span>
+              <span class="fw-semibold">{{ $toDateTimeFormat(order.expired_at) }}</span>
             </div>
             <div class="d-flex justify-content-between mb-2">
               <span class="text-muted">Комментарии:</span>
@@ -67,8 +67,11 @@
         />
       </div>
 
-      <div class="col-md-4 col-md-6 col-lg-8">
-        <OrderTasksGraphView :order="order" />
+      <div
+        class="col-md-4 col-md-6 col-lg-8"
+        v-if="order.tasks && order.tasks.length > 0"
+      >
+        <OrderTasksGraphView :order="order" @reloadOrder="() => $emit('reloadOrder')" />
       </div>
     </div>
   </div>
@@ -107,11 +110,6 @@ export default {
     },
   },
   methods: {
-    formatDate(dateStr) {
-      if (!dateStr) return "-";
-      const date = new Date(dateStr);
-      return date.toLocaleDateString();
-    },
     getStatusOrderStatus(statusCode) {
       return getOrderStatusClass(statusCode);
     },

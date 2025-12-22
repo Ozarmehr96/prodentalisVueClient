@@ -28,7 +28,7 @@
           <option value="NotStarted">Не начат</option>
           <option value="Started">В работе</option>
           <option value="Paused">Приостановлен</option>
-          <option value="Finished">Завершен</option>
+          <option value="Finished">Выполнен</option>
         </select>
       </div>
 

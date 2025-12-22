@@ -1,15 +1,17 @@
 <template>
-  <div
-    class="spinner-border d-flex justify-content-center align-items-center"
-    role="status"
-  >
-    <span class="visually-hidden">Загрузка...</span>
+  <!-- Спиннер -->
+  <div class="spinner-wrapper">
+    <div class="spinner-border text-primary spinner" role="status">
+      <span class="visually-hidden">Загрузка...</span>
+    </div>
   </div>
 </template>
-<style>
-.spinner-border {
-  margin: auto;
-  border: var(--bs-spinner-border-width) solid #3dd2cc !important;
-  border-right-color: transparent !important;
+<style scoped>
+.spinner-wrapper {
+  position: relative;
+  left: 50%;
+  /* по центру */
+  z-index: 99910;
+  /* чтобы был поверх контента */
 }
 </style>

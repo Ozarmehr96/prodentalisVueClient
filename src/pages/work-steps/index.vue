@@ -4,6 +4,8 @@
     @onAddButtonClickEvent="() => $router.push('/work-steps/add')"
     isShowAddButton
   >
+    <SearchByTitle @search="onSearch" class="mb-4" />
+
     <!-- Main content -->
     <div class="content-body">
       <table class="table table-hover align-middle">
@@ -11,9 +13,7 @@
           <tr>
             <th scope="col">Название</th>
             <th scope="col" class="d-none d-sm-table-cell">Приоритет</th>
-            <th scope="col" class="d-none d-sm-table-cell">
-              Цена по умолчанию
-            </th>
+            <th scope="col" class="d-none d-sm-table-cell">Цена по умолчанию</th>
             <th scope="col" class="d-none d-sm-table-cell">Комментарии</th>
             <th scope="col" v-if="isLabDirector">Действия</th>
           </tr>
@@ -32,10 +32,7 @@
             </td>
             <td class="d-none d-sm-table-cell">{{ step.description }}</td>
             <td v-if="isLabDirector">
-              <button
-                class="btn btn-danger btn-sm"
-                @click.stop="deleteWorkStep(step.id)"
-              >
+              <button class="btn btn-danger btn-sm" @click.stop="deleteWorkStep(step.id)">
                 <i class="bi bi-trash"></i>
                 <!-- иконка из Bootstrap Icons -->
                 Удалить
@@ -52,6 +49,7 @@
 import { mapActions, mapGetters } from "vuex";
 import AppPage from "../../components/AppPage.vue";
 import { DELETE_WORK_STEP, IS_LAB_DIRECTOR, LOAD_WORK_STEPS } from "../../store/types";
+import SearchByTitle from "../../components/SearchByTitle.vue";
 
 /**
  * Страница "Добавление этапа работ"
@@ -61,10 +59,12 @@ import { DELETE_WORK_STEP, IS_LAB_DIRECTOR, LOAD_WORK_STEPS } from "../../store/
 export default {
   components: {
     AppPage,
+    SearchByTitle,
   },
   data() {
     return {
       workSteps: [],
+      searchName: "",
     };
   },
   async beforeMount() {
@@ -72,10 +72,18 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isLabDirector: IS_LAB_DIRECTOR
+      isLabDirector: IS_LAB_DIRECTOR,
     }),
     filtredWorkSteps() {
-      return this.workSteps;
+      if (this.searchName) {
+        return this.workSteps
+          .filter((step) =>
+            step.name.toLowerCase().includes(this.searchName.toLowerCase())
+          )
+          .sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      return this.workSteps.sort((a, b) => a.name.localeCompare(b.name));
     },
   },
   methods: {
@@ -90,6 +98,9 @@ export default {
           this.$toast("Этап работы удален.", 5000);
         });
       }
+    },
+    onSearch(searchTerm) {
+      this.searchName = searchTerm;
     },
   },
 };

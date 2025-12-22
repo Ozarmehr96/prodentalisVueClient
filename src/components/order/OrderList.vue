@@ -1,5 +1,6 @@
 <template>
   <div class="row parent-container">
+    <!-- Фильтры -->
     <OrderFilters @search="searchByFilter" />
     <template v-if="orders && orders.length > 0">
       <div
@@ -15,39 +16,63 @@
         />
       </div>
     </template>
+
+    <!-- Нет данных -->
     <div v-if="!isLoading && orders && orders.length === 0" class="col-12">
       <p class="text-muted fs-8">Нет данных, попробуйте изменить фильтр</p>
     </div>
+
+    <!-- Спиннер -->
     <div v-if="isLoading" class="spinner-wrapper">
       <div class="spinner-border text-primary spinner" role="status">
         <span class="visually-hidden">Загрузка...</span>
       </div>
     </div>
+
+    <!-- Кнопка загрузки -->
+    <div v-if="hasMore && !isLoading" class="col-12 text-center py-2">
+      <button class="btn btn-outline-primary w-100" @click="() => loadMore()">
+        Загрузить ещё
+      </button>
+    </div>
+
+    <!-- Конец списка -->
     <div v-if="!hasMore && orders.length > 0" class="text-center py-2 text-muted">
       Все заказы загружены
     </div>
-    <!-- Компонент бесконечной подгрузки -->
-    <InfiniteLoading ref="infiniteLoading" @infinite="loadMore" style="display: inline" />
+
+    <!-- Infinite Loading -->
+    <div
+      class="infinite-wrapper flex-grow-1 me-3"
+      infinite-wrapper
+      style="overflow-y: auto"
+    >
+      <InfiniteLoading
+        ref="infiniteLoading"
+        @infinite="loadMore"
+        spinner="default"
+        :distance="100"
+        :forceUseInfiniteWrapper="true"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
 import AppPage from "../../components/AppPage.vue";
-import orders from "../../store/modules/orders";
+import OrderCardItem from "../../components/OrderCardItem.vue";
+import OrderFilters from "../../components/order/OrderFilters.vue";
+import InfiniteLoading from "v3-infinite-loading";
+import { printOrder } from "../../helpers/printService";
 import {
   IS_ORDER_LOADING,
-  LOAD_ORDERS,
   LOAD_ORDERS_PAGED,
   SET_ORDER_LOADING,
   ORDER_FILTERS,
   ORDERS,
 } from "../../store/types";
-import OrderCardItem from "../../components/OrderCardItem.vue";
-import OrderFilters from "../../components/order/OrderFilters.vue";
-import { printOrder } from "../../helpers/printService";
-import InfiniteLoading from "v3-infinite-loading";
-import "v3-infinite-loading/lib/style.css";
+
 /**
  * Страница "Запросы"
  *
@@ -87,10 +112,10 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadOrdersAction: LOAD_ORDERS,
       loadOrdersPagedAction: LOAD_ORDERS_PAGED,
       setOrderLoading: SET_ORDER_LOADING,
     }),
+
     async searchByFilter() {
       console.log("[FILTER] Фильтр изменен");
       await new Promise((resolve) => setTimeout(resolve, 300)); // небольшая задержка для корректного фильтра
@@ -113,6 +138,7 @@ export default {
     async loadMore($state) {
       if (this.isLoading || !this.hasMore) {
         console.log("[LOAD] Защита или больше данных нет", this.page);
+        $state && $state.complete();
         return;
       }
 
@@ -130,23 +156,23 @@ export default {
           this.orders.push(...result.items);
           this.page++;
           this.hasMore = result.has_more;
-
           console.log(
             "[LOAD] Получено заказов:",
             result.items.length,
-            "Текущая страница:",
+            "Страница:",
             this.page - 1
           );
-
-          // Вместо $state.loaded() можно вообще не вызывать, контролируем через hasMore
-          if (!this.hasMore) console.log("[LOAD] Больше данных нет");
+          if ($state) $state.loaded();
+          if (!this.hasMore && $state) $state.complete();
         } else {
           this.hasMore = false;
-          console.log("[LOAD] Пустой ответ от сервера на странице", this.page);
+          console.log("[LOAD] Пустой ответ на странице", this.page);
+          if ($state) $state.complete();
         }
       } catch (err) {
         console.error("[LOAD] Ошибка при загрузке заказов:", err);
         this.hasMore = false;
+        if ($state) $state.complete();
       } finally {
         this.setOrderLoading(false);
       }
@@ -191,5 +217,11 @@ export default {
   /* чтобы спиннер позиционировался относительно родителя */
   min-height: 70px;
   /* или высота контента */
+}
+
+.infinite-wrapper {
+  width: 100%;
+  flex: 1 0 0;
+  overflow-y: auto;
 }
 </style>

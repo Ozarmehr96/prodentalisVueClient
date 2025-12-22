@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 /**
  * Конвертирует выбранные зубы в типы работ с привязкой к зубам
  * @param {*} orderSelectedTeeth 
@@ -115,4 +117,45 @@ export  function msToTime(ms) {
     ":" +
     String(seconds).padStart(2, "0")
   );
+}
+
+/**
+ * Получить даты "с" и "по" из типа даты фильтра
+ * @param {string} dateType — тип даты фильтра
+ * @returns {object} объект с полями created_from и created_to
+ */
+export function getDataFromType(dateType) {
+  let from = "";
+  let to = "";
+
+  const today = dayjs();
+
+  switch (dateType) {
+    case "today":
+      from = today.format("YYYY-MM-DD");
+      to = from;
+      break;
+    case "week":
+      // Неделя: с понедельника по сегодня
+      from = today.startOf("week").format("YYYY-MM-DD");
+      to = today.format("YYYY-MM-DD");
+      break;
+    case "month":
+      // Месяц: с 1 числа месяца по сегодня
+      from = today.startOf("month").format("YYYY-MM-DD");
+      to = today.format("YYYY-MM-DD");
+      break;
+    case "period":
+      from = "";
+      to = "";
+      break;
+    default:
+      from = "";
+      to = "";
+  }
+
+  return {
+    from,
+    to
+  };
 }

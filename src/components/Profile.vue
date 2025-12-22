@@ -1,7 +1,5 @@
 <template>
   <div class="min-vh-100">
-    <!-- Header -->
-
     <!-- Content -->
     <main class="">
       <div class="card mb-3 shadow-lg border-0">
@@ -37,62 +35,82 @@
         </div>
       </div>
 
-      <!-- Earnings -->
+      <!-- Заработок -->
       <div class="card mb-3 shadow-lg border-0">
         <div class="card-body">
           <h5 class="mb-3">Заработок</h5>
 
-          <!-- Period selector -->
-          <div class="btn-group w-100 mb-4">
-            <button
-              v-for="period in periods"
-              :key="period.value"
-              @click="selectedPeriod = period.value"
-              class="btn btn-outline-secondary"
-              :class="{ active: selectedPeriod === period.value }"
+          <Spinner v-show="isStatsLoading" />
+          <div v-show="!isStatsLoading">
+            <!-- Period selector -->
+            <div class="btn-group w-100 mb-4">
+              <button
+                v-for="period in periods"
+                :key="period.value"
+                @click="loadUserStat(period.value)"
+                class="btn btn-outline-secondary"
+                :class="{ active: selectedPeriod === period.value }"
+              >
+                {{ period.label }}
+              </button>
+            </div>
+
+            <!-- Сумма заработка -->
+            <div class="bg-success bg-opacity-10 rounded p-4 text-center">
+              <div class="text-success small mb-1">
+                {{ currentPeriodLabel }}
+              </div>
+              <div class="fs-2 fw-bold text-success">
+                {{ formatCurrency(userStat.money) }}
+              </div>
+            </div>
+
+            <!-- Custom period -->
+            <div
+              v-if="selectedPeriod === 'period'"
+              class="d-flex align-items-end gap-3 flex-wrap mt-2"
             >
-              {{ period.label }}
-            </button>
-          </div>
-
-          <!-- Amount -->
-          <div class="bg-success bg-opacity-10 rounded p-4 text-center">
-            <div class="text-success small mb-1">
-              {{ currentPeriodLabel }}
+              <!-- Дата от -->
+              <div>
+                <input
+                  type="date"
+                  id="created_from"
+                  class="form-control form-control-sm"
+                  v-model="created_from"
+                  @change="applyFilter"
+                />
+              </div>
+              <span>-</span>
+              <!-- Дата до -->
+              <div>
+                <input
+                  type="date"
+                  id="created_to"
+                  class="form-control form-control-sm"
+                  v-model="created_to"
+                  @change="applyFilter"
+                />
+              </div>
             </div>
-            <div class="fs-2 fw-bold text-success">
-              {{ formatCurrency(currentEarnings) }}
-            </div>
           </div>
-
-          <!-- Custom period -->
-          <button
-            v-if="selectedPeriod === 'custom'"
-            class="btn btn-outline-secondary w-100 mt-3"
-          >
-            Выбрать даты
-          </button>
         </div>
       </div>
 
-      <!-- Statistics -->
+      <!-- UserStat -->
       <div class="card shadow-lg border-0 mb-3">
         <div class="card-body">
           <h5 class="mb-3">Статистика</h5>
+          <Spinner v-show="isStatsLoading" />
+          <div v-show="!isStatsLoading">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Выполнено задач</span>
+              <strong>{{ totalTasksCompleted }}</strong>
+            </div>
 
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">Выполнено задач</span>
-            <strong>{{ statistics.completedOrders }}</strong>
-          </div>
-
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">Средний чек</span>
-            <strong>{{ formatCurrency(statistics.averageCheck) }}</strong>
-          </div>
-
-          <div class="d-flex justify-content-between">
-            <span class="text-muted">Рейтинг качества</span>
-            <strong>{{ statistics.rating }} ⭐</strong>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Затраченное время</span>
+              <strong>{{ totalElapsedTime }}</strong>
+            </div>
           </div>
         </div>
       </div>
@@ -113,7 +131,7 @@
           <!-- Phone -->
           <div class="mb-2">
             <small class="text-muted d-block">Телефон</small>
-            <div>+992 {{ formatPhoneNumber(employee.phone_number) }}</div>
+            <div>{{ formatPhoneNumber(employee.phone_number) }}</div>
           </div>
 
           <!-- Login -->
@@ -125,7 +143,7 @@
           <!-- Birth date -->
           <div class="mb-3">
             <small class="text-muted d-block">Дата рождения</small>
-            <div>{{ formatDate(employee.date_birth) }}</div>
+            <div>{{ $toDateFormat(employee.date_birth) }}</div>
           </div>
 
           <hr />
@@ -143,39 +161,42 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { CURRENT_USER, LOAD_ROLES, ROLES } from "../store/types";
+import {
+  CURRENT_USER,
+  IS_STATS_LOADING,
+  LOAD_ROLES,
+  LOAD_USER_STAT,
+  ROLES,
+  USER_STAT,
+} from "../store/types";
+import { getDataFromType } from "../helpers/order-helpers";
+import Spinner from "./Spinner.vue";
 
 export default {
   name: "EmployeeProfile",
+  components: {
+    Spinner,
+  },
   data() {
     return {
-      version: "1.0.0", // версия приложения
+      version: "2025.12.22.1", // версия приложения
       selectedPeriod: "today", // выбранный период дохода
       defaultAvatar: null, // если понадобится заглушка
+      created_from: null,
+      created_to: null,
       periods: [
         { value: "today", label: "Сегодня" },
         { value: "week", label: "Неделя" },
         { value: "month", label: "Месяц" },
-        { value: "custom", label: "Период" },
+        { value: "period", label: "Период" },
       ],
-
-      // временно, позже подтянешь с API
-      earnings: {
-        today: 450,
-        week: 2100,
-        month: 8300,
-        custom: 10000,
-      },
-
-      statistics: {
-        completedOrders: 24,
-        averageCheck: 11875,
-        rating: 4.8,
-      },
     };
   },
 
   async beforeMount() {
+    // Загружаем статистику за сегодня
+    await this.loadUserStat("today");
+
     // Загружаем справочник ролей
     await this.loadRoles();
   },
@@ -184,7 +205,31 @@ export default {
     ...mapGetters({
       employee: CURRENT_USER, // текущий пользователь
       roles: ROLES, // все роли системы
+      isStatsLoading: IS_STATS_LOADING, // загрузка статистики
+      userStat: USER_STAT, // статистика пользователя
     }),
+
+    /**
+     * Общее затраченное время
+     */
+    totalElapsedTime() {
+      if (this.selectedPeriod === "period") {
+        if (!this.created_from || !this.created_to) return "-";
+      }
+
+      return this.formatTime(this.userStat.total_elapsed_time);
+    },
+
+    /**
+     * Общее количество выполненных задач
+     */
+    totalTasksCompleted() {
+      if (this.selectedPeriod === "period") {
+        if (!this.created_from || !this.created_to) return "-";
+      }
+
+      return this.userStat.total_tasks_completed;
+    },
 
     /**
      * Основная роль (если понадобится отдельно)
@@ -213,22 +258,20 @@ export default {
       const period = this.periods.find((p) => p.value === this.selectedPeriod);
       return period ? period.label : "Сегодня";
     },
-
-    /**
-     * Доход за выбранный период
-     */
-    currentEarnings() {
-      return this.earnings[this.selectedPeriod] || 0;
-    },
   },
 
   methods: {
     ...mapActions({
       loadRoles: LOAD_ROLES,
+      loadUserStatAction: LOAD_USER_STAT,
     }),
 
     // Формат денег
     formatCurrency(amount) {
+      if (this.selectedPeriod === "period") {
+        if (!this.created_from || !this.created_to) return "-";
+      }
+
       return new Intl.NumberFormat("ru-RU", {
         style: "currency",
         currency: "TJS",
@@ -244,15 +287,36 @@ export default {
       return match ? `${match[1]} ${match[2]} ${match[3]} ${match[4]}` : phone;
     },
 
-    // Формат даты
-    formatDate(dateString) {
-      if (!dateString) return "";
-      const date = new Date(dateString);
-      return date.toLocaleDateString("ru-RU", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
+    async loadUserStat(dataType) {
+      this.selectedPeriod = dataType;
+      console.log("[STAT] Загружается статистика за:", dataType);
+      if (dataType === "period") return; // для периода ждем выбора дат
+      const period = getDataFromType(dataType);
+      await this.loadUserStatAction({
+        created_from: period.from,
+        created_to: period.to,
       });
+    },
+    applyFilter() {
+      if (this.selectedPeriod !== "period") return;
+      if (!this.created_from || !this.created_to) return;
+
+      this.loadUserStatAction({
+        created_from: this.created_from,
+        created_to: this.created_to,
+      });
+    },
+
+    formatTime(value) {
+      // Если 0, null, undefined, пусто
+      if (!value || value === "0") return "00:00:00";
+
+      // Если строка с миллисекундами
+      if (typeof value === "string" && value.includes(".")) {
+        return value.split(".")[0];
+      }
+
+      return value; // если уже HH:mm:ss
     },
   },
 };

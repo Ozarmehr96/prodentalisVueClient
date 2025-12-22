@@ -73,7 +73,7 @@ sudo systemctl enable nginx  # Автозапуск при старте сист
 ############################################################
 # 1️⃣ prodentalis.ru — лэндинг
 ############################################################
-
+sudo nano /etc/nginx/sites-available/prodentalis-client
 server {
     listen 80;  # Порт HTTP
     server_name prodentalis.ru www.prodentalis.ru;
