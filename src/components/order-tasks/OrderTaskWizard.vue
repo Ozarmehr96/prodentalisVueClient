@@ -3,7 +3,10 @@
     <div class="card mb-3 shadow-lg border-0">
       <div class="card-body p-4">
         <!-- Верхняя строка: слева текст, справа статус -->
-        <div class="d-flex justify-content-between align-items-start">
+        <div
+          v-if="!showButtonsOnly"
+          class="d-flex justify-content-between align-items-start"
+        >
           <!-- Левая часть -->
           <div class="me-2">
             <h5 class="card-title mb-1">{{ orderTask.work_step.name }}</h5>
@@ -16,7 +19,7 @@
         </div>
 
         <!-- Информация о заказе -->
-        <div class="bg-light rounded p-3 mb-3">
+        <div class="bg-light rounded p-3 mb-3" v-if="!showButtonsOnly && orderTask.order">
           <div class="d-flex justify-content-between mb-1">
             <small class="text-muted">Заказ</small>
             <small>
@@ -67,8 +70,7 @@
             <i class="bi bi-play-fill"></i> Начать
           </button>
         </div>
-
-        <template v-if="currentExecutor">
+        <template v-if="currentExecutor && !orderTask.is_auto_started">
           <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Started'">
             <button @click="pauseTask(orderTask.id)" class="btn btn-warning flex-fill">
               <i class="bi bi-pause-fill"></i> Пауза
@@ -88,7 +90,17 @@
           </div>
         </template>
         <div v-else-if="anotherExecutor" class="d-flex justify-content-between">
-          <small>Взят в работу: {{ anotherExecutor.executor.name }}</small>
+          <small
+            >Взят в работу: {{ anotherExecutor.executor.name }}
+            {{ orderTask.is_auto_started ? "(автоматически)" : "" }}</small
+          >
+        </div>
+
+        <div
+          v-if="currentExecutor && orderTask.is_auto_started"
+          class="d-flex justify-content-between"
+        >
+          <small>Автоматически запущен</small>
         </div>
 
         <div class="d-grid" v-if="orderTask.status === 'Finished'">
@@ -121,9 +133,15 @@ export default {
     Timer,
   },
   props: {
+    /* Задача заказа */
     orderTask: {
       type: Object,
       required: true,
+    },
+    /* Показать только кнопки управления задачей без дополнительной информации */
+    showButtonsOnly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

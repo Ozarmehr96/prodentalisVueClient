@@ -64,6 +64,7 @@
                       </span>
                     </div>
 
+                    <!-- Информация о задаче -->
                     <template v-for="executor in task.executors">
                       <div class="task-line">
                         <span class="text-muted">Исполнитель:</span>
@@ -92,6 +93,16 @@
                         <span>{{ millisecondsToTime(executor.elapsedTime) }}</span>
                       </div>
                     </template>
+
+                    <OrderTaskWizard
+                      @refreshTasks="() => $emit('reloadOrder')"
+                      class="mt-3"
+                      :orderTask="task"
+                      :showButtonsOnly="true"
+                      v-if="
+                        task.status.code != 'Finished' && task.status.code != 'Pending'
+                      "
+                    />
                   </div>
                 </div>
               </foreignObject>
@@ -105,9 +116,13 @@
 
 <script>
 import { getTaskStatusClass, msToTime } from "../../helpers/order-helpers";
+import OrderTaskWizard from "./OrderTaskWizard.vue";
 
 export default {
   name: "TaskGraph",
+  components: {
+    OrderTaskWizard,
+  },
   props: {
     order: {
       type: Object,
@@ -181,7 +196,7 @@ export default {
 
     maxCardHeight(task) {
       // высота карточки зависит от количества исполнителей
-      const baseHeight = 200;
+      const baseHeight = 300;
       const extra = task.executors.length > 1 ? (task.executors.length - 1) * 20 : 0;
       return baseHeight + extra;
     },

@@ -11,6 +11,7 @@ import order_wizard from "./modules/order_wizard";
 import labs from "./modules/labs";
 import roles from "./modules/roles";
 import orderTasks from "./modules/orderTasks";
+import stats from "./modules/stats";
 const store = createStore({
   modules: {
     auth,
@@ -23,7 +24,8 @@ const store = createStore({
     order_wizard,
     labs,
     roles,
-    orderTasks
+    orderTasks,
+    stats
   },
 });
 

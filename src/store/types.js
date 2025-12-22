@@ -133,3 +133,10 @@ export const FINISH_ORDER_TASK = "orderTasks/FINISH_ORDER_TASK"; // Заверш
 export const ORDER_TASK_FILTERS = "orderTasks/ORDER_TASK_FILTERS";
 export const MUTATE_ORDER_TASK_FILTERS = "orderTasks/MUTATE_ORDER_TASK_FILTERS";
 export const SET_ORDER_TASK_FILTERS = "orderTasks/SET_ORDER_TASK_FILTERS";
+
+// Статистика
+export const LOAD_USER_STAT = "stats/LOAD_USER_STAT";
+export const MUTATE_IS_STATS_LOADING = "stats/MUTATE_IS_STATS_LOADING";
+export const IS_STATS_LOADING = "stats/IS_STATS_LOADING";
+export const USER_STAT = "stats/USER_STAT";
+export const MUTATE_USER_STAT = "stats/MUTATE_USER_STAT";

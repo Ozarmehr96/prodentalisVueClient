@@ -116,7 +116,7 @@
 import { mapGetters } from "vuex";
 import { ORDER_FILTERS, SET_ORDER_FILTERS } from "../../store/types";
 import { mapActions } from "vuex";
-import dayjs from "dayjs";
+import { getDataFromType } from "../../helpers/order-helpers";
 export default {
   name: "OrderFilter",
   computed: {
@@ -151,40 +151,13 @@ export default {
       await this.setOrderFilters({ ...this.filters });
       this.applyFilter();
     },
+    /* Обработка изменения типа даты */
     onDateTypeChange() {
-      let from = "";
-      let to = "";
+      const data = getDataFromType(this.filters.date_type);
+      this.filters.created_from = data.from;
+      this.filters.created_to = data.to;
 
-      const today = dayjs();
-
-      switch (this.filters.date_type) {
-        case "today":
-          from = today.format("YYYY-MM-DD");
-          to = from;
-          break;
-        case "week":
-          // Неделя: с понедельника по сегодня
-          from = today.startOf("week").format("YYYY-MM-DD");
-          to = today.format("YYYY-MM-DD");
-          break;
-        case "month":
-          // Месяц: с 1 числа месяца по сегодня
-          from = today.startOf("month").format("YYYY-MM-DD");
-          to = today.format("YYYY-MM-DD");
-          break;
-        case "period":
-          from = "";
-          to = "";
-          return;
-          break;
-        default:
-          from = "";
-          to = "";
-      }
-
-      this.filters.created_from = from;
-      this.filters.created_to = to;
-
+      // применяем изменения
       this.applyFilter();
     },
   },

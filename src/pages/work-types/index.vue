@@ -4,6 +4,8 @@
     @onAddButtonClickEvent="() => $router.push('/work-types/add')"
     isShowAddButton
   >
+    <SearchByTitle @search="(n) => (searchName = n)" class="mb-3" />
+
     <!-- Main content -->
     <div class="content-body">
       <table class="table table-hover align-middle">
@@ -43,9 +45,15 @@
 <script>
 import { mapActions } from "vuex";
 import AppPage from "../../components/AppPage.vue";
-import { DELETE_WORK_TYPE, IS_LAB_DIRECTOR, LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
+import {
+  DELETE_WORK_TYPE,
+  IS_LAB_DIRECTOR,
+  LOAD_WORK_TYPES,
+  WORK_TYPES,
+} from "../../store/types";
 import { mapGetters } from "vuex/dist/vuex.cjs.js";
 import WorkTypeCardItem from "../../components/WorkTypeCardItem.vue";
+import SearchByTitle from "../../components/SearchByTitle.vue";
 
 /**
  * Страница "Типы работ"
@@ -55,19 +63,33 @@ import WorkTypeCardItem from "../../components/WorkTypeCardItem.vue";
 export default {
   components: {
     AppPage,
-    WorkTypeCardItem
+    WorkTypeCardItem,
+    SearchByTitle,
   },
   async beforeMount() {
     await this.loadWorkTypes();
     await this.loadWorkTypes();
   },
+  data() {
+    return {
+      searchName: "",
+    };
+  },
   computed: {
     ...mapGetters({
       workTypes: WORK_TYPES,
-      isLabDirector: IS_LAB_DIRECTOR
+      isLabDirector: IS_LAB_DIRECTOR,
     }),
     filtredWorkTypes() {
-      return this.workTypes;
+      if (this.searchName) {
+        return this.workTypes
+          .filter((type) =>
+            type.name.toLowerCase().includes(this.searchName.toLowerCase())
+          )
+          .sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      return this.workTypes.sort((a, b) => a.name.localeCompare(b.name));
     },
   },
   methods: {
