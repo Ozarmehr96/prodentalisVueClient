@@ -71,22 +71,29 @@
               class="d-flex align-items-end gap-3 flex-wrap mt-2"
             >
               <!-- Дата от -->
-              <div>
+              <div class="flex-grow-1 flex-md-grow-0">
+                <!-- flex-grow-1 заставит поле растянуться на мобильных -->
                 <input
                   type="date"
                   id="created_from"
-                  class="form-control form-control-sm"
+                  placeholder="дд.мм.гггг"
+                  class="form-control form-control-sm w-100"
                   v-model="created_from"
                   @change="applyFilter"
                 />
               </div>
-              <span>-</span>
+
+              <!-- Разделитель всегда по центру по вертикали -->
+              <span class="align-self-center text-nowrap pb-1">—</span>
+              <!-- Я заменил обычный "-" на более красивый "—" (em dash) -->
+
               <!-- Дата до -->
-              <div>
+              <div class="flex-grow-1 flex-md-grow-0">
                 <input
                   type="date"
                   id="created_to"
-                  class="form-control form-control-sm"
+                  placeholder="дд.мм.гггг"
+                  class="form-control form-control-sm w-100"
                   v-model="created_to"
                   @change="applyFilter"
                 />
@@ -182,8 +189,8 @@ export default {
       version: "2025.12.22.1", // версия приложения
       selectedPeriod: "today", // выбранный период дохода
       defaultAvatar: null, // если понадобится заглушка
-      created_from: null,
-      created_to: null,
+      created_from: "",
+      created_to: "",
       periods: [
         { value: "today", label: "Сегодня" },
         { value: "week", label: "Неделя" },
