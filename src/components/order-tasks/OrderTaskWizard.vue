@@ -1,6 +1,9 @@
 <template>
   <main>
-    <div class="card mb-3 shadow-lg border-0">
+    <div
+      class="card mb-3 shadow-lg border-0"
+      :class="isSaving || isStopping || isFinishing ? `pe-none` : ``"
+    >
       <div class="card-body p-4">
         <!-- Верхняя строка: слева текст, справа статус -->
         <div
@@ -66,27 +69,49 @@
         </div>
 
         <div class="d-grid gap-2" v-if="orderTask.status.code === 'NotStarted'">
-          <button @click="startTask(orderTask.id)" class="btn btn-primary">
-            <i class="bi bi-play-fill"></i> Начать
-          </button>
+          <ButtonWithLoader
+            :isLoading="isSaving"
+            title="Начать"
+            :customClasses="['btn-primary flex-fill']"
+            :loadingText="''"
+            @click="startTask(orderTask.id)"
+          />
         </div>
         <template v-if="currentExecutor && !orderTask.is_auto_started">
           <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Started'">
-            <button @click="pauseTask(orderTask.id)" class="btn btn-warning flex-fill">
-              <i class="bi bi-pause-fill"></i> Пауза
-            </button>
-            <button @click="finishTask(orderTask.id)" class="btn btn-secondary flex-fill">
-              <i class="bi bi-check-circle-fill"></i> Завершить
-            </button>
+            <ButtonWithLoader
+              :isLoading="isStopping"
+              title="Пауза"
+              :customClasses="['btn-warning flex-fill']"
+              :loadingText="''"
+              @click="pauseTask(orderTask.id)"
+            />
+
+            <ButtonWithLoader
+              :isLoading="isFinishing"
+              title="Завершить"
+              :customClasses="['btn-primary flex-fill']"
+              :loadingText="''"
+              @click="finishTask(orderTask.id)"
+            />
           </div>
 
           <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Paused'">
-            <button @click="startTask(orderTask.id)" class="btn btn-success flex-fill">
-              <i class="bi bi-play-fill"></i> Продолжить
-            </button>
-            <button @click="finishTask(orderTask.id)" class="btn btn-secondary flex-fill">
-              <i class="bi bi-check-circle-fill"></i> Завершить
-            </button>
+            <ButtonWithLoader
+              :isLoading="isSaving"
+              title="Продолжить"
+              :customClasses="['btn-success flex-fill']"
+              :loadingText="''"
+              @click="startTask(orderTask.id)"
+            />
+
+            <ButtonWithLoader
+              :isLoading="isFinishing"
+              title="Завершить"
+              :customClasses="['btn-primary flex-fill']"
+              :loadingText="''"
+              @click="finishTask(orderTask.id)"
+            />
           </div>
         </template>
         <div v-else-if="anotherExecutor" class="d-flex justify-content-between">
@@ -126,11 +151,13 @@ import {
   getTaskStatusClass,
 } from "../../helpers/order-helpers";
 import Timer from "../order/Timer.vue";
+import ButtonWithLoader from "../ButtonWithLoader.vue";
 
 export default {
   name: "OrderTaskWizard",
   components: {
     Timer,
+    ButtonWithLoader,
   },
   props: {
     /* Задача заказа */
@@ -146,6 +173,9 @@ export default {
   },
   data() {
     return {
+      isSaving: false,
+      isStopping: false,
+      isFinishing: false,
       orderTasks: [
         {
           id: "88b074e9-2493-4182-9350-1317a2e4ffb6",
@@ -252,22 +282,28 @@ export default {
       finishOrderTaskAction: FINISH_ORDER_TASK,
     }),
     async startTask(orderTaskId) {
+      this.isSaving = true;
       await this.startOrderTaskAction({
         orderTaskId,
         callback: (orderTask) => this.$emit("refreshTasks"),
       });
+      this.isSaving = false;
     },
     async pauseTask(orderTaskId) {
+      this.isStopping = true;
       await this.pauseOrderTaskAction({
         orderTaskId,
         callback: (orderTask) => this.$emit("refreshTasks"),
       });
+      this.isStopping = false;
     },
     async finishTask(orderTaskId) {
+      this.isFinishing = true;
       await this.finishOrderTaskAction({
         orderTaskId,
         callback: (orderTask) => this.$emit("refreshTasks"),
       });
+      this.isFinishing = false;
     },
     getStatusClass(status) {
       return getTaskStatusClass(status);

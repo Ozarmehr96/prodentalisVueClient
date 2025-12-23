@@ -42,7 +42,7 @@ export function getOrderStatusClass(statusCode) {
     case "Stopped":
       return "bg-warning";
     case "Finished":
-      return "bg-secondary";
+      return "bg-primary";
     case "Canceled":
     case "PendingDeletion":
       return "bg-danger";
@@ -78,8 +78,8 @@ export function getTaskStatusClass(statusCode, returnHex = false) {
       hex: "#ffc107",
     },
     Finished: {
-      class: "bg-secondary",
-      hex: "#adb5bd",
+      class: "bg-primary",
+      hex: "#0d6efd",
     },
     Canceled: {
       class: "bg-danger",

@@ -100,7 +100,9 @@
                       :orderTask="task"
                       :showButtonsOnly="true"
                       v-if="
-                        task.status.code != 'Finished' && task.status.code != 'Pending'
+                        task.status.code != 'Finished' &&
+                        task.status.code != 'Pending' &&
+                        task.status.code != 'Canceled'
                       "
                     />
                   </div>
@@ -183,7 +185,7 @@ export default {
     },
 
     getNodeColor(task) {
-      return task.status.code === "Finished" ? "#198754" : "#6c757d";
+      return task.status.code === "Finished" ? "#0d6efd" : "#6c757d";
     },
 
     getStatusClass(status, returnHex = false) {
