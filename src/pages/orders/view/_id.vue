@@ -5,7 +5,7 @@
         <span class="visually-hidden">Загрузка...</span>
       </div>
     </div>
-    <OrderView :order="order" v-if="!isLoading && order" @reloadOrder="loadOrder" />
+    <OrderView :order="order" v-if="!isLoading && order" @reloadOrder="reloadOrder" />
   </app-page>
 </template>
 <script>
@@ -37,6 +37,11 @@ export default {
     ...mapActions({
       loadOrderAction: LOAD_ORDER,
     }),
+    async reloadOrder() {
+      await this.loadOrderAction(this.$route.params.id).then((order) => {
+        this.order = order;
+      });
+    },
     async loadOrder() {
       this.isLoading = true;
       await this.loadOrderAction(this.$route.params.id).then((order) => {

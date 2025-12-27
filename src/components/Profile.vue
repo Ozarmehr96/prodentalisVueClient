@@ -162,6 +162,15 @@
           </div>
         </div>
       </div>
+
+      <div class="mb-3 border-0">
+        <!-- Кнопка загрузки -->
+        <div class="col-12 text-center py-2">
+          <button class="btn btn-outline-danger w-100" @click="() => logOut()">
+            Выйти из аккаунта
+          </button>
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -173,6 +182,7 @@ import {
   IS_STATS_LOADING,
   LOAD_ROLES,
   LOAD_USER_STAT,
+  LOGOUT,
   ROLES,
   USER_STAT,
 } from "../store/types";
@@ -186,7 +196,7 @@ export default {
   },
   data() {
     return {
-      version: "2025.12.22.1", // версия приложения
+      version: "2025.12.24.2", // версия приложения
       selectedPeriod: "today", // выбранный период дохода
       defaultAvatar: null, // если понадобится заглушка
       created_from: "",
@@ -271,6 +281,7 @@ export default {
     ...mapActions({
       loadRoles: LOAD_ROLES,
       loadUserStatAction: LOAD_USER_STAT,
+      logOut: LOGOUT,
     }),
 
     // Формат денег

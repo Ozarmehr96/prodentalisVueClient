@@ -73,6 +73,13 @@ let headerMenuItemsArray = [
     path: null,
   },
   {
+    label: "Задачи",
+    link: "/tasks",
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab", "Worker"],
+    svg: null,
+    path: "/images/tasks.svg",
+  },
+  {
     label: "Запросы",
     link: "/requests",
     includedRoles: ["allRoles"],
@@ -107,20 +114,13 @@ let headerMenuItemsArray = [
     svg: null,
     path: "/images/work-steps.svg",
   },
-  {
-    label: "Приоритеты этапов",
-    link: "/work-steps/priorities",
-    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
-    svg: null,
-    path: "/images/priority.svg",
-  },
-  {
-    label: "Задачи",
-    link: "/tasks",
-    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab", "Worker"],
-    svg: null,
-    path: "/images/tasks.svg",
-  },
+  // {
+  //   label: "Приоритеты этапов",
+  //   link: "/work-steps/priorities",
+  //   includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
+  //   svg: null,
+  //   path: "/images/priority.svg",
+  // },
 ];
 
 export const headerMenuItems = headerMenuItemsArray;

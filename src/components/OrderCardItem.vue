@@ -245,7 +245,9 @@ export default {
     },
     async finishOrder() {
       if (
-        confirm(`Вы действительно хотите завершить выполнение заказа №${this.order.id}?`)
+        confirm(
+          `Вы действительно хотите завершить выполнение заказа №${this.order.number}?`
+        )
       ) {
         await this.finishOrderAction(this.order.id).then(() => {
           this.$emit("statusChanged");
