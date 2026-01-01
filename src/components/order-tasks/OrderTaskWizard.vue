@@ -2,17 +2,21 @@
   <main>
     <div
       class="card mb-3 shadow-lg border-0 task-item"
-      style="cursor: pointer"
       :class="isSaving || isStopping || isFinishing ? `pe-none` : ``"
-      v-on:click="() => $router.push(`/orders/view/${orderTask.order.id}`)"
     >
-      <div class="card-header d-flex flex-wrap" style="background-color: white">
+      <div
+        class="card-header d-flex flex-wrap"
+        style="background-color: white' cursor: pointer"
+        v-on:click="goToViewPage"
+      >
         <span>Заказ №{{ orderTask.order_number }}</span>
       </div>
       <div class="card-body p-4">
         <!-- Верхняя строка: слева текст, справа статус -->
         <div
           v-if="!showButtonsOnly"
+          style="cursor: pointer"
+          v-on:click="goToViewPage"
           class="d-flex justify-content-between align-items-start"
         >
           <!-- Левая часть -->
@@ -278,6 +282,9 @@ export default {
       pauseOrderTaskAction: PAUSE_ORDER_TASK,
       finishOrderTaskAction: FINISH_ORDER_TASK,
     }),
+    goToViewPage(e) {
+      this.$router.push(`/orders/view/${this.orderTask.order.id}`);
+    },
     async startTask(orderTaskId) {
       this.isSaving = true;
       await this.startOrderTaskAction({
