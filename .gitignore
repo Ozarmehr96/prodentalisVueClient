@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+/dev-dist/registerSW.js
+/dev-dist/sw.js
+/dev-dist/workbox-5a5d9309.js
