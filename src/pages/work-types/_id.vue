@@ -1,10 +1,6 @@
 <template>
   <app-page title="Редактирование типа работы" :showBackButton="true">
-    <WorkTypeWizard
-      v-if="workType"
-      :workTypeData="workType"
-      :isEditMode="true"
-    />
+    <WorkTypeWizard v-if="workType" :workTypeData="workType" :isEditMode="true" />
   </app-page>
 </template>
 

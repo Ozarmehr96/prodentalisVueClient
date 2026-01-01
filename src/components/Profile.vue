@@ -158,7 +158,7 @@
           <!-- App version -->
           <div class="d-flex justify-content-between text-muted small">
             <span>Версия приложения</span>
-            <span>v{{ version }}</span>
+            <span>v{{ appVersion }}</span>
           </div>
         </div>
       </div>
@@ -196,7 +196,7 @@ export default {
   },
   data() {
     return {
-      version: "2025.12.24.2", // версия приложения
+      appVersion: __APP_VERSION__, // версия приложения
       selectedPeriod: "today", // выбранный период дохода
       defaultAvatar: null, // если понадобится заглушка
       created_from: "",

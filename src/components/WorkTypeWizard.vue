@@ -2,9 +2,7 @@
   <div class="mt-3">
     <div class="row">
       <div class="col-12" style="max-width: 720px">
-        <form
-          @submit.prevent="isEditMode ? updateWorkType() : createWorkType()"
-        >
+        <form @submit.prevent="isEditMode ? updateWorkType() : createWorkType()">
           <!-- Название -->
           <div class="mb-3">
             <label for="name" class="form-label">Название</label>
@@ -58,6 +56,10 @@
 
           <!-- Этапы работы -->
           <div class="mb-3">
+            <label class="form-label">Этапы типа работы</label>
+            <div class="form-text mb-2">
+              Выберите последовательность этапов для этого типа работы
+            </div>
             <SelectWorkStepWizard
               @onUpdateSelectedSteps="
                 (newSteps) => {
@@ -128,24 +130,6 @@ export default {
     },
   },
   async beforeMount() {
-    if (this.isEditMode && this.workTypeData) {
-      this.workType = { ...this.workTypeData };
-      let steps = [];
-      await this.loadWorkSteps().then((s) => {
-        steps = s;
-      });
-
-      this.selectedWorkSteps = this.workTypeData.steps;
-      this.selectedWorkSteps.forEach((step) => {
-        const foundStep = steps.find((s) => s.id === step.work_step_id);
-        if (foundStep) {
-          step.name = foundStep.name;
-        }
-      });
-      this.setSelectedWorkTypeStep(this.selectedWorkSteps);
-    }
-  },
-  async beforeMount() {
     // Проверяем, что мы в режиме редактирования и что данные типа работы существуют
     if (this.isEditMode && this.workTypeData) {
       // Создаём копию данных типа работы
@@ -170,8 +154,7 @@ export default {
 
       // Обновляем выбранные шаги в состоянии компонента
       this.setSelectedWorkTypeStep(this.selectedWorkSteps);
-    }
-    else {
+    } else {
       this.setSelectedWorkTypeStep([]);
     }
   },
@@ -214,7 +197,7 @@ export default {
           return;
         }
       }
-      
+
       if (!this.workType.name.trim()) {
         alert("Пожалуйста, заполните все обязательные поля");
         return;
@@ -256,7 +239,7 @@ export default {
         callback: (newWorkStep) => {
           this.$toast(`Тип работы обновлён`, 5000);
           // this.$router.go(-1); - пока нельзя использовать потому что картинка не обновляется, так как кэшируется и еще название картинки это иД тип работы
-          window.location.href = "/work-types"; 
+          window.location.href = "/work-types";
         },
       });
 
@@ -264,17 +247,13 @@ export default {
     },
     objectToFormData(obj, form = new FormData(), namespace = "") {
       for (let property in obj) {
-        if (!obj.hasOwnProperty(property) || obj[property] === undefined)
-          continue;
+        if (!obj.hasOwnProperty(property) || obj[property] === undefined) continue;
 
         const formKey = namespace ? `${namespace}[${property}]` : property;
 
         if (obj[property] instanceof File || obj[property] instanceof Blob) {
           form.append(formKey, obj[property]);
-        } else if (
-          typeof obj[property] === "object" &&
-          !Array.isArray(obj[property])
-        ) {
+        } else if (typeof obj[property] === "object" && !Array.isArray(obj[property])) {
           this.objectToFormData(obj[property], form, formKey);
         } else {
           form.append(

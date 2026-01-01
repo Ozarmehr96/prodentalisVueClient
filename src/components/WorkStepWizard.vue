@@ -72,6 +72,34 @@
             />
           </div>
 
+          <!-- Связанные этапы работ, которые должны одновременно запускаться вместе с этим этапом -->
+          <div class="mb-3">
+            <label class="form-label" :title="relatedTaskTitleInfo"
+              >Связанные этапы</label
+            >
+            <div class="form-text mb-2">
+              <span :title="relatedTaskTitleInfo">
+                Выберите связанные этапы, которые будут запускаться одновременно с этим
+                этапом (автоматически).
+              </span>
+              <p
+                class="text-danger"
+                title="Этап будет запущен автоматически и будет считан бесплатным."
+              >
+                За этапы, которые запускаются автоматически, не взимается плата.
+              </p>
+            </div>
+            <SelectWorkStepWizard
+              isSelecteOnlyMode
+              ignoreDuplicateSteps
+              @onUpdateSelectedSteps="
+                (newSteps) => {
+                  this.workStep.related_steps = newSteps;
+                }
+              "
+            />
+          </div>
+
           <!-- Комментарии -->
           <div class="mb-3">
             <label for="descriptionInput" class="form-label">Комментарии</label>
@@ -98,12 +126,22 @@
 </template>
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { LOAD_ROLES, ROLES, SAVE_WORK_STEP, UPDATE_WORK_STEP } from "../store/types";
+import {
+  LOAD_ROLES,
+  LOAD_WORK_STEPS,
+  ROLES,
+  SAVE_WORK_STEP,
+  SET_SELECTED_WORK_TYPE_STEPS,
+  UPDATE_WORK_STEP,
+  WORK_STEPS,
+} from "../store/types";
 import MultiSelect from "./MultiSelect.vue";
+import SelectWorkStepWizard from "./SelectWorkStepWizard.vue";
 
 export default {
   components: {
     MultiSelect,
+    SelectWorkStepWizard,
   },
   props: {
     workStepData: {
@@ -124,18 +162,54 @@ export default {
         description: "",
         roles: [],
         price_mode: null,
+        related_steps: [],
       },
+      relatedTaskTitleInfo:
+        "Связанные этапы помогут автоматизировать рабочий процесс, позволяя запускать несколько этапов одновременно без необходимости запуска их каждый раз вручную.",
     };
   },
   async beforeMount() {
     await this.loadRoles();
+
+    // Проверяем, что мы в режиме редактирования и что данные этапа работы существуют
     if (this.isEditMode && this.workStepData) {
-      this.workStep = this.workStepData;
+      // Создаём копию данных этапа работы
+      this.workStep = { ...this.workStepData };
+
+      // Загружаем шаги работы асинхронно
+      if (this.steps.length === 0) {
+        await this.loadWorkSteps();
+      }
+
+      // Присваиваем выбранные этапы из данных этапа работы
+      this.workStep.related_steps = this.workStep.related_steps || [];
+
+      var selectedSteps = [];
+      let i = 1;
+      // Обрабатываем каждый этап, чтобы обновить его имя, если оно найдено в загруженных этапах
+      this.workStep.related_steps.forEach((step) => {
+        const foundStep = this.steps.find((s) => s.id === step);
+        if (foundStep) {
+          selectedSteps.push({
+            id: foundStep.id,
+            name: foundStep.name,
+            price: foundStep.price,
+            order_in_step: i,
+          });
+          i++;
+        }
+      });
+
+      // Обновляем выбранные шаги в состоянии компонента
+      this.setSelectedWorkTypeStep(selectedSteps);
+    } else {
+      this.setSelectedWorkTypeStep([]);
     }
   },
   computed: {
     ...mapGetters({
       roles: ROLES,
+      steps: WORK_STEPS,
     }),
     isNameValid() {
       return this.workStep.name.trim() !== "";
@@ -157,10 +231,13 @@ export default {
       saveWorkStep: SAVE_WORK_STEP,
       updateWorkStep: UPDATE_WORK_STEP,
       loadRoles: LOAD_ROLES,
+      loadWorkSteps: LOAD_WORK_STEPS,
+      setSelectedWorkTypeStep: SET_SELECTED_WORK_TYPE_STEPS,
     }),
     async save() {
       let params = {
         ...this.workStep,
+        related_steps: this.workStep.related_steps.map((step) => step.id),
         callback: (newWorkStep) => {
           this.$toast(`Этап ${newWorkStep.name} добавлен.`, 5000);
           this.$router.go(-1);
@@ -173,6 +250,7 @@ export default {
       let params = {
         ...this.workStep,
         id: this.workStep.id,
+        related_steps: this.workStep.related_steps.map((step) => step.id),
         callback: (updatedWorkStep) => {
           this.$toast(`Этап ${updatedWorkStep.name} обновлен.`, 5000);
           this.$router.go(-1);

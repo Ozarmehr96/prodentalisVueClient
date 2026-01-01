@@ -1,9 +1,12 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Pages from 'vite-plugin-pages'
-
+import pkg from './package.json';
 export default defineConfig({
   base: '/', // ✅ абсолютные пути к ассетам
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version)
+  },
   plugins: [
     vue(),
     Pages({

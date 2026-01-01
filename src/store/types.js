@@ -64,6 +64,8 @@ export const UPDATE_WORK_STEP = "workSteps/UPDATE_WORK_STEP";
 export const DELETE_WORK_STEP = "workSteps/DELETE_WORK_STEP";
 export const LOAD_WORK_STEPS = "workSteps/LOAD_WORK_STEPS";
 export const LOAD_WORK_STEP = "workSteps/LOAD_WORK_STEP";
+export const WORK_STEPS = "workSteps/WORK_STEPS";
+export const MUTATE_WORK_STEPS = "workSteps/MUTATE_WORK_STEPS";
 
 // Заказы
 export const LOAD_ORDERS = "orders/LOAD_ORDERS";

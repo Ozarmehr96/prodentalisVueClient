@@ -40,7 +40,7 @@
             </div>
             <div class="d-flex justify-content-between">
               <span class="text-muted">Срок сдачи:</span>
-              <span class="fw-semibold">{{ $toDateTimeFormat(order.expired_at) }}</span>
+              <span class="fw-semibold">{{ $toDateFormat(order.expired_at) }}</span>
             </div>
             <div class="d-flex justify-content-between mb-2">
               <span class="text-muted">Комментарии:</span>

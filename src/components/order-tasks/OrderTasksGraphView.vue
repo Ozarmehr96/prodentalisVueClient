@@ -10,7 +10,7 @@
               :y1="topMargin"
               :x2="lineX"
               :y2="svgHeight - topMargin"
-              stroke="#cbd5e1"
+              :stroke="lineColor"
               stroke-width="4"
             />
 
@@ -45,6 +45,7 @@
               >
                 <div
                   class="card task-card shadow-sm mb-2"
+                  :style="`border-color: ${getWorkTypeColor(task?.work_type?.id)}`"
                   :ref="(el) => setTaskRef(el, index)"
                 >
                   <div class="card-body p-1">
@@ -117,8 +118,10 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 import { getTaskStatusClass, msToTime } from "../../helpers/order-helpers";
 import OrderTaskWizard from "./OrderTaskWizard.vue";
+import { LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
 
 export default {
   name: "TaskGraph",
@@ -133,6 +136,7 @@ export default {
   },
   data() {
     return {
+      lineColor: "#cbd5e1",
       nodeSpacing: 200,
       topMargin: 40,
       svgWidth: 250,
@@ -141,6 +145,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      workTypes: WORK_TYPES,
+    }),
     tasks() {
       return this.order.tasks.sort((a, b) => {
         // 1️⃣ по типу работы
@@ -168,6 +175,11 @@ export default {
     },
   },
 
+  async beforeMount() {
+    if (this.workTypes.length == 0) {
+      await this.loadWorkTypes();
+    }
+  },
   mounted() {
     this.updateSvgWidth();
     window.addEventListener("resize", this.updateSvgWidth);
@@ -178,6 +190,18 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      loadWorkTypes: LOAD_WORK_TYPES,
+    }),
+
+    getWorkTypeColor(workTypeId) {
+      let color = this.workTypes.find((t) => t.id == workTypeId)?.background_color;
+      if (color) {
+        return color;
+      }
+
+      return null;
+    },
     updateSvgWidth() {
       if (this.$refs.graphContainer) {
         this.svgWidth = this.$refs.graphContainer.clientWidth;

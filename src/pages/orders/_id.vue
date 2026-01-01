@@ -1,5 +1,5 @@
 <template>
-  <app-page title="Редактирование заказа" :showBackButton="true">
+  <app-page :title="`Редактирование заказа ${num}`" :showBackButton="true">
     <OrderWizard v-if="order" :isEditMode="true" :orderToEdit="order" />
   </app-page>
 </template>
@@ -24,11 +24,13 @@ export default {
   data() {
     return {
       order: null,
+      num: "",
     };
   },
   async beforeMount() {
     await this.loadOrder(this.$route.params.id).then((order) => {
       this.order = order;
+      this.num = "№" + this.order.number;
     });
   },
   methods: {

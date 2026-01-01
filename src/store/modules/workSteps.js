@@ -3,14 +3,22 @@ import {
   DELETE_WORK_STEP,
   LOAD_WORK_STEP,
   LOAD_WORK_STEPS,
+  MUTATE_WORK_STEPS,
   SAVE_WORK_STEP,
   SAVE_WORK_STEP_PRIORITY,
   UPDATE_WORK_STEP,
+  WORK_STEPS,
 } from "../types";
 
-const state = {};
+const state = {
+  steps: [],
+};
 
-const mutations = {};
+const mutations = {
+  [MUTATE_WORK_STEPS] : (state, workSteps) => {
+    state.steps = workSteps;
+  }
+};
 
 const actions = {
   [SAVE_WORK_STEP]: async ({}, params) => {
@@ -48,9 +56,10 @@ const actions = {
       console.error("Error saving work step priority:", error);
     }
   },
-  [LOAD_WORK_STEPS]: async ({}) => {
+  [LOAD_WORK_STEPS]: async ({commit}) => {
     try {
       let response = await api.get("/work-steps");
+      commit(MUTATE_WORK_STEPS, response.data);
       return response.data;
     } catch (error) {
       console.error("Error loading work steps:", error);
@@ -66,7 +75,9 @@ const actions = {
   },
 };
 
-const getters = {};
+const getters = {
+  [WORK_STEPS]: (state) => state.steps,
+};
 
 export default {
   state,

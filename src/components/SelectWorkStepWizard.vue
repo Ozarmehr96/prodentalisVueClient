@@ -1,10 +1,5 @@
 <template>
   <div>
-    <label class="form-label">Этапы типа работы</label>
-    <div class="form-text mb-2">
-      Выберите последовательность этапов для этого типа работы
-    </div>
-
     <!-- Таблица выбранных этапов -->
     <div class="card shadow-sm mb-3">
       <div class="card-header d-flex justify-content-between align-items-center">
@@ -38,10 +33,12 @@
                   v-model.number="step.price"
                   @input="emitUpdate"
                   required
+                  :readonly="isSelecteOnlyMode"
                 />
               </td>
               <td>
                 <button
+                  :class="isSelecteOnlyMode ? 'd-none' : ''"
                   type="button"
                   class="btn btn-sm btn-secondary me-1"
                   @click="moveUp(index)"
@@ -50,6 +47,7 @@
                   ↑
                 </button>
                 <button
+                  :class="isSelecteOnlyMode ? 'd-none' : ''"
                   type="button"
                   class="btn btn-sm btn-secondary me-1"
                   @click="moveDown(index)"
@@ -120,6 +118,16 @@ import {
 } from "../store/types";
 
 export default {
+  props: {
+    isSelecteOnlyMode: {
+      type: Boolean,
+      default: false,
+    },
+    ignoreDuplicateSteps: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       //selectedWorkTypeSteps: [],
@@ -138,9 +146,11 @@ export default {
       selectedWorkTypeSteps: SELECTED_WORK_TYPE_STEPS,
     }),
     filteredSteps() {
-      return this.workSteps.filter((step) =>
-        step.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      return this.workSteps
+        .filter((step) =>
+          step.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        )
+        .sort((a, b) => a.name.localeCompare(b.name)); // сортировка по name;
     },
   },
   methods: {
@@ -155,6 +165,18 @@ export default {
       this.bsOffcanvas.hide();
     },
     addStep(step) {
+      if (this.ignoreDuplicateSteps) {
+        const isExistsStep = this.selectedWorkTypeSteps.some(
+          (s) => s.id === step.id
+          // или: s.work_step_id === step.id
+        );
+
+        if (isExistsStep) {
+          // Уже есть — выходим и не добавляем
+          return;
+        }
+      }
+
       this.selectedWorkTypeSteps.push({ ...step, work_step_id: step.id }); // добавляем work_step_id
       this.updateOrder();
       this.emitUpdate();
