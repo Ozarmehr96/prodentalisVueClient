@@ -1,9 +1,14 @@
 <template>
   <main>
     <div
-      class="card mb-3 shadow-lg border-0"
+      class="card mb-3 shadow-lg border-0 task-item"
+      style="cursor: pointer"
       :class="isSaving || isStopping || isFinishing ? `pe-none` : ``"
+      v-on:click="() => $router.push(`/orders/view/${orderTask.order.id}`)"
     >
+      <div class="card-header d-flex flex-wrap" style="background-color: white">
+        <span>Заказ №{{ orderTask.order_number }}</span>
+      </div>
       <div class="card-body p-4">
         <!-- Верхняя строка: слева текст, справа статус -->
         <div
@@ -23,14 +28,6 @@
 
         <!-- Информация о заказе -->
         <div class="bg-light rounded p-3 mb-3" v-if="!showButtonsOnly && orderTask.order">
-          <div class="d-flex justify-content-between mb-1">
-            <small class="text-muted">Заказ</small>
-            <small>
-              <router-link :to="`/orders/view/${orderTask.order.id}`">
-                №{{ orderTask.order_number }}
-              </router-link>
-            </small>
-          </div>
           <div class="d-flex justify-content-between mb-1">
             <small class="text-muted">Пациент</small>
             <small>{{ orderTask.order.patient_name }}</small>
@@ -313,6 +310,9 @@ export default {
 </script>
 
 <style scoped>
+.task-item:hover {
+  pointer-events: stroke;
+}
 .table td {
   vertical-align: middle;
 }
