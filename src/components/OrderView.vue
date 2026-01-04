@@ -49,10 +49,16 @@
           </div>
         </div>
 
-        <div class="card text-center mb-3" v-if="isSystemAdmin || isLabDirector">
-          <div class="card-body">
-            <h5 class="card-title">Стоимость</h5>
-            <p class="fs-3" style="margin-bottom: 0">{{ order.price }} TJS</p>
+        <!-- Сумма заработка -->
+        <div
+          class="card text-center mb-3"
+          v-if="isSystemAdmin || isLabDirector || isLabAdmin"
+        >
+          <div class="card-body bg-success bg-opacity-10 rounded text-center">
+            <h5 class="card-title text-success small mb-1">Стоимость</h5>
+            <p class="fs-2 fw-bold text-success" style="margin-bottom: 0px">
+              {{ order.price }} TJS
+            </p>
           </div>
         </div>
       </div>
@@ -84,7 +90,7 @@ import {
   getOrderStatusClass,
 } from "../helpers/order-helpers";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
-import { IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../store/types";
+import { IS_LAB_ADMIN, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../store/types";
 import OrderTasksGraphView from "./order-tasks/OrderTasksGraphView.vue";
 
 export default {
@@ -103,6 +109,7 @@ export default {
     ...mapGetters({
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
+      isLabAdmin: IS_LAB_ADMIN,
     }),
     // Группировка зубов по типам работ
     filtredOrderSelectedTeethasWorktype() {

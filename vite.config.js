@@ -10,9 +10,14 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    Pages({
+      dirs: 'src/pages', // где лежат страницы
+      extensions: ['vue'], // расширение
+      importMode: 'async', // ленивая подгрузка
+    }),
     VitePWA({
       registerType: 'autoUpdate',        // Автообновление SW
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+      includeAssets: [],
       manifest: {
         name: 'ProDentalis',
         short_name: 'ProDentalis',
@@ -22,7 +27,7 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/',
         icons: [
-          { src: '/pwa-logo.png', sizes: '192x192', type: 'image/png' },
+          { src: '/pwa-logo-192.png', sizes: '192x192', type: 'image/png' },
           // { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' }
           { src: '/pwa-logo.png', sizes: '512x512', type: 'image/png' }
         ]
@@ -37,11 +42,6 @@ export default defineConfig({
         type: 'module'
       }
     }),
-    Pages({
-      dirs: 'src/pages', // где лежат страницы
-      extensions: ['vue'], // расширение
-      importMode: 'async', // ленивая подгрузка
-    }),
   ],
   resolve: {
     alias: {
@@ -52,7 +52,8 @@ export default defineConfig({
     fs: {
       strict: false
     },
-    allowedHosts: ["3e6d7526a96861.lhr.life"]
+    
+    allowedHosts: ["3e6d7526a96861.lhr.life", "flocculable-livingly-imelda.ngrok-free.dev"]
   }
 })
 
