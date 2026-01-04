@@ -65,6 +65,16 @@
                       </span>
                     </div>
 
+                    <div
+                      class="task-line"
+                      title="Стоимость за работу, то есть за все зубы"
+                    >
+                      <span class="text-muted">Стоимость:</span>
+                      <span class="fw-bold">
+                        {{ task.total_price }} TJS / {{ task.teeth_count }} ед.</span
+                      >
+                    </div>
+
                     <!-- Информация о задаче -->
                     <template v-for="executor in task.executors">
                       <div class="task-line">
@@ -91,7 +101,12 @@
 
                       <div class="task-line">
                         <span class="text-muted">Затраченное время:</span>
-                        <span>{{ millisecondsToTime(executor.elapsedTime) }}</span>
+                        <Timer
+                          :elapsedTime="executor ? executor.elapsedTime : 0"
+                          :running="
+                            task.status.code === 'Started' && executor ? true : false
+                          "
+                        />
                       </div>
                     </template>
 
@@ -122,11 +137,13 @@ import { mapActions, mapGetters } from "vuex";
 import { getTaskStatusClass, msToTime } from "../../helpers/order-helpers";
 import OrderTaskWizard from "./OrderTaskWizard.vue";
 import { LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
+import Timer from "../order/Timer.vue";
 
 export default {
   name: "TaskGraph",
   components: {
     OrderTaskWizard,
+    Timer,
   },
   props: {
     order: {
@@ -251,6 +268,9 @@ export default {
 </script>
 
 <style scoped>
+.text-muted {
+  padding-right: 3px;
+}
 .card {
   border-radius: 8px;
   background: white;

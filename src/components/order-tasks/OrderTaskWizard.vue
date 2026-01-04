@@ -6,8 +6,9 @@
     >
       <div
         class="card-header d-flex flex-wrap"
-        style="background-color: white' cursor: pointer"
+        style="background-color: white; cursor: pointer"
         v-on:click="goToViewPage"
+        v-if="!showButtonsOnly"
       >
         <span>Заказ №{{ orderTask.order_number }}</span>
       </div>
@@ -41,6 +42,12 @@
             <small>{{ $toDateFormat(orderTask.order.expired_at) }}</small>
           </div>
           <div class="d-flex justify-content-between">
+            <small class="text-muted">Стоимость</small>
+            <small class="fw-bold"
+              >{{ orderTask.total_price }} TJS / {{ orderTask.teeth_count }} ед.</small
+            >
+          </div>
+          <div class="d-flex justify-content-between">
             <small class="text-muted">Зубы</small>
             <small>
               <div class="teeth d-inline-flex">
@@ -64,7 +71,9 @@
           >
             <timer
               :elapsedTime="currentExecutor ? currentExecutor.elapsedTime : 0"
-              :running="orderTask.status.code === 'Started' && currentExecutor"
+              :running="
+                orderTask.status.code === 'Started' && currentExecutor ? true : false
+              "
             />
           </div>
         </div>
