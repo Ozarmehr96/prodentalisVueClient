@@ -1,7 +1,7 @@
 //export const baseHost = "http://192.168.1.122:5000";
 // export const baseHost = "http://0.0.0.0:5000";
 const originWithoutPort = `${window.location.protocol}//${window.location.hostname}`; // при условии, что бэк и клиент на одном серваке
-export const baseHost =`${originWithoutPort}:5000`;
+export const baseHost =`${originWithoutPort}`;
 
 export const baseURL = `${baseHost}/api/v1`;
 

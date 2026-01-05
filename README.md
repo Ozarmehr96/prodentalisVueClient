@@ -119,3 +119,113 @@ server {
 
 > Все запросы на маршруты будут корректно обрабатываться благодаря `try_files /index.html;` в конфигурации Nginx.
 
+
+## Сертификаты
+Successfully deployed certificate for prodentalis.ru to /etc/nginx/sites-enabled/prodentalis-client
+Successfully deployed certificate for app.prodentalis.ru to /etc/nginx/sites-enabled/prodentalis-client
+Successfully deployed certificate for www.prodentalis.ru to /etc/nginx/sites-enabled/prodentalis-client
+Congratulations! You have successfully enabled HTTPS on https://prodentalis.ru, https://app.prodentalis.ru, and https://www.prodentalis.ru
+
+
+## Настройки NGINX с SSL
+
+# sudo nano /etc/nginx/sites-available/prodentalis-client
+############################################################
+# 1️⃣ prodentalis.ru — лэндинг
+############################################################
+
+server {  # Порт HTTP
+    server_name prodentalis.ru www.prodentalis.ru;
+
+    # Корневая папка лэндинга
+    root /var/www/prodentalis/landing;
+    index index.html;
+
+    # SPA роутинг (если нужно)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/prodentalis.ru/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/prodentalis.ru/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+############################################################
+# 2️⃣ app.prodentalis.ru — клиент Vue (собранный)
+############################################################
+
+server {
+    server_name app.prodentalis.ru;
+
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/prodentalis.ru/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/prodentalis.ru/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    # -------------------------
+    # 🔹 Backend API (наш бк слушает HTTP, мы с помощью NGINX перенаправляем на нужный порт). Клиент должен отправить запрос /api
+    # -------------------------
+    location ^~ /api/ {
+        proxy_pass http://127.0.0.1:5000; 
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # -------------------------
+    # 🔹 SPA (Vue)
+    # -------------------------
+    root /var/www/prodentalis/prodentalis-client;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+
+
+server {
+    if ($host = www.prodentalis.ru) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = prodentalis.ru) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name prodentalis.ru www.prodentalis.ru;
+    return 404; # managed by Certbot
+
+
+
+
+}
+
+server {
+    if ($host = app.prodentalis.ru) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name app.prodentalis.ru;
+    return 404; # managed by Certbot
+
+
+}
+
+
+

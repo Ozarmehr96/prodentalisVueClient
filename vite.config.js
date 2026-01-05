@@ -17,7 +17,7 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',        // Автообновление SW
-      includeAssets: [],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'favicon-16x16.png', 'favicon-32x32.png'],
       manifest: {
         name: 'ProDentalis',
         short_name: 'ProDentalis',
@@ -25,11 +25,11 @@ export default defineConfig({
         theme_color: '#3dd2cc', // цвет браузерной строки
         background_color: '#ffffff', // цвет сплэш-скрина
         display: 'standalone',
-        start_url: '/',
+        start_url: './',
         icons: [
-          { src: '/pwa-logo-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
           // { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' }
-          { src: '/pwa-logo.png', sizes: '512x512', type: 'image/png' }
+          { src: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' }
         ]
       },
       workbox: {
