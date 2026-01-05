@@ -30,8 +30,12 @@ export default {
       isLoading: false,
     };
   },
+  async beforeRouteUpdate(to, from, next) {
+    await this.loadOrder(to.params.id);
+    next();
+  },
   async beforeMount() {
-    await this.loadOrder();
+    await this.loadOrder(this.$route.params.id);
   },
   methods: {
     ...mapActions({
@@ -42,9 +46,9 @@ export default {
         this.order = order;
       });
     },
-    async loadOrder() {
+    async loadOrder(id) {
       this.isLoading = true;
-      await this.loadOrderAction(this.$route.params.id).then((order) => {
+      await this.loadOrderAction(id).then((order) => {
         this.isLoading = false;
         this.order = order;
       });
