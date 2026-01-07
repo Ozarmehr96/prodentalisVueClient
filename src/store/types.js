@@ -143,3 +143,16 @@ export const MUTATE_IS_STATS_LOADING = "stats/MUTATE_IS_STATS_LOADING";
 export const IS_STATS_LOADING = "stats/IS_STATS_LOADING";
 export const USER_STAT = "stats/USER_STAT";
 export const MUTATE_USER_STAT = "stats/MUTATE_USER_STAT";
+
+// Заказчики
+export const LOAD_CUSTOMERS = "customers/LOAD_CUSTOMERS";
+export const MUTATE_IS_CUSTOMERS_LOADING = "customers/MUTATE_IS_CUSTOMERS_LOADING";
+export const IS_CUSTOMERS_LOADING = "customers/IS_CUSTOMERS_LOADING";
+export const LOAD_CUSTOMER = "customers/LOAD_CUSTOMER";
+export const CUSTOMER = "customers/CUSTOMER";
+export const CUSTOMERS = "customers/CUSTOMERS";
+export const MUTATE_CUSTOMER = "customers/MUTATE_CUSTOMER";
+export const MUTATE_CUSTOMERS = "customers/MUTATE_CUSTOMERS";
+export const SET_CUSTOMERS_IS_LOADING = "customers/SET_CUSTOMERS_IS_LOADING";
+export const SAVE_CUSTOMER = "customers/SAVE_CUSTOMER";
+export const UPDATE_CUSTOMER = "customers/UPDATE_CUSTOMER";
