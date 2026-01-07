@@ -22,10 +22,7 @@
             <WorkTypeCardItem :workType="workType" class="d-inline-flex" />
           </div>
 
-          <span
-            v-if="availableWorkTypes.length === 0"
-            class="text-muted d-block mt-2"
-          >
+          <span v-if="availableWorkTypes.length === 0" class="text-muted d-block mt-2">
             Нет доступных типов работ
           </span>
         </div>
@@ -65,23 +62,23 @@ export default {
   },
   methods: {
     ...mapActions({
-      setSelectedTooth: SET_SELECTED_TOOTH, 
+      setSelectedTooth: SET_SELECTED_TOOTH,
       setOrderSelectedTeeth: SET_ORDER_SELECTED_TEETH,
     }),
-    /** 
+    /**
      * Метод вызывается при открытии боковой панели.
      * Очищает предыдущие выбранные типы работ и устанавливает текущие для выбранного зуба.
      */
     onOpenSidePanel() {
       this.onClearClick(); // снимаем все отметки с доступных типов работ
       this.selectedWorkTypes = this.selectedTooth.workTypes.slice(); // копируем текущие типы работ выбранного зуба
-      this.availableWorkTypes.forEach(w => {
-        if (this.selectedWorkTypes.find(t => t.id == w.id)){
+      this.availableWorkTypes.forEach((w) => {
+        if (this.selectedWorkTypes.find((t) => t.id == w.id)) {
           w.isSelected = true; // помечаем как выбранные
         }
       });
     },
-    /** 
+    /**
      * Проверяет, выбран ли конкретный тип работы.
      * @param {Object} workType - объект типа работы
      * @returns {Boolean} true, если выбран
@@ -89,7 +86,7 @@ export default {
     isSelected(workType) {
       return this.selectedWorkTypes.some((w) => w.id === workType.id);
     },
-    /** 
+    /**
      * Снимает все выбранные типы работ на панели.
      * Используется при очистке или при открытии панели.
      */
@@ -98,7 +95,7 @@ export default {
       this.selectedWorkTypes = []; // очищаем массив выбранных
     },
 
-    /** 
+    /**
      * Переключает выбор конкретного типа работы.
      * @param {Object} workType - объект типа работы
      */
@@ -115,7 +112,7 @@ export default {
       }
       this.$emit("select", this.selectedWorkTypes); // уведомляем родителя о выборе
     },
-    /** 
+    /**
      * Метод вызывается при закрытии боковой панели.
      * Снимает выделение с текущего зуба и обновляет его в Vuex.
      */
@@ -124,7 +121,7 @@ export default {
       await this.setSelectedTooth(this.selectedTooth); // сохраняем изменения в Vuex
       this.$emit("applyChangesToSelectedTooth"); // уведомляем родителя о применении изменений
     },
-    /** 
+    /**
      * Сохраняет выбранные типы работ и выбранный зуб.
      * Обновляет массив выбранных зубов в Vuex и выделяет цветом в компоненте выбора зубов.
      */
@@ -145,7 +142,9 @@ export default {
       } else {
         existedOrderTooth = orderTooth; // если есть — обновляем объект
         console.log("Обновляю типы работы для существующего зуба");
-        let indexOfOrderTeeth = this.orderSelectedTeeth.findIndex(o => o.toothId == orderTooth.toothId);
+        let indexOfOrderTeeth = this.orderSelectedTeeth.findIndex(
+          (o) => o.toothId == orderTooth.toothId
+        );
         if (indexOfOrderTeeth >= 0) {
           this.orderSelectedTeeth[indexOfOrderTeeth] = orderTooth;
         }
@@ -159,8 +158,6 @@ export default {
         );
       }
 
-      console.log(this.orderSelectedTeeth); // вывод текущего состояния массива
-
       // визуально выделяем выбранный зуб
       this.selectedTooth.isSelected = false; // снимаем выделение
       this.selectedTooth.workTypes = orderTooth.workTypes;
@@ -169,15 +166,12 @@ export default {
           ? this.selectedTooth.workTypes[0].background_color // цвет первого выбранного типа
           : null; // если нет выбранных типов — цвет не устанавливаем
       this.selectedTooth.removeColored = this.selectedTooth.workTypes.length == 0;
-      console.log("Выбранные типы работ", this.selectedWorkTypes); // лог выбранных типов
-
       await this.setSelectedTooth(this.selectedTooth); // сохраняем выбранный зуб в Vuex
       await this.$emit("applyChangesToSelectedTooth"); // уведомляем родителя о применении изменений
       //this.$emit("close"); // ранее можно было закрывать панель
     },
   },
 };
-
 </script>
 
 <style scoped>

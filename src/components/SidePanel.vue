@@ -9,11 +9,7 @@
       <h1 class="offcanvas-title">
         <slot name="title">{{ title }}</slot>
       </h1>
-      <button
-        type="button"
-        class="btn-close text-reset"
-        @click="closePanel"
-      ></button>
+      <button type="button" class="btn-close text-reset" @click="closePanel"></button>
     </div>
     <div class="offcanvas-body">
       <slot>
@@ -24,14 +20,14 @@
 
     <!-- Футер с кнопками -->
     <div class="p-3 d-flex flex-column flex-sm-row gap-2">
-      <button
-        type="button"
-        class="btn btn-secondary w-100 w-sm-50"
-        @click="clear"
-      >
+      <button type="button" class="btn btn-secondary w-100 w-sm-50" @click="clear">
         Очистить
       </button>
-      <button type="button" class="btn btn-primary w-100 w-sm-50 brand-style" @click="onSaveChanged">
+      <button
+        type="button"
+        class="btn btn-primary w-100 w-sm-50 brand-style"
+        @click="onSaveChanged"
+      >
         Сохранить
       </button>
     </div>
@@ -80,7 +76,6 @@ export default {
   },
   watch: {
     isOpen(newVal) {
-      console.log("isOpen changed:", newVal);
       if (!this.bsOffcanvas) return;
       if (newVal) this.bsOffcanvas.show();
       else {
@@ -108,7 +103,6 @@ export default {
 .half-width-offcanvas {
   width: 50% !important;
   max-width: 1200px !important;
-
 }
 
 /* Для мобильных можно вернуть 100% */

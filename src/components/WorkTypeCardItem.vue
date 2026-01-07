@@ -67,7 +67,7 @@ export default {
   computed: {
     imagePath() {
       return this.workType.image_url
-        ? `${baseHost}/${this.workType.image_url}`
+        ? `${baseHost}/api/${this.workType.image_url}`
         : this.workType.imageSrc;
     },
   },
