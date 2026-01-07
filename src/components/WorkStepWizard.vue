@@ -250,12 +250,13 @@ export default {
       let params = {
         ...this.workStep,
         id: this.workStep.id,
-        related_steps: this.workStep.related_steps.map((step) => step.id),
+        related_steps: this.workStep.related_steps,
         callback: (updatedWorkStep) => {
           this.$toast(`Этап ${updatedWorkStep.name} обновлен.`, 5000);
           this.$router.go(-1);
         },
       };
+
       await this.updateWorkStep(params);
     },
   },
