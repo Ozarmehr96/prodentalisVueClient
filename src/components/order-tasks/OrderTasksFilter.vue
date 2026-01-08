@@ -32,6 +32,40 @@
         </select>
       </div>
 
+      <div class="col-12 col-sm-auto" v-if="filters.date_type === 'period'">
+        <label for="created_from" class="form-label small">От</label>
+        <input
+          type="date"
+          id="created_from"
+          class="form-control"
+          v-model="filters.created_from"
+          @change="applyFilter"
+        />
+      </div>
+
+      <!-- Дата до -->
+      <div class="col-12 col-sm-auto" v-if="filters && filters.finished_at">
+        <label for="finished_at" class="form-label small">До</label>
+        <input
+          type="date"
+          id="finished_at"
+          class="form-control"
+          v-model="filters.finished_at"
+          @change="applyFilter"
+        />
+      </div>
+
+      <div class="col-12 col-sm-auto" v-if="filters && filters.finished_to">
+        <label for="finished_to" class="form-label small">До</label>
+        <input
+          type="date"
+          id="finished_to"
+          class="form-control"
+          v-model="filters.finished_to"
+          @change="applyFilter"
+        />
+      </div>
+
       <!-- Сброс -->
       <div class="col-auto d-flex gap-2 reset-button">
         <button
@@ -48,7 +82,11 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { ORDER_TASK_FILTERS, SET_ORDER_TASK_FILTERS } from "../../store/types";
+import {
+  ORDER_TASK_FILTERS,
+  RESET_ORDER_TASK_FILTERS,
+  SET_ORDER_TASK_FILTERS,
+} from "../../store/types";
 import { mapActions } from "vuex";
 
 export default {
@@ -61,6 +99,7 @@ export default {
   methods: {
     ...mapActions({
       setOrderFilters: SET_ORDER_TASK_FILTERS,
+      resetOrderTaskFilters: RESET_ORDER_TASK_FILTERS,
     }),
     onStatusChanged() {
       console.log("[FILTER] Статус изменен");
@@ -73,12 +112,7 @@ export default {
       this.$emit("search", { ...this.filters });
     },
     async resetFilter() {
-      this.filters.order_number = null;
-      this.filters.customer_name = null;
-      this.filters.created_from = null;
-      this.filters.created_to = null;
-      this.filters.status = "";
-      this.filters.date_type = "";
+      await this.resetOrderTaskFilters();
       await this.setOrderFilters({ ...this.filters });
       this.applyFilter();
     },

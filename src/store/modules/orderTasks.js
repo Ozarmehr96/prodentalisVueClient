@@ -11,18 +11,30 @@ import {
  ORDER_TASK_FILTERS,
  ORDER_TASKS,
  PAUSE_ORDER_TASK,
+ RESET_ORDER_TASK_FILTERS,
  SET_ORDER_TASK_FILTERS,
  SET_ORDER_TASKS_LOADING,
  START_ORDER_TASK,
 } from "../types";
-
+const defaultFilter = {
+  order_number: null,
+  status: "",
+  finished_at: null,
+  finished_to: null,
+  by_executor_id: null,
+  isForUserStats: false
+};
 const state = {
  orderTasks: [],
  orderTask: null,
  isLoadingOrderTasks: false,
  filters: {
-    order_number: null,
-    status: "",
+    order_number: defaultFilter.order_number,
+    status: defaultFilter.status,
+    finished_at: defaultFilter.finished_at,
+    finished_to: defaultFilter.finished_to,
+    by_executor_id: defaultFilter.by_executor_id,
+    isForUserStats: defaultFilter.isForUserStats
   },
 };
 
@@ -39,6 +51,10 @@ const mutations = {
 const actions = {
  [SET_ORDER_TASKS_LOADING]: ({ commit }, isLoading) => {
   commit(MUTATE_IS_LOADING_ORDER_TASKS, isLoading);
+ },
+
+ [RESET_ORDER_TASK_FILTERS]: ({ commit }) => {
+  commit(MUTATE_ORDER_FILTERS, defaultFilter);
  },
 
  [SET_ORDER_TASK_FILTERS]: ({ commit }, filters) => {

@@ -24,9 +24,6 @@ const mutations = {
 const actions = {
  [LOAD_USER_STAT]: async ({ commit }, params) => {
   try {
-    console.log(params);
-    console.log(params);
-    console.log(params);
    await commit(MUTATE_IS_STATS_LOADING, true);
    const response = await api.get("/stats", {params});
    await commit(MUTATE_USER_STAT, response.data);

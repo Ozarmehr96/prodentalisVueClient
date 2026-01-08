@@ -109,8 +109,11 @@
           <h5 class="mb-3">Статистика</h5>
           <Spinner v-show="isStatsLoading" />
           <div v-show="!isStatsLoading">
-            <div class="d-flex justify-content-between mb-2">
-              <span class="text-muted">Выполнено задач</span>
+            <div
+              class="d-flex justify-content-between mb-2 clickable-link"
+              @click="viewUserTasks"
+            >
+              <span class="clickable-link">Выполнено задач</span>
               <strong>{{ totalTasksCompleted }}</strong>
             </div>
 
@@ -183,7 +186,10 @@ import {
   LOAD_ROLES,
   LOAD_USER_STAT,
   LOGOUT,
+  ORDER_TASK_FILTERS,
+  RESET_ORDER_TASK_FILTERS,
   ROLES,
+  SET_ORDER_TASK_FILTERS,
   USER_STAT,
 } from "../store/types";
 import { getDataFromType } from "../helpers/order-helpers";
@@ -224,6 +230,7 @@ export default {
       roles: ROLES, // все роли системы
       isStatsLoading: IS_STATS_LOADING, // загрузка статистики
       userStat: USER_STAT, // статистика пользователя
+      orderTaskFilters: ORDER_TASK_FILTERS,
     }),
 
     /**
@@ -282,6 +289,8 @@ export default {
       loadRoles: LOAD_ROLES,
       loadUserStatAction: LOAD_USER_STAT,
       logOut: LOGOUT,
+      resetOrderTaskFilters: RESET_ORDER_TASK_FILTERS,
+      setOrderTaskFilters: SET_ORDER_TASK_FILTERS,
     }),
 
     // Формат денег
@@ -336,6 +345,43 @@ export default {
 
       return value; // если уже HH:mm:ss
     },
+
+    async viewUserTasks() {
+      const period = getDataFromType(this.selectedPeriod);
+      if (this.selectedPeriod == "period") {
+        if (!this.created_from || !this.created_to) {
+          alert("Сначала выберите период");
+          return;
+        } else {
+          period.from = this.created_from;
+          period.to = this.created_to;
+        }
+      }
+
+      await this.resetOrderTaskFilters();
+      setTimeout(() => {
+        this.setOrderTaskFilters({
+          ...this.orderTaskFilters,
+          finished_at: period.from,
+          finished_to: period.to,
+          isForUserStats: true,
+          by_executor_id: this.employee.id,
+          status: "Finished",
+        });
+        this.$router.push("/tasks");
+      }, 300);
+    },
   },
 };
 </script>
+<style scoped>
+/* Кликабельный блок как ссылка */
+.clickable-link {
+  cursor: pointer; /* курсор как у ссылки */
+  color: #0d6efd; /* bootstrap primary */
+}
+
+.clickable-link:hover {
+  text-decoration: underline; /* эффект ссылки */
+}
+</style>

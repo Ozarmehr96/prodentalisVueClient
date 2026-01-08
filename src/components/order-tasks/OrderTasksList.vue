@@ -36,6 +36,7 @@ import {
   LOAD_ORDER_TASKS_PAGED,
   ORDER_TASK_FILTERS,
   ORDER_TASKS,
+  RESET_ORDER_TASK_FILTERS,
   SET_ORDER_TASKS_LOADING,
 } from "../../store/types";
 import InfiniteLoading from "v3-infinite-loading";
@@ -70,6 +71,8 @@ export default {
   },
   beforeMount() {
     this.orderTasks.length = 0;
+    console.log(this.orderTaskFilters);
+    console.log(this.orderTaskFilters);
   },
   mounted() {
     // как только компонент смонтирован — инициируем первую загрузку
@@ -78,6 +81,9 @@ export default {
         this.$refs.infiniteLoading.stateChanger.reset(); // сброс состояния
       }
     });
+  },
+  unmounted() {
+    if (this.orderTaskFilters.isForUserStats) this.resetOrderTaskFilters();
   },
   computed: {
     ...mapGetters({
@@ -90,6 +96,7 @@ export default {
     ...mapActions({
       loadOrderTasks: LOAD_ORDER_TASKS_PAGED,
       setOrderTaskLoading: SET_ORDER_TASKS_LOADING,
+      resetOrderTaskFilters: RESET_ORDER_TASK_FILTERS,
     }),
 
     async refreshTasks() {
