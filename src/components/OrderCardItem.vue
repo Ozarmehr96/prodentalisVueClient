@@ -102,6 +102,16 @@
       <div class="qr-code d-none d-lg-block" style="flex: 0 0 auto; min-width: 120px">
         <QrCode :link="host" :maxSize="150" :id="`order-qr-${order.id}`" />
       </div>
+      <div
+        class="qr-code d-none d-lg-block"
+        style="flex: 0 0 auto; min-width: 120px; transform: scale(1.8)"
+      >
+        <ToothSelection
+          ref="toothSelection"
+          @onToothSelectedChanged="selectedToothChnged"
+          @onCopyToothData="copyToothData"
+        />
+      </div>
     </div>
 
     <div class="card-footer text-muted small d-flex align-items-center order-item-footer">
@@ -191,16 +201,40 @@ import {
   CURRENT_USER,
   INVOKE_USER_REQUEST,
   LOAD_ACTIVE_REQUEST_BY_TYPE,
+  SET_ORDER_SELECTED_TEETH,
+  SET_SELECTED_TOOTH,
 } from "../store/types";
+import ToothSelection from "./ToothSelection.vue";
 
 export default {
   name: "OrderCard",
-  components: { QrCode },
+  components: { QrCode, ToothSelection },
   props: {
     order: {
       type: Object,
       required: true,
     },
+  },
+  async beforeMount() {
+    let orderToEdit = JSON.parse(JSON.stringify(this.order));
+
+    orderToEdit.teeth.forEach(async (t) => {
+      let selectedTooth = {};
+      selectedTooth.id = t.tooth_id;
+      selectedTooth.isSelected = false;
+      selectedTooth.workTypes = t.work_types;
+      selectedTooth.background_color = t.work_types.length
+        ? t.work_types[0].background_color
+        : null;
+
+      await new Promise((resolve) => setTimeout(resolve, 100)); // небольшая задержка для корректного рендера
+      await this.setSelectedTooth(selectedTooth).then(async () => {
+        await this.$refs.toothSelection.applySelection();
+      });
+    });
+  },
+  async mounted() {
+    await this.$refs.toothSelection.applySelection();
   },
   computed: {
     ...mapGetters({
@@ -231,6 +265,8 @@ export default {
   },
   methods: {
     ...mapActions({
+      setOrderSelectedTeeth: SET_ORDER_SELECTED_TEETH,
+      setSelectedTooth: SET_SELECTED_TOOTH,
       startOrderAction: START_ORDER,
       finishOrderAction: FINISH_ORDER,
       deleteOrderAction: DELETE_ORDER,
