@@ -71,6 +71,7 @@ const actions = {
 };
 
 const getters = {
+  [types.IS_CUSTOMER]: (state) => state.currentUser.role == "Customer",
   [types.ACCESS_TOKEN]: (state) => state.accessToken,
   [types.CURRENT_USER]: (state) => state.currentUser,
   [types.IS_LAB_ADMIN]: (state) => state.currentUser.role == "AdminLab",

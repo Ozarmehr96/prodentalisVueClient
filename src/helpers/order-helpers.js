@@ -37,6 +37,7 @@ export function getOrderStatusClass(statusCode) {
   switch (statusCode) {
     case "Created":
       return "bg-primary";
+    case "Primerka":
     case "Started":
       return "bg-success text-white";
     case "Stopped":
@@ -58,8 +59,6 @@ export function getOrderStatusClass(statusCode) {
  * @returns {string} если returnHex true, вернуть HEX, иначе CSS-класс
  */
 export function getTaskStatusClass(statusCode, returnHex = false) {
-  console.log("statusCode", statusCode);
-
   const map = {
     NotStarted: {
       class: "bg-secondary",
@@ -68,6 +67,10 @@ export function getTaskStatusClass(statusCode, returnHex = false) {
     Pending: {
       class: "bg-secondary",
       hex: "#6c757d",
+    },
+    Primerka: {
+      class: "bg-success",
+      hex: "#198754",
     },
     Started: {
       class: "bg-success",

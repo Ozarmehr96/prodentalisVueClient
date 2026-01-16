@@ -95,6 +95,13 @@ let headerMenuItemsArray = [
     path: null,
   },
   {
+    label: "Заказчики",
+    link: "/customers",
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
+    svg: null,
+    path: "/images/client-svgrepo-com.svg",
+  },
+  {
     label: "Роли",
     link: "/roles",
     includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],

@@ -326,7 +326,6 @@ export default {
           else if (!/(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}/.test(value))
             this.errors[field] = "Минимум 8 символов, хотя бы одна буква и цифра";
           else this.errors[field] = "";
-          console.log(this.errors[field]);
           break;
         }
 
@@ -370,7 +369,6 @@ export default {
             },
           });
         } else {
-          console.log("Создание пользователя", this.user);
           await this.createUser({
             ...this.user,
             callback: (u) => {

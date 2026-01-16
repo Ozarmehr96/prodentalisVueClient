@@ -242,7 +242,6 @@ export default {
     defineExpose() { },
     // Единый метод подсветки зубов
     applySelection() {
-      console.log("applySelection", "this.selectedTooth", this.selectedTooth);
       console.log("Применение подсветки для зуба", this.selectedTooth);
       const allTeeth = document.querySelectorAll(".tooth");
 
@@ -310,7 +309,6 @@ export default {
 
     // Пример метода для кнопки "+"
     onPlusClick() {
-      console.log("Стрелка нажата");
       // Здесь позже можно открывать модалку
     },
 
@@ -427,8 +425,6 @@ export default {
 
         fromToothId = parseInt(this.draggedTooth.id.replace("tooth-", ""));
         toToothId = parseInt(targetTooth.id.replace("tooth-", ""));
-        console.log("copy from ", fromToothId);
-        console.log("copy to ", toToothId);
       }
 
       // удаляем копию

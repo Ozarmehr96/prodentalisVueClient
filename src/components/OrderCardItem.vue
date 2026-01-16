@@ -33,7 +33,7 @@
       @click="() => $router.push(`/orders/view/${order.id}`)"
     >
       <!-- Левая колонка: данные заказа -->
-      <div class="main-data me-3" style="flex: 1 1 auto">
+      <div class="main-data me-3 leftColumn" style="flex: 1 1 auto">
         <!-- Заказчик и пациент -->
         <div class="d-flex mb-2">
           <span class="text-muted orderKey">Заказчик:</span>
@@ -109,6 +109,16 @@
       <span class="text-truncate"> Создал: {{ order.created_user_name }} </span>
 
       <div class="ms-auto d-none d-sm-flex">
+        <button
+          v-if="canControl && order.status.code === 'Primerka' && false"
+          class="btn btn-sm btn-success ms-auto me-2 footerButton"
+          @click="finishPrimerka"
+          title="Завершить примерку"
+          style="min-width: 150px"
+        >
+          Завершить примерку
+        </button>
+
         <button
           v-if="canControl && order.status.code === 'Created'"
           class="btn btn-sm btn-success ms-auto me-2 footerButton"
@@ -293,6 +303,14 @@ export default {
     getStatusClass(statusCode) {
       return getOrderStatusClass(statusCode);
     },
+    /**
+     * Завершение примерки.
+     */
+    finishPrimerka() {},
+    /**
+     * Отправить примерку.
+     */
+    startPrimerka() {},
   },
 };
 </script>

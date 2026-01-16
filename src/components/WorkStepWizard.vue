@@ -34,6 +34,21 @@
             <div class="invalid-feedback">Цена должна быть неотрицательным числом.</div>
           </div>
 
+          <div class="mb-3">
+            <div class="form-check">
+              <!-- Чекбокс -->
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="isPrimerka"
+                v-model="workStep.is_primerka"
+              />
+              <label class="form-check-label" for="isPrimerka">
+                Отметьте, если это примерка
+              </label>
+            </div>
+          </div>
+
           <!-- Тип цены -->
           <div class="mb-3">
             <div>
@@ -63,7 +78,7 @@
           </div>
 
           <!-- Основная роль -->
-          <div class="mb-3">
+          <div class="mb-3" v-if="!workStep.is_primerka">
             <label class="form-label">Исполнители этапа</label>
             <MultiSelect
               v-model="workStep.roles"
@@ -160,6 +175,7 @@ export default {
         roles: [],
         price_mode: null,
         related_steps: [],
+        is_primerka: false,
       },
       relatedTaskTitleInfo:
         "Связанные этапы помогут автоматизировать рабочий процесс, позволяя запускать несколько этапов одновременно без необходимости запуска их каждый раз вручную.",
@@ -218,7 +234,7 @@ export default {
       return (
         this.isNameValid &&
         this.isPriceValid &&
-        this.workStep.roles.length > 0 &&
+        (this.workStep.is_primerka ? true : this.workStep.roles.length > 0) &&
         this.workStep.price_mode !== null
       );
     },
@@ -234,7 +250,9 @@ export default {
     async save() {
       let params = {
         ...this.workStep,
-        related_steps: this.workStep.related_steps.map((step) => step.id),
+        related_steps: this.workStep.is_primerka
+          ? []
+          : this.workStep.related_steps.map((step) => step.id),
         callback: (newWorkStep) => {
           this.$toast(`Этап ${newWorkStep.name} добавлен.`, 5000);
           this.$router.go(-1);
@@ -247,7 +265,7 @@ export default {
       let params = {
         ...this.workStep,
         id: this.workStep.id,
-        related_steps: this.workStep.related_steps,
+        related_steps: this.workStep.is_primerka ? [] : this.workStep.related_steps,
         callback: (updatedWorkStep) => {
           this.$toast(`Этап ${updatedWorkStep.name} обновлен.`, 5000);
           this.$router.go(-1);

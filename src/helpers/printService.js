@@ -17,12 +17,21 @@ export function printOrder(order) {
     // Заменяем canvas QR на img
     const originalCanvas = orderBody.querySelector("canvas");
     if (originalCanvas) {
+         const leftColumn = clone.querySelector(".leftColumn");
+        if (leftColumn) {
+        console.log('leftColumn.style.fle', leftColumn.style.flex)
+            
+            // Сбрасываем flex
+            leftColumn.style.flex = "unset";
+        }
     console.log("QR canvas найден, заменяем на img");
     const img = document.createElement("img");
     img.src = originalCanvas.toDataURL("image/png");
     img.alt = "QR Code";
     img.style.width = originalCanvas.style.width || "150px";
     img.style.height = originalCanvas.style.height || "150px";
+    img.style.position = "relative"; // вместо margin-right
+    img.style.top = "-10px"; // вместо margin-right
     const clonedCanvas = clone.querySelector("canvas");
     if (clonedCanvas) clonedCanvas.replaceWith(img);
     }
@@ -55,8 +64,6 @@ export function printOrder(order) {
             }
             .card-body {
                 display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
                 gap: 25px;
             }
             .main-data {

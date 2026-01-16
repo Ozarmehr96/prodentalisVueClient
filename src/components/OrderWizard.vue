@@ -12,11 +12,17 @@
           <div class="form-floating mb-4">
             <input
               type="text"
-              v-model="customer"
+              :value="customer ? customer.full_name : ''"
               class="form-control"
               id="floatingInput"
+              @click="showCustomerCanvas = true"
+              readonly
             />
             <label for="floatingInput">Заказчик</label>
+            <SelectCustomersWizard
+              v-model:visible="showCustomerCanvas"
+              @select-customer="onCustomerSelected"
+            />
           </div>
 
           <div class="form-floating mb-4">
@@ -52,6 +58,7 @@
               max="10000"
               class="form-control"
               id="floatingInput"
+              :readonly="!this.isEditMode"
             />
             <label for="floatingInput">Стоимость</label>
           </div>
@@ -131,19 +138,23 @@ import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 import ToothSelection from "./ToothSelection.vue";
 import {
   CREATE_ORDER,
+  CUSTOMERS,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
+  LOAD_WORK_STEPS,
   LOAD_WORK_TYPES,
   ORDER_SELECTED_TEETH,
   SELECTED_TOOTH,
   SET_ORDER_SELECTED_TEETH,
   SET_SELECTED_TOOTH,
   UPDATE_ORDER,
+  WORK_STEPS,
   WORK_TYPES,
 } from "../store/types";
 import SelectWorkTypeWizard from "./SelectWorkTypeWizard.vue";
 import { convertOrderTeethToWorkTypes } from "../helpers/order-helpers";
 import ButtonWithLoader from "./ButtonWithLoader.vue";
+import SelectCustomersWizard from "./customers/SelectCustomersWizard.vue";
 
 export default {
   name: "OrderWizard",
@@ -162,6 +173,7 @@ export default {
     WorkTypeCardItem,
     SelectWorkTypeWizard,
     ButtonWithLoader,
+    SelectCustomersWizard,
   },
   data() {
     return {
@@ -177,6 +189,7 @@ export default {
       price: null,
       isChanged: false,
       oldOrderData: null,
+      showCustomerCanvas: false,
     };
   },
   async beforeMount() {
@@ -189,7 +202,10 @@ export default {
       });
       this.setOrderSelectedTeeth(this.orderToEdit.teeth);
       this.price = this.orderToEdit.price;
-      this.customer = this.orderToEdit.customer_name;
+      this.customer = {
+        id: this.orderToEdit.customer_id,
+        full_name: this.orderToEdit.customer_name,
+      };
       this.patient = this.orderToEdit.patient_name;
       this.expectedDate = this.orderToEdit.expired_at
         ? this.orderToEdit.expired_at.split("T")[0]
@@ -200,11 +216,11 @@ export default {
       this.setOrderSelectedTeeth([]);
     }
 
-    this.loadWorkTypes();
+    await this.loadWorkTypes();
+    await this.loadWorkSteps();
   },
   async mounted() {
     if (this.isEditMode) {
-      console.log("Order to edit:", this.orderToEdit);
       // в режиме редактирования выделяем первый зуб из заказа
       this.orderToEdit.teeth.forEach(async (t) => {
         let selectedTooth = {};
@@ -221,7 +237,6 @@ export default {
         });
       });
     }
-    // console.log("OrderWizard mounted");
   },
   computed: {
     ...mapGetters({
@@ -230,11 +245,13 @@ export default {
       orderSelectedTeeth: ORDER_SELECTED_TEETH,
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
+      customers: CUSTOMERS,
+      steps: WORK_STEPS,
     }),
     isValid() {
       let isValidData =
         this.customer &&
-        this.customer.trim().length > 0 &&
+        this.customer?.full_name?.trim().length > 0 &&
         this.patient &&
         this.patient.trim().length > 0 &&
         this.expectedDate &&
@@ -244,7 +261,7 @@ export default {
       if (this.isEditMode) {
         if (isValidData) {
           return (
-            this.customer.trim() !== this.oldOrderData.customer_name ||
+            this.customer?.full_name.trim() !== this.oldOrderData.customer_name ||
             this.patient.trim() !== this.oldOrderData.patient_name ||
             this.price !== this.oldOrderData.price ||
             this.expectedDate !==
@@ -272,15 +289,20 @@ export default {
       let total = 0;
       if (this.isChanged) {
       }
-      let steps = [];
-      this.orderSelectedTeeth.forEach((t) => {
-        t.workTypes.forEach((workType) => {
-          workType.steps.forEach((step) => {
-            if (!steps.some((s) => s.work_step_id == step.work_step_id)) {
-              total += step.price;
-              steps.push(step);
-            }
-          });
+
+      let workTypesWithTeeth = convertOrderTeethToWorkTypes(
+        this.orderSelectedTeeth.slice()
+      );
+
+      workTypesWithTeeth.forEach((workType) => {
+        workType.steps.forEach((workTypeStep) => {
+          let step = this.steps.find((s) => s.id === workTypeStep.work_step_id);
+          if (step) {
+            total +=
+              step.price_mode === "PerTooth" // если цена за один зуб
+                ? workTypeStep.price * workType.teeth.length // умножим цену на количество зубов
+                : workTypeStep.price; // иначе цена просто за этап, неважно сколько зубов
+          }
         });
       });
 
@@ -290,11 +312,15 @@ export default {
   methods: {
     ...mapActions({
       loadWorkTypes: LOAD_WORK_TYPES,
+      loadWorkSteps: LOAD_WORK_STEPS,
       createOrderAction: CREATE_ORDER,
       updateOrderAction: UPDATE_ORDER,
       setOrderSelectedTeeth: SET_ORDER_SELECTED_TEETH,
       setSelectedTooth: SET_SELECTED_TOOTH,
     }),
+    onCustomerSelected(c) {
+      this.customer = c;
+    },
     /**
      * Событие выбора зуба
      * @param selectedTeeth
@@ -324,8 +350,9 @@ export default {
     async createOrder() {
       this.isSaving = true;
       let newOrder = {
-        customer_name: this.customer.trim(),
-        price: this.price,
+        customer_name: this.customer.full_name.trim(),
+        customer_id: this.customer.id,
+        price: null, // this.price - не указываем, так как автоматом на сервере будет считаться.
         patient_name: this.patient.trim(),
         expired_at: this.expectedDate,
         description: this.description ? this.description.trim() : null,
@@ -369,7 +396,6 @@ export default {
       this.isChanged = !this.isChanged;
     },
     async copyToothData(fromToothId, toToothId) {
-      console.log("Клонирование зуба");
       let copyFromThoothId = this.orderSelectedTeeth.findIndex(
         (o) => o.toothId == fromToothId
       );
@@ -404,7 +430,6 @@ export default {
      * @returns {Boolean} - true, если есть изменения, false - если нет
      */
     hasTeethChanged(newTeeth, oldTeeth) {
-      console.log("oldTeeth:", oldTeeth);
       // Приводим массив к единой структуре и сортируем
       const normalizedNew = newTeeth
         .map((t) => ({

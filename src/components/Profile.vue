@@ -347,6 +347,7 @@ export default {
     },
 
     async viewUserTasks() {
+      if (this.employee.role === "Customer") return;
       const period = getDataFromType(this.selectedPeriod);
       if (this.selectedPeriod == "period") {
         if (!this.created_from || !this.created_to) {

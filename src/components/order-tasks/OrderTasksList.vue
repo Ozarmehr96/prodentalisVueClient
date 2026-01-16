@@ -71,8 +71,6 @@ export default {
   },
   beforeMount() {
     this.orderTasks.length = 0;
-    console.log(this.orderTaskFilters);
-    console.log(this.orderTaskFilters);
   },
   mounted() {
     // как только компонент смонтирован — инициируем первую загрузку

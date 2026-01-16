@@ -68,6 +68,7 @@
                     <div
                       class="task-line"
                       title="Стоимость за работу, то есть за все зубы"
+                      v-if="!isCustomer"
                     >
                       <span class="text-muted">Стоимость:</span>
                       <span class="fw-bold">
@@ -136,7 +137,7 @@
 import { mapActions, mapGetters } from "vuex";
 import { getTaskStatusClass, msToTime } from "../../helpers/order-helpers";
 import OrderTaskWizard from "./OrderTaskWizard.vue";
-import { LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
+import { IS_CUSTOMER, LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
 import Timer from "../order/Timer.vue";
 
 export default {
@@ -164,6 +165,7 @@ export default {
   computed: {
     ...mapGetters({
       workTypes: WORK_TYPES,
+      isCustomer: IS_CUSTOMER,
     }),
     tasks() {
       return this.order.tasks.sort((a, b) => {
@@ -253,8 +255,6 @@ export default {
     },
 
     getTaskY(index) {
-      console.log("Вычисление Y для задачи", index);
-      console.log("Вычисление this.topMargin для задачи", this.topMargin);
       let y = this.topMargin;
 
       for (let i = 0; i < index; i++) {
