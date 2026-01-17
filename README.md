@@ -71,6 +71,8 @@ sudo systemctl enable nginx  # Автозапуск при старте сист
 Убедитесь, что директория с клиентом имеет правильного владельца:
 
 ```bash
+cp -r /var/www/prodentalis/ /var/www/backups/prodentalis050125
+
 sudo chown -R www-data:www-data /var/www/prodentalis/prodentalis-client
 sudo chmod -R 755 /var/www/prodentalis/prodentalis-client
 sudo systemctl restart nginx

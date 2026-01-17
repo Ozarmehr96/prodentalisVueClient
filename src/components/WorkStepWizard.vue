@@ -49,34 +49,6 @@
             </div>
           </div>
 
-          <!-- Тип цены -->
-          <div class="mb-3">
-            <div>
-              <label class="form-label">Тип цены</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                id="pricePerStep"
-                value="PerStep"
-                v-model="workStep.price_mode"
-              />
-              <label class="form-check-label" for="pricePerStep"> За весь этап </label>
-            </div>
-
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                id="pricePerTooth"
-                value="PerTooth"
-                v-model="workStep.price_mode"
-              />
-              <label class="form-check-label" for="pricePerTooth"> За один зуб </label>
-            </div>
-          </div>
-
           <!-- Основная роль -->
           <div class="mb-3" v-if="!workStep.is_primerka">
             <label class="form-label">Исполнители этапа</label>
@@ -173,7 +145,6 @@ export default {
         price: null,
         description: "",
         roles: [],
-        price_mode: null,
         related_steps: [],
         is_primerka: false,
       },
@@ -234,8 +205,7 @@ export default {
       return (
         this.isNameValid &&
         this.isPriceValid &&
-        (this.workStep.is_primerka ? true : this.workStep.roles.length > 0) &&
-        this.workStep.price_mode !== null
+        (this.workStep.is_primerka ? true : this.workStep.roles.length > 0)
       );
     },
   },

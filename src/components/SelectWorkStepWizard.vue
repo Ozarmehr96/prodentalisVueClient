@@ -15,6 +15,7 @@
               <th style="width: 40px">#</th>
               <th>Название этапа</th>
               <th style="width: 150px">Стоимость</th>
+              <th style="width: 150px" v-if="!isSelecteOnlyMode">Тип стоимости</th>
               <th style="width: 120px">Действия</th>
             </tr>
           </thead>
@@ -35,6 +36,35 @@
                   required
                   :readonly="isSelecteOnlyMode"
                 />
+              </td>
+              <td v-if="!isSelecteOnlyMode">
+                <div>
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    :id="`pricePerStep-${index}`"
+                    value="PerStep"
+                    v-model="step.price_mode"
+                    :disabled="isSelecteOnlyMode"
+                  />
+                  <label class="form-check-label" :for="`pricePerStep-${index}`">
+                    За весь этап
+                  </label>
+                </div>
+
+                <div>
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    :id="`pricePerTooth-${index}`"
+                    value="PerTooth"
+                    v-model="step.price_mode"
+                    :disabled="isSelecteOnlyMode"
+                  />
+                  <label class="form-check-label" :for="`pricePerTooth-${index}`">
+                    За один зуб
+                  </label>
+                </div>
               </td>
               <td>
                 <button
@@ -224,5 +254,11 @@ export default {
 <style scoped>
 .list-group-item {
   cursor: pointer;
+}
+.table > tbody {
+  vertical-align: middle !important;
+}
+.form-check-label {
+  padding-left: 5px;
 }
 </style>

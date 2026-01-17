@@ -299,7 +299,7 @@ export default {
           let step = this.steps.find((s) => s.id === workTypeStep.work_step_id);
           if (step) {
             total +=
-              step.price_mode === "PerTooth" // если цена за один зуб
+              workTypeStep.price_mode === "PerTooth" // если цена за один зуб
                 ? workTypeStep.price * workType.teeth.length // умножим цену на количество зубов
                 : workTypeStep.price; // иначе цена просто за этап, неважно сколько зубов
           }

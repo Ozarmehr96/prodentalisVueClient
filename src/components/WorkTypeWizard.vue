@@ -119,14 +119,37 @@ export default {
       },
       selectedWorkSteps: [],
       isSaving: false,
+      priceModeChanged: false,
     };
   },
+  watch: {
+    selectedWorkSteps: {
+      handler(newVal, oldVal) {
+        // 🔍 Срабатывает при любом изменении внутри массива
+        this.priceModeChanged = !this.priceModeChanged;
+      },
+      deep: true, // ОБЯЗАТЕЛЬНО для объектов внутри массива
+      immediate: true, // true — если нужно отработать при инициализации
+    },
+  },
+
   computed: {
     ...mapGetters({
       selectedWorkTypeSteps: SELECTED_WORK_TYPE_STEPS,
     }),
     isValid() {
-      return this.workType.name.trim() !== "";
+      if (this.priceModeChanged) {
+      }
+      return (
+        this.workType.name.trim() !== "" &&
+        (this.selectedWorkSteps.length === 0 ||
+          this.selectedWorkSteps.every(
+            (t) =>
+              Object.prototype.hasOwnProperty.call(t, "price_mode") &&
+              t.price_mode != null &&
+              t.price_mode !== ""
+          ))
+      );
     },
   },
   async beforeMount() {
