@@ -122,6 +122,20 @@ let headerMenuItemsArray = [
     svg: null,
     path: "/images/work-steps.svg",
   },
+  {
+    label: "Расходники",
+    link: "/finance/materials",
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
+    svg: null,
+    path: "/images/work-steps.svg",
+  },
+  {
+    label: "Себестоимость",
+    link: "/finance/work-type-materials",
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
+    svg: null,
+    path: "/images/work-steps.svg",
+  },
   // {
   //   label: "Приоритеты этапов",
   //   link: "/work-steps/priorities",

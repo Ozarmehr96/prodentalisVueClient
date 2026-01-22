@@ -159,3 +159,29 @@ export const SET_CUSTOMERS_IS_LOADING = "customers/SET_CUSTOMERS_IS_LOADING";
 export const SAVE_CUSTOMER = "customers/SAVE_CUSTOMER";
 export const UPDATE_CUSTOMER = "customers/UPDATE_CUSTOMER";
 export const DELETE_CUSTOMER = "customers/DELETE_CUSTOMER";
+
+// Расходные материалы
+export const LOAD_MATERIALS = "materials/LOAD_MATERIALS";
+export const MUTATE_MATERIALS = "materials/MUTATE_MATERIALS";
+export const MATERIALS = "materials/MATERIALS";
+export const LOAD_MATERIAL = "materials/LOAD_MATERIAL";
+export const MATERIAL = "materials/MATERIAL";
+export const MUTATE_MATERIAL = "materials/MUTATE_MATERIAL";
+export const SAVE_MATERIAL = "materials/SAVE_MATERIAL";
+export const UPDATE_MATERIAL = "materials/UPDATE_MATERIAL";
+export const DELETE_MATERIAL = "materials/DELETE_MATERIAL";
+export const IS_MATERIALS_LOADING = "materials/IS_MATERIALS_LOADING";
+export const MUTATE_IS_MATERIALS_LOADING = "materials/MUTATE_IS_MATERIALS_LOADING";
+export const SET_IS_MATERIALS_LOADING = "materials/SET_IS_MATERIALS_LOADING";
+
+// Расходные материалы по типам работ и себестоимость работ
+export const LOAD_WORK_TYPE_MATERIALS = "workTypeMaterials/LOAD_WORK_TYPE_MATERIALS";
+export const MUTATE_WORK_TYPE_MATERIALS = "workTypeMaterials/MUTATE_WORK_TYPE_MATERIALS";
+export const WORK_TYPE_MATERIALS = "workTypeMaterials/WORK_TYPE_MATERIALS";
+export const LOAD_WORK_TYPE_MATERIAL = "workTypeMaterials/LOAD_WORK_TYPE_MATERIAL";
+export const WORK_TYPE_MATERIAL = "workTypeMaterials/WORK_TYPE_MATERIAL";
+export const MUTATE_WORK_TYPE_MATERIAL = "workTypeMaterials/MUTATE_WORK_TYPE_MATERIAL";
+export const SAVE_WORK_TYPE_MATERIAL = "workTypeMaterials/SAVE_WORK_TYPE_MATERIAL";
+export const IS_WORK_TYPE_MATERIALS_LOADING = "workTypeMaterials/IS_WORK_TYPE_MATERIALS_LOADING";
+export const MUTATE_IS_WORK_TYPE_MATERIALS_LOADING = "workTypeMaterials/MUTATE_IS_WORK_TYPE_MATERIALS_LOADING";
+export const SET_IS_WORK_TYPE_MATERIALS_LOADING = "workTypeMaterials/SET_IS_WORK_TYPE_MATERIALS_LOADING";

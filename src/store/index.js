@@ -13,6 +13,8 @@ import roles from "./modules/roles";
 import orderTasks from "./modules/orderTasks";
 import stats from "./modules/stats";
 import customers from "./modules/customers";
+import materials from "./modules/materials";
+import workTypeMaterials from "./modules/workTypeMaterials";
 const store = createStore({
   modules: {
     auth,
@@ -27,7 +29,9 @@ const store = createStore({
     roles,
     orderTasks,
     stats,
-    customers
+    customers,
+    materials,
+    workTypeMaterials
   },
 });
 
