@@ -3,6 +3,7 @@
     title="Сотрудники"
     @onAddButtonClickEvent="() => $router.push('/users/add')"
     :isShowAddButton="canControl"
+    :showBackButton="true"
   >
     <!-- Main content -->
     <div class="content-body">
@@ -20,7 +21,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in filtresUsers" @click="() => $router.push(`/users/${user.id}`)" style="cursor:pointer">
+          <tr
+            v-for="user in filtresUsers"
+            @click="() => $router.push(`/users/${user.id}`)"
+            style="cursor: pointer"
+          >
             <td class="employee-cell">
               <img
                 v-if="user.avatar_url"
@@ -48,7 +53,8 @@
             </td>
 
             <td class="d-sm-table-cell">
-             <button v-if="user.role !== 'LabDirector' && isLabDirector"
+              <button
+                v-if="user.role !== 'LabDirector' && isLabDirector"
                 class="btn btn-danger btn-sm removeButton"
                 @click.stop="deleteUser(user)"
               >
@@ -65,7 +71,15 @@
 <script>
 import AppPage from "../../components/AppPage.vue";
 import { mapGetters, mapActions } from "vuex";
-import { CURRENT_USER, DELETE_USER, IS_LAB_ADMIN, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN, LOAD_MAIN_ROLES, LOAD_USERS } from "./../../store/types";
+import {
+  CURRENT_USER,
+  DELETE_USER,
+  IS_LAB_ADMIN,
+  IS_LAB_DIRECTOR,
+  IS_SYSTEM_ADMIN,
+  LOAD_MAIN_ROLES,
+  LOAD_USERS,
+} from "./../../store/types";
 export default {
   components: {
     AppPage,
@@ -83,7 +97,7 @@ export default {
       currentUser: CURRENT_USER,
       isSystemAdmin: IS_SYSTEM_ADMIN,
       isLabAdmin: IS_LAB_ADMIN,
-      isLabDirector: IS_LAB_DIRECTOR
+      isLabDirector: IS_LAB_DIRECTOR,
     }),
     canControl() {
       return this.isLabAdmin || this.isLabDirector || this.isSystemAdmin;
@@ -96,7 +110,7 @@ export default {
     ...mapActions({
       loadMainRoles: LOAD_MAIN_ROLES,
       loadUsers: LOAD_USERS,
-      deleteUserAction: DELETE_USER
+      deleteUserAction: DELETE_USER,
     }),
     goToEditPage(e) {
       console.log(e);
@@ -104,13 +118,13 @@ export default {
     async deleteUser(user) {
       console.log(user);
       if (confirm(`Вы действительно хотите  удалить сотрудника '${user.short_name}'`)) {
-        await this.deleteUserAction(user.id).then(async() => {
+        await this.deleteUserAction(user.id).then(async () => {
           this.$toast(`Сотрудник удален из системы`);
           this.users = await this.loadUsers();
           return;
         });
       }
-    }
+    },
   },
 };
 </script>

@@ -3,6 +3,7 @@
     title="Заказчики"
     :isShowAddButton="canControl"
     @onAddButtonClickEvent="openCutomerModal"
+    :showBackButton="true"
   >
     <!-- Здесь будет таблица ролей -->
     <div class="table-responsive">

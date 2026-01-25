@@ -88,27 +88,6 @@ let headerMenuItemsArray = [
     path: null,
   },
   {
-    label: "Сотрудники",
-    link: "/users",
-    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
-    svg: "#people-circle",
-    path: null,
-  },
-  {
-    label: "Заказчики",
-    link: "/customers",
-    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
-    svg: null,
-    path: "/images/client-svgrepo-com.svg",
-  },
-  {
-    label: "Роли",
-    link: "/roles",
-    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
-    svg: "#roles",
-    path: null,
-  },
-  {
     label: "Типы работ",
     link: "/work-types",
     includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
@@ -121,6 +100,13 @@ let headerMenuItemsArray = [
     includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
     svg: null,
     path: "/images/work-steps.svg",
+  },
+  {
+    label: "Управление",
+    link: "/management",
+    includedRoles: ["SystemAdmin", "LabDirector", "AdminLab"],
+    svg: null,
+    path: "/images/management.svg",
   },
   // {
   //   label: "Приоритеты этапов",
