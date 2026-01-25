@@ -49,8 +49,8 @@ body {
   display: inline-block;
 }
 .brand-style {
-  background-color: #3dd2cc !important;
-  border-color: #3dd2cc !important;
+  background-color: #08c2ba !important;
+  border-color: #08c2ba !important;
 }
 .brand-style:hover {
   background-color: #36bfba !important;

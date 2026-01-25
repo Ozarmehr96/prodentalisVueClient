@@ -3,6 +3,7 @@
     title="Роли"
     :isShowAddButton="canControl"
     @onAddButtonClickEvent="openRoleModal"
+    :showBackButton="true"
   >
     <!-- Здесь будет таблица ролей -->
     <div class="table-responsive">

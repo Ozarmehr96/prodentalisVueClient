@@ -1,5 +1,5 @@
 <template>
-  <app-page title="Себестоимость типов работ">
+  <app-page title="Себестоимость работ" :showBackButton="true">
     <SearchByTitle @search="(n) => (searchName = n)" class="mb-3" />
     <template
       v-for="workTypeMaterials in filtredWorkTypeMaterials"

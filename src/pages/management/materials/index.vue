@@ -2,6 +2,7 @@
   <app-page
     title="Расходные материалы"
     :isShowAddButton="canControl"
+    :showBackButton="true"
     @onAddButtonClickEvent="openMaterialModal"
   >
     <!-- Таблица расходных материалов -->

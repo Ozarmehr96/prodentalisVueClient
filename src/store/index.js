@@ -15,6 +15,7 @@ import stats from "./modules/stats";
 import customers from "./modules/customers";
 import materials from "./modules/materials";
 import workTypeMaterials from "./modules/workTypeMaterials";
+import customersWorkTypePrices from "./modules/customersWorkTypePrices";
 const store = createStore({
   modules: {
     auth,
@@ -31,7 +32,8 @@ const store = createStore({
     stats,
     customers,
     materials,
-    workTypeMaterials
+    workTypeMaterials,
+    customersWorkTypePrices
   },
 });
 
