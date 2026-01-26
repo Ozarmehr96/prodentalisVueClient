@@ -221,7 +221,7 @@ export default {
         materials: this.materialsList,
         callback: () => {
           this.$toast("Расходные материалы сохранены");
-          this.$router.push("/finance/work-type-materials");
+          this.$router.push("/management/work-type-materials");
         },
       });
     },

@@ -262,7 +262,7 @@ export default {
         callback: async () => {
           await this.loadCustomersWorkTypePrices();
           this.initializeMatrix();
-          this.$toast.success("Цены сохранены!");
+          this.$toast("Цены сохранены!", 3000);
         },
       });
     },

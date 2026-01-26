@@ -12,7 +12,7 @@
         </h2>
         <button
           class="btn btn-sm btn-light text-dark"
-          @click="() => $router.push('/finance/work-type-materials/' + workType.id)"
+          @click="() => $router.push('/management/work-type-materials/' + workType.id)"
         >
           Редактировать
         </button>
