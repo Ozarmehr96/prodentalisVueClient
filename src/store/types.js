@@ -131,6 +131,7 @@ export const MUTATE_ORDER_TASK = "orderTasks/MUTATE_ORDER_TASK"; // Мутаци
 export const START_ORDER_TASK = "orderTasks/START_ORDER_TASK"; // Запуск задачи заказа
 export const PAUSE_ORDER_TASK = "orderTasks/PAUSE_ORDER_TASK"; // Пауза задачи заказа
 export const FINISH_ORDER_TASK = "orderTasks/FINISH_ORDER_TASK"; // Завершение задачи заказа
+export const CANCEL_ORDER_TASK = "orderTasks/CANCEL_ORDER_TASK"; // Отмена задачи заказа
 export const RESET_ORDER_TASK_FILTERS = "orderTasks/RESET_ORDER_TASK_FILTERS";
 
 // Фильтр по задачам

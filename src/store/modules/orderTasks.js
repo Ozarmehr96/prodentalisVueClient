@@ -1,5 +1,6 @@
 import api from "../../services/api";
 import {
+  CANCEL_ORDER_TASK,
  FINISH_ORDER_TASK,
  IS_LOADING_ORDER_TASKS,
  LOAD_ORDER_TASKS_PAGED,
@@ -124,6 +125,19 @@ if (params.callback) {
  [FINISH_ORDER_TASK]: async ({ commit }, params) => {
   try {
    const response = await api.put(`/order-tasks/${params.orderTaskId}/finish`);
+   await commit(MUTATE_ORDER_TASK, response.data);
+   if (params.callback) {
+    params.callback(response.data);
+   }
+   return response.data;
+  } catch (e) {
+   console.error(e);
+  }
+ },
+
+ [CANCEL_ORDER_TASK]: async ({ commit }, params) => {
+  try {
+   const response = await api.put(`/order-tasks/${params.orderTaskId}/cancel`);
    await commit(MUTATE_ORDER_TASK, response.data);
    if (params.callback) {
     params.callback(response.data);

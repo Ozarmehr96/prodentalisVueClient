@@ -2,7 +2,7 @@
   <main>
     <div
       class="card mb-3 shadow-lg border-0 task-item"
-      :class="isSaving || isStopping || isFinishing ? `pe-none` : ``"
+      :class="isSaving || isStopping || isFinishing || isCanceling ? `pe-none` : ``"
     >
       <div
         class="card-header d-flex flex-wrap"
@@ -87,6 +87,7 @@
             @click="startTask(orderTask.id)"
           />
         </div>
+
         <template v-if="currentExecutor && !orderTask.is_auto_started">
           <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Started'">
             <ButtonWithLoader
@@ -103,6 +104,13 @@
               :customClasses="['btn-primary flex-fill']"
               :loadingText="''"
               @click="finishTask(orderTask.id)"
+            />
+            <ButtonWithLoader
+              :isLoading="isCanceling"
+              title="Отменить"
+              :customClasses="['btn-secondary flex-fill']"
+              :loadingText="'Отмена...'"
+              @click="cancelTask(orderTask.id)"
             />
           </div>
 
@@ -121,6 +129,14 @@
               :customClasses="['btn-primary flex-fill']"
               :loadingText="''"
               @click="finishTask(orderTask.id)"
+            />
+
+            <ButtonWithLoader
+              :isLoading="isCanceling"
+              title="Отменить"
+              :customClasses="['btn-secondary flex-fill']"
+              :loadingText="'Отмена...'"
+              @click="cancelTask(orderTask.id)"
             />
           </div>
         </template>
@@ -151,6 +167,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import {
+  CANCEL_ORDER_TASK,
   CURRENT_USER,
   FINISH_ORDER_TASK,
   PAUSE_ORDER_TASK,
@@ -186,64 +203,7 @@ export default {
       isSaving: false,
       isStopping: false,
       isFinishing: false,
-      orderTasks: [
-        {
-          id: "88b074e9-2493-4182-9350-1317a2e4ffb6",
-          order_id: 5,
-          order_number: 5,
-          work_type: {
-            id: 2,
-            name: "Цирконий",
-            image_url: null,
-            description: null,
-            background_color: null,
-            steps: [],
-          },
-          work_step: {
-            roles: [],
-            id: 3,
-            name: "Модилирование",
-            price: 0,
-            description: null,
-            priority: 0,
-          },
-          priority: 1,
-          status: {
-            id: 1,
-            name: "Не начат",
-            code: "NotStarted",
-          },
-          created_at: "2025-12-01T16:49:43.67874",
-          comment: null,
-          isFittingStep: false,
-          executors: [],
-          order: {
-            id: 5,
-            customer_name: "ozarmehr",
-            patient_name: "ozarmehr",
-            number: 5,
-            expired_at: "2025-12-10T00:00:00",
-            created_at: "0001-01-01T00:00:00",
-            teeth: [
-              {
-                id: 11,
-                order_id: 5,
-                tooth_id: 48,
-                work_types: [
-                  {
-                    id: 2,
-                    name: "Цирконий",
-                    image_url: null,
-                    description: null,
-                    background_color: "#12d380",
-                    steps: [],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      ],
+      isCanceling: false,
     };
   },
   computed: {
@@ -290,6 +250,7 @@ export default {
       startOrderTaskAction: START_ORDER_TASK,
       pauseOrderTaskAction: PAUSE_ORDER_TASK,
       finishOrderTaskAction: FINISH_ORDER_TASK,
+      cancelOrderTaskAction: CANCEL_ORDER_TASK,
     }),
     goToViewPage(e) {
       this.$router.push(`/orders/view/${this.orderTask.order.id}`);
@@ -317,6 +278,16 @@ export default {
         callback: (orderTask) => this.$emit("refreshTasks"),
       });
       this.isFinishing = false;
+    },
+    async cancelTask(orderTaskId) {
+      if (!confirm("Вы действительно хотите отменить выполнение этой задачи?")) return;
+
+      this.isCanceling = true;
+      await this.cancelOrderTaskAction({
+        orderTaskId,
+        callback: (orderTask) => this.$emit("refreshTasks"),
+      });
+      this.isCanceling = false;
     },
     getStatusClass(status) {
       return getTaskStatusClass(status);
