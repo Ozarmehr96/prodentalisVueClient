@@ -58,7 +58,7 @@
               max="10000"
               class="form-control"
               id="floatingInput"
-              :readonly="!this.isEditMode"
+              :readonly="true"
             />
             <label for="floatingInput">Стоимость</label>
           </div>
@@ -94,7 +94,7 @@
         </span>
       </div>
       <!-- Правая часть -->
-      <div class="col-md-4 d-flex justify-content-center">
+      <div class="col-md-4 d-flex justify-content-center" style="min-height: 400px">
         <ToothSelection
           ref="toothSelection"
           @onToothSelectedChanged="selectedToothChnged"
@@ -113,6 +113,7 @@
       </div>
     </div>
     <SelectWorkTypeWizard
+      class="selectWorkTypeWizard"
       :isOpen="isVisibleSelectWorkType"
       :availableWorkTypes="filteredWorkTypes"
       @select="
@@ -460,6 +461,17 @@ export default {
 @media (min-width: 1400px) {
   .saveOrderButton {
     margin-top: -50px;
+  }
+}
+
+/* Медиазапрос для мобильных устройств */
+@media (max-width: 991px) {
+  .saveOrderButton {
+    padding-top: 10px;
+    padding-bottom: 15px;
+  }
+  .selectWorkTypeWizard {
+    padding-bottom: 55px;
   }
 }
 </style>
