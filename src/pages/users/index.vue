@@ -7,61 +7,88 @@
   >
     <!-- Main content -->
     <div class="content-body">
-      <table class="table table-hover align-middle">
-        <thead>
+      <table class="table table-striped table-bordered align-middle text-center">
+        <thead class="table-light">
           <tr>
-            <th scope="col" class="d-none d-sm-table-cell">ФИО</th>
-            <th scope="col" class="d-none d-sm-table-cell">Роль</th>
-            <th scope="col" class="d-none d-sm-table-cell">Специализация</th>
-            <th scope="col" class="d-none d-sm-table-cell">Логин</th>
-            <th scope="col" class="d-none d-sm-table-cell">Телефон</th>
-            <th scope="col" class="d-none d-sm-table-cell">Дата рождения</th>
-            <th scope="col" class="d-none d-sm-table-cell">Дата регистрации</th>
-            <th scope="col" v-if="isLabDirector">Действия</th>
+            <th>№</th>
+            <th>Сотрудник</th>
+            <th>Роль</th>
+            <th>Специализация</th>
+            <th>Логин</th>
+            <th>Телефон</th>
+            <th>Дата рождения</th>
+            <th>Дата регистрации</th>
+            <th v-if="isLabDirector">Действия</th>
           </tr>
         </thead>
+
         <tbody>
           <tr
-            v-for="user in filtresUsers"
+            v-for="(user, index) in filtresUsers"
+            :key="user.id"
             @click="() => $router.push(`/users/${user.id}`)"
             style="cursor: pointer"
           >
-            <td class="employee-cell">
-              <img
-                v-if="user.avatar_url"
-                :src="user.avatar_url"
-                alt=""
-                class="rounded-circle me-2 d-none d-sm-table-cell"
-                style="width: 32px; height: 32px"
-              />
-              <svg v-else class="avatar bi me-2 d-none d-sm-table-cell">
-                <use xlink:href="#people-circle"></use>
-              </svg>
-              <span>{{ user.full_name }}</span>
-            </td>
-            <td class="d-none d-sm-table-cell">{{ user.role_title }}</td>
-            <td class="d-none d-sm-table-cell">
-              {{ user.specialization ? user.specialization : "Не указано" }}
-            </td>
-            <td class="d-none d-sm-table-cell">{{ user.login }}</td>
-            <td class="d-none d-sm-table-cell">{{ user.phone_number }}</td>
-            <td class="d-none d-sm-table-cell">
-              {{ $toDateFormat(user.date_birth) }}
-            </td>
-            <td class="d-none d-sm-table-cell">
-              {{ $toDateTimeFormat(user.registration_datetime) }}
+            <!-- № -->
+            <td>{{ index + 1 }}</td>
+
+            <!-- Сотрудник -->
+            <td class="text-start">
+              <div class="d-flex align-items-center gap-2">
+                <img
+                  v-if="user.avatar_url"
+                  :src="user.avatar_url"
+                  class="rounded-circle"
+                  style="width: 32px; height: 32px"
+                />
+                <svg v-else class="avatar bi">
+                  <use xlink:href="#people-circle"></use>
+                </svg>
+                <span>{{ user.full_name }}</span>
+              </div>
             </td>
 
-            <td class="d-sm-table-cell">
-              <button
-                v-if="user.role !== 'LabDirector' && isLabDirector"
-                class="btn btn-danger btn-sm removeButton"
-                @click.stop="deleteUser(user)"
-              >
-                <!-- иконка из Bootstrap Icons -->
-                Удалить
-              </button>
+            <!-- Роль -->
+            <td>
+              <span class="badge bg-primary">
+                {{ user.role_title }}
+              </span>
             </td>
+
+            <!-- Специализация -->
+            <td>
+              {{ user.specialization || "—" }}
+            </td>
+
+            <!-- Логин -->
+            <td>{{ user.login }}</td>
+
+            <!-- Телефон -->
+            <td>{{ user.phone_number }}</td>
+
+            <!-- Дата рождения -->
+            <td>{{ $toDateFormat(user.date_birth) }}</td>
+
+            <!-- Дата регистрации -->
+            <td>{{ $toDateTimeFormat(user.registration_datetime) }}</td>
+
+            <!-- Действия -->
+            <td v-if="isLabDirector">
+              <div class="d-flex justify-content-center gap-2">
+                <button
+                  v-if="user.role !== 'LabDirector'"
+                  class="btn btn-sm btn-danger"
+                  @click.stop="deleteUser(user)"
+                >
+                  Удалить
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Пустой список -->
+          <tr v-if="!filtresUsers || filtresUsers.length === 0">
+            <td colspan="9" class="text-muted py-3">Нет сотрудников для отображения</td>
           </tr>
         </tbody>
       </table>
