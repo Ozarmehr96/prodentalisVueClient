@@ -164,7 +164,7 @@ export default {
           item.name = item.material?.name ?? item.name;
         });
 
-        this.materialsList = materials;
+        this.materialsList = this.sortedData(materials);
       },
     },
   },
@@ -224,6 +224,21 @@ export default {
           this.$router.push("/management/work-type-materials");
         },
       });
+    },
+    sortedData(materials) {
+      materials.sort((a, b) => {
+        // Сначала по типу: material.type.code
+        if (a.material.type.code < b.material.type.code) return -1;
+        if (a.material.type.code > b.material.type.code) return 1;
+
+        // Если тип одинаковый, сортируем по названию: material.name
+        if (a.material.name < b.material.name) return -1;
+        if (a.material.name > b.material.name) return 1;
+
+        return 0;
+      });
+
+      return materials;
     },
   },
 };

@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <div v-else class="table-outer-wrapper">
+    <div v-else class="table-outer-wrapper" style="max-width: 1230px">
       <div class="table-scroll-container">
         <table class="table table-bordered table-sm price-matrix mb-0">
           <thead>

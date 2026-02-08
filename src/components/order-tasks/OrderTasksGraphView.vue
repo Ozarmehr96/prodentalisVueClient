@@ -155,7 +155,7 @@ export default {
   data() {
     return {
       lineColor: "#cbd5e1",
-      nodeSpacing: 200,
+      nodeSpacing: 210,
       topMargin: 40,
       svgWidth: 250,
       taskHeights: [], // 👈 реальные высоты карточек
@@ -241,7 +241,7 @@ export default {
 
     maxCardHeight(task) {
       // высота карточки зависит от количества исполнителей
-      const baseHeight = 300;
+      const baseHeight = 400;
       const extra = task.executors.length > 1 ? (task.executors.length - 1) * 20 : 0;
       return baseHeight + extra;
     },
