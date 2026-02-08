@@ -32,7 +32,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in workType.materials" :key="index">
+            <tr v-for="(item, index) in filtredMaterials" :key="index">
               <td>{{ index + 1 }}</td>
               <td>{{ item.material.name }}</td>
               <td>{{ item.norma }}</td>
@@ -76,6 +76,20 @@ export default {
     };
   },
   computed: {
+    filtredMaterials() {
+      // Сортируем копию массива, чтобы не мутировать оригинальный
+      return [...this.workType.materials].sort((a, b) => {
+        // Сначала по типу: material.type.code
+        if (a.material.type.code < b.material.type.code) return -1;
+        if (a.material.type.code > b.material.type.code) return 1;
+
+        // Если тип одинаковый, сортируем по названию: material.name
+        if (a.material.name < b.material.name) return -1;
+        if (a.material.name > b.material.name) return 1;
+
+        return 0;
+      });
+    },
     headerGradient() {
       return this.workType.background_color;
     },
