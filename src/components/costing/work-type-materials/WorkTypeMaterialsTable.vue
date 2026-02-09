@@ -7,9 +7,19 @@
         class="p-3 d-flex justify-content-between align-items-center text-white rounded-top"
         :style="{ background: headerGradient }"
       >
-        <h2 class="fw-bold mb-0" style="font-size: 1.5rem">
-          {{ workType.name }}
-        </h2>
+        <router-link
+          :to="`/work-types/${workType.id}`"
+          class="nav-link link-dark"
+          :title="`Перейти на карточку '${workType.name}'`"
+        >
+          <h2
+            class="fw-bold mb-0"
+            style="font-size: 1.5rem; color: white; text-decoration: underline"
+          >
+            {{ workType.name }}
+          </h2>
+        </router-link>
+
         <button
           class="btn btn-sm btn-light text-dark"
           @click="() => $router.push('/management/work-type-materials/' + workType.id)"
