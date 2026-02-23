@@ -57,6 +57,27 @@ const actions = {
       console.error(e);
     }
   },
+
+  [types.UPDATE_ORDER_DEAD_LINE]: async ({ commit }, params) => {
+    try {
+      const response = await api.put(`/orders/${params.id}/deadline`, params);
+      if (params.callback) {
+        params.callback(response.data);
+      }
+
+      // обновляем список заказов
+      await commit(
+        types.MUTATE_ORDERS,
+        state.orders.map((order) =>
+          order.id === response.data.id ? response.data : order
+        )
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+    }
+  },
+
   [types.LOAD_ORDERS]: async ({ commit }, params) => {
     // Отменяем предыдущий, если есть
     if (ordersController) {
