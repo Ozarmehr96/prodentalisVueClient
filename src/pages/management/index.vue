@@ -1,6 +1,8 @@
 <template>
   <div class="navigation-cards min-vh-100 py-3" v-if="canView">
     <div class="container">
+      <FinanceExportModal v-model:show="showFinanceExportModal" />
+
       <!-- Заголовок страницы -->
       <div class="text-center mb-4">
         <h1 class="h2 mb-2 text-dark">Управление лабораторией</h1>
@@ -53,19 +55,24 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex/dist/vuex.cjs.js";
+import { mapGetters } from "vuex";
 import {
   IS_CUSTOMER,
   IS_LAB_ADMIN,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
 } from "../../store/types";
+import FinanceExportModal from "../../components/costing/FinanceExportModal.vue";
 
 export default {
   name: "NavigationCards",
+  components: {
+    FinanceExportModal,
+  },
   data() {
     return {
       hoveredCard: null,
+      showFinanceExportModal: false,
       // Группы карточек
     };
   },
@@ -81,12 +88,32 @@ export default {
           groupTitle: "Финансы",
           cards: [
             {
-              id: "cost-calculation",
+              id: "export-finance",
               iconClass: "brand-style",
-              title: "Себестоимость работ",
-              description: "Расчёт затрат на материалы и накладные расходы",
-              action: "/management/work-type-materials",
-              svgPath: "/images/calculator.svg",
+              title: "Финансовый отчёт",
+              description: "Доходы, расходы и чистая прибыль по заказчикам и типам работ",
+              action: () => (this.showFinanceExportModal = true), // Открытие модального окна
+              svgPath: "/images/finance-export.svg",
+              canShow: this.canView,
+            },
+            {
+              id: "payment-journal",
+              iconClass: "brand-style",
+              title: "Журнал платежей заказчиков",
+              description: "Прайс-листы и расценки для различных клиник и заказчиков",
+              action: "/management/payment-journal",
+              // svgPath: "/images/users.svg",
+              svgPath: "/images/payment-journal.svg",
+              canShow: this.canView,
+            },
+            {
+              id: "client-pricing",
+              iconClass: "brand-style",
+              title: "Стоимость работ по заказчикам",
+              description: "Прайс-листы и расценки для различных клиник и заказчиков",
+              action: "/management/customer-work-type-prices",
+              // svgPath: "/images/users.svg",
+              svgPath: "/images/price-price-tag-cost-svgrepo-com.svg",
               canShow: this.canView,
             },
             {
@@ -99,13 +126,12 @@ export default {
               canShow: this.canView,
             },
             {
-              id: "client-pricing",
+              id: "cost-calculation",
               iconClass: "brand-style",
-              title: "Стоимость работ по заказчикам",
-              description: "Прайс-листы и расценки для различных клиник и заказчиков",
-              action: "/management/customer-work-type-prices",
-              // svgPath: "/images/users.svg",
-              svgPath: "/images/price-price-tag-cost-svgrepo-com.svg",
+              title: "Себестоимость работ",
+              description: "Расчёт затрат на материалы и накладные расходы",
+              action: "/management/work-type-materials",
+              svgPath: "/images/calculator.svg",
               canShow: this.canView,
             },
           ],
@@ -152,6 +178,11 @@ export default {
   },
   methods: {
     handleCardClick(action) {
+      if (typeof action === "function") {
+        action();
+        return;
+      }
+
       // Отправляем событие родителю
       this.$emit("navigate", action);
       this.$router.push(action);

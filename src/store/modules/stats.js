@@ -1,7 +1,11 @@
+import { downloadFile, getFinanceReportFileName } from "../../helpers/download";
 import api from "../../services/api";
 import {
+ EXPORT_FINANCE_REPORT,
+ IS_LOADING_EXPORT_FINANCE_REPORT,
  IS_STATS_LOADING,
  LOAD_USER_STAT,
+ MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT,
  MUTATE_IS_STATS_LOADING,
  MUTATE_USER_STAT,
  USER_STAT,
@@ -13,19 +17,22 @@ const state = {
   total_elapsed_time: 0,
   total_tasks_completed: 0,
  },
+ isExportingFinanceReport: false,
  isLoading: false,
 };
 
 const mutations = {
  [MUTATE_USER_STAT]: (state, userStat) => (state.userStat = userStat),
  [MUTATE_IS_STATS_LOADING]: (state, isLoading) => (state.isLoading = isLoading),
+ [MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT]: (state, isExportingFinanceReport) =>
+  (state.isExportingFinanceReport = isExportingFinanceReport),
 };
 
 const actions = {
  [LOAD_USER_STAT]: async ({ commit }, params) => {
   try {
    await commit(MUTATE_IS_STATS_LOADING, true);
-   const response = await api.get("/stats", {params});
+   const response = await api.get("/stats", { params });
    await commit(MUTATE_USER_STAT, response.data);
    await commit(MUTATE_IS_STATS_LOADING, false);
    return response.data;
@@ -34,9 +41,37 @@ const actions = {
    await commit(MUTATE_IS_STATS_LOADING, false);
   }
  },
+ [EXPORT_FINANCE_REPORT]: async ({ commit }, params) => {
+  try {
+    let fileName = "";
+   await commit(MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT, true);
+   const response = await api.get("/stats/export/finance-report", { params });
+   await commit(MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT, false);
+   await api({
+    method: "GET",
+    responseType: "blob", // important
+    url: `/download/` + response.data,
+    data: {
+    },
+   }).then(async (res) => {
+    fileName = getFinanceReportFileName(params.date_from, params.date_to);
+    downloadFile(res, fileName);
+    await commit(MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT, false);
+   });
+
+   if (params.callback) {
+    params.callback(fileName);
+   }
+   return response.data;
+  } catch (e) {
+   console.error(e);
+   await commit(MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT, false);
+  }
+ },
 };
 
 const getters = {
+ [IS_LOADING_EXPORT_FINANCE_REPORT]: (state) => state.isExportingFinanceReport,
  [USER_STAT]: (state) => state.userStat,
  [IS_STATS_LOADING]: (state) => state.isLoading,
 };
