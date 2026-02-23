@@ -87,7 +87,6 @@
             @click="startTask(orderTask.id)"
           />
         </div>
-
         <template v-if="currentExecutor && !orderTask.is_auto_started">
           <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Started'">
             <ButtonWithLoader
@@ -113,7 +112,6 @@
               @click="cancelTask(orderTask.id)"
             />
           </div>
-
           <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Paused'">
             <ButtonWithLoader
               :isLoading="isSaving"
@@ -140,6 +138,7 @@
             />
           </div>
         </template>
+
         <div v-else-if="anotherExecutor" class="d-flex justify-content-between">
           <small
             >Взят в работу: {{ anotherExecutor.executor.name }}
@@ -148,7 +147,7 @@
         </div>
 
         <div
-          v-if="currentExecutor && orderTask.is_auto_started"
+          v-if="currentExecutor && orderTask.is_auto_started === true"
           class="d-flex justify-content-between"
         >
           <small>Автоматически запущен</small>

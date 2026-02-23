@@ -59,6 +59,7 @@ export default {
       type: Boolean,
       default: false,
     },
+    isAddAllButton: false,
   },
   data() {
     return {
@@ -73,14 +74,25 @@ export default {
       customer: CUSTOMER,
     }),
     filteredCustomers() {
-      return this.customers
+      let customers = [];
+
+      if (this.isAddAllButton) {
+        customers.push({
+          id: null,
+          full_name: "Все заказчики",
+        });
+      }
+
+      const filtered = this.customers
         .filter(
           (c) =>
             (c.full_name &&
               c.full_name.toLowerCase().includes(this.searchQuery.toLowerCase())) ||
             (c.phone && c.phone.includes(this.searchQuery))
         )
-        .sort((a, b) => a.full_name?.localeCompare(b.full_name));
+        .sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
+
+      return [...customers, ...filtered];
     },
   },
   watch: {
