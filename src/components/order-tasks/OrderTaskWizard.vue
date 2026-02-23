@@ -91,7 +91,7 @@
           <div class="d-grid gap-2 d-md-flex" v-if="orderTask.status.code === 'Started'">
             <ButtonWithLoader
               :isLoading="isStopping"
-              title="Пауза"
+              title="Приостановить"
               :customClasses="['btn-warning flex-fill']"
               :loadingText="''"
               @click="pauseTask(orderTask.id)"
@@ -147,6 +147,23 @@
         </div>
 
         <div
+          class="pt-3 d-grid gap-2 d-md-flex"
+          v-if="
+            anotherExecutor &&
+            isLabDirector &&
+            (orderTask.status.code === 'Paused' || orderTask.status.code === 'Started')
+          "
+        >
+          <ButtonWithLoader
+            :isLoading="isFinishing"
+            title="Завершить"
+            :customClasses="['btn-primary flex-fill']"
+            :loadingText="''"
+            @click="finishTaskByDirector(orderTask.id)"
+          />
+        </div>
+
+        <div
           v-if="currentExecutor && orderTask.is_auto_started === true"
           class="d-flex justify-content-between"
         >
@@ -169,6 +186,7 @@ import {
   CANCEL_ORDER_TASK,
   CURRENT_USER,
   FINISH_ORDER_TASK,
+  IS_LAB_DIRECTOR,
   PAUSE_ORDER_TASK,
   START_ORDER_TASK,
 } from "../../store/types";
@@ -208,6 +226,7 @@ export default {
   computed: {
     ...mapGetters({
       currentUser: CURRENT_USER,
+      isLabDirector: IS_LAB_DIRECTOR,
     }),
     canShowTimer() {
       return (
@@ -277,6 +296,19 @@ export default {
         callback: (orderTask) => this.$emit("refreshTasks"),
       });
       this.isFinishing = false;
+    },
+    async finishTaskByDirector(orderTaskId) {
+      this.isFinishing = true;
+      if (
+        !confirm(
+          "Вы не являетесь исполнителем этой задачи.\nВы действительно хотите завершить эту задачу?"
+        )
+      ) {
+        this.isFinishing = false;
+        return;
+      }
+
+      await this.finishTask(orderTaskId);
     },
     async cancelTask(orderTaskId) {
       if (!confirm("Вы действительно хотите отменить выполнение этой задачи?")) return;

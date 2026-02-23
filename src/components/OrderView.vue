@@ -19,7 +19,7 @@
         </div>
       </div>
       <!-- Левая колонка: данные заказа и стоимость -->
-      <div class="col-md-8 col-md-6">
+      <div class="col-md-4 col-md-8 col-md-6 col-lg-8">
         <div class="card mb-3 shadow-sm">
           <div class="card-body">
             <div class="d-flex justify-content-between mb-2">
@@ -45,6 +45,38 @@
             <div class="d-flex justify-content-between mb-2">
               <span class="text-muted">Комментарии:</span>
               <span class="fw-semibold">{{ order.description }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Блок для изменения срока выполнения заказа -->
+        <div
+          class="card shadow-sm mb-3"
+          v-if="isSystemAdmin || isLabDirector || isLabAdmin"
+        >
+          <div class="card-body">
+            <div class="row g-2 align-items-end">
+              <!-- Поле даты -->
+              <div class="col-12 col-md-7">
+                <label class="form-label mb-1"> Новый срок выполнения </label>
+                <input type="date" class="form-control" v-model="newDeadline" />
+              </div>
+
+              <!-- Кнопка -->
+              <div class="col-12 col-md-5">
+                <ButtonWithLoader
+                  @click="updateOrderDeadline"
+                  type="button"
+                  :isLoading="isUpdatingDeadline"
+                  title="Обновить срок"
+                  loadingText="Обновление..."
+                  :isValid="isValidNewDeadline"
+                  :customClasses="[
+                    'w-100',
+                    isValidNewDeadline ? 'brand-style' : 'btn-outline-secondary',
+                  ]"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -84,20 +116,28 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import {
   convertOrderTeethToWorkTypes,
   getOrderStatusClass,
 } from "../helpers/order-helpers";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
-import { IS_LAB_ADMIN, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../store/types";
+import {
+  IS_LAB_ADMIN,
+  IS_LAB_DIRECTOR,
+  IS_SYSTEM_ADMIN,
+  UPDATE_ORDER,
+  UPDATE_ORDER_DEAD_LINE,
+} from "../store/types";
 import OrderTasksGraphView from "./order-tasks/OrderTasksGraphView.vue";
+import ButtonWithLoader from "./ButtonWithLoader.vue";
 
 export default {
   name: "OrderView",
   components: {
     WorkTypeCardItem,
     OrderTasksGraphView,
+    ButtonWithLoader,
   },
   props: {
     order: {
@@ -105,20 +145,48 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      newDeadline: null,
+      isUpdatingDeadline: false,
+    };
+  },
   computed: {
     ...mapGetters({
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
       isLabAdmin: IS_LAB_ADMIN,
     }),
+    isValidNewDeadline() {
+      return (
+        this.newDeadline &&
+        this.$toDateFormat(this.newDeadline) !== this.$toDateFormat(this.order.expired_at)
+      );
+    },
     // Группировка зубов по типам работ
     filtredOrderSelectedTeethasWorktype() {
       return convertOrderTeethToWorkTypes(this.order.teeth);
     },
   },
   methods: {
+    ...mapActions({
+      updateOrderDeadlineAction: UPDATE_ORDER_DEAD_LINE,
+    }),
     getStatusOrderStatus(statusCode) {
       return getOrderStatusClass(statusCode);
+    },
+    async updateOrderDeadline() {
+      this.isUpdatingDeadline = true;
+      await this.updateOrderDeadlineAction({
+        id: this.order.id,
+        expired_at: this.newDeadline,
+        callback: () => {
+          this.isUpdatingDeadline = false;
+          this.$emit("reloadOrder");
+          this.$toast("Срок заказа успешно обновлен");
+        },
+      });
+      this.isUpdatingDeadline = false;
     },
   },
 };

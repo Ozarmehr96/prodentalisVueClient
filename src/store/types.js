@@ -81,6 +81,7 @@ export const MUTATE_ORDER = "orders/MUTATE_ORDER";
 export const ORDER = "orders/ORDER";
 export const CREATE_ORDER = "orders/CREATE_ORDER";
 export const UPDATE_ORDER = "orders/UPDATE_ORDER";
+export const UPDATE_ORDER_DEAD_LINE = "orders/UPDATE_ORDER_DEAD_LINE";
 export const DELETE_ORDER = "orders/DELETE_ORDER";
 export const START_ORDER = "orders/START_ORDER";
 export const FINISH_ORDER = "orders/FINISH_ORDER";

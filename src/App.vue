@@ -53,7 +53,7 @@ body {
   border-color: #08c2ba !important;
 }
 .brand-style:hover {
-  background-color: #36bfba !important;
+  background-color: #0ca8a3 !important;
 }
 .teeth {
   display: flex;
