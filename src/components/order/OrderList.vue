@@ -179,7 +179,11 @@ export default {
     },
 
     printOrderEvent(order) {
-      printOrder(order);
+      printOrder(
+        order,
+        this.$toDateTimeFormat(order.created_at),
+        this.$toDateFormat(order.expired_at)
+      );
     },
   },
 };

@@ -209,6 +209,24 @@ export default {
       isLabAdmin: IS_LAB_ADMIN,
       currentUser: CURRENT_USER,
     }),
+    teethColorList() {
+      const result = [];
+
+      this.order.teeth.forEach((item) => {
+        if (!item.work_types || item.work_types.length === 0) return;
+
+        // Если work_type один — берём первый
+        // Если их несколько — можно решить позже как объединять
+        const color = item.work_types[0].background_color;
+
+        result.push({
+          toothId: item.tooth_id,
+          background_color: color,
+        });
+      });
+
+      return result;
+    },
     canControl() {
       return this.isSystemAdmin || this.isLabAdmin || this.isLabDirector;
     },
