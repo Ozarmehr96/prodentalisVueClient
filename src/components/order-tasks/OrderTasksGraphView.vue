@@ -1,5 +1,25 @@
 <template>
   <div>
+    <div class="mb-3 w-100">
+      <div class="btn-group w-100" role="group">
+        <button
+          type="button"
+          class="btn btn-sm"
+          :class="displayMode === 'grouped' ? 'brand-style' : 'btn-outline-secondary'"
+          @click="displayMode = 'grouped'"
+        >
+          Сгруппированный
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm"
+          :class="displayMode === 'normal' ? 'brand-style' : 'btn-outline-secondary'"
+          @click="displayMode = 'normal'"
+        >
+          Обычный
+        </button>
+      </div>
+    </div>
     <div class="card mb-3">
       <div class="card-content">
         <div class="graph-container" ref="graphContainer">
@@ -56,7 +76,7 @@
                           {{ task.work_step?.name }}
                         </div>
                         <small class="text-muted">
-                          {{ task.work_type?.name }}
+                          {{ task.displayWorkTypeName }}
                         </small>
                       </div>
 
@@ -158,6 +178,7 @@ export default {
       nodeSpacing: 210,
       topMargin: 40,
       svgWidth: 250,
+      displayMode: "grouped", // 'normal' или 'grouped'
       taskHeights: [], // 👈 реальные высоты карточек
     };
   },
@@ -168,15 +189,56 @@ export default {
       isCustomer: IS_CUSTOMER,
     }),
     tasks() {
-      return this.order.tasks.sort((a, b) => {
-        // 1️⃣ по типу работы
-        if (a.work_type.id !== b.work_type.id) {
-          return a.work_type.id - b.work_type.id;
+      if (this.displayMode === "grouped") {
+        return this.tasksGrouped;
+      }
+
+      return this.sortTasks(this.order.tasks, true);
+    },
+
+    tasksGrouped() {
+      // Исходные задачи
+      const tasks = this.order.tasks;
+
+      // Словарь для быстрого поиска по id
+      const taskMap = {};
+      tasks.forEach((t) => (taskMap[t.id] = t));
+
+      // Новый список задач для отображения
+      const displayTasks = [];
+
+      // Чтобы не добавлять дубликаты
+      const addedTaskIds = new Set();
+
+      tasks.forEach((task) => {
+        // Если это авто-запущенная задача, её не добавляем отдельно
+        if (task.started_task_id) {
+          return;
         }
 
-        // 2️⃣ внутри типа — по приоритету этапа
-        return a.priority - b.priority;
+        // Ищем все задачи, которые были запущены этой задачей
+        const relatedTasks = tasks.filter((t) => t.started_task_id === task.id);
+
+        // Формируем объединённое название work_type
+        const allWorkTypes = [
+          task.work_type?.name,
+          ...relatedTasks.map((t) => t.work_type?.name),
+        ].filter(Boolean); // убираем null/undefined
+
+        const displayTask = {
+          ...task,
+          displayWorkTypeName: allWorkTypes.join(" + "), // Имплант + Промежуток МК
+          relatedTasks: relatedTasks, // можно сохранить для других целей
+        };
+
+        displayTask.total_price =
+          task.total_price + relatedTasks.reduce((sum, t) => sum + t.total_price, 0);
+
+        displayTasks.push(displayTask);
+        addedTaskIds.add(task.id);
       });
+
+      return this.sortTasks(displayTasks);
     },
 
     svgHeight() {
@@ -262,6 +324,26 @@ export default {
       }
 
       return y;
+    },
+
+    sortTasks(tasks, canMapByWorkType = false) {
+      let sortedTasks = tasks.sort((a, b) => {
+        // 1️⃣ по типу работы
+        if (a.work_type.id !== b.work_type.id) {
+          return a.work_type.id - b.work_type.id;
+        }
+        // 2️⃣ внутри типа — по приоритету этапа
+        return a.priority - b.priority;
+      });
+
+      if (canMapByWorkType) {
+        sortedTasks = sortedTasks.map((task) => ({
+          ...task,
+          displayWorkTypeName: task.work_type?.name, // добавляем свойство для обычного отображения
+        }));
+      }
+
+      return sortedTasks;
     },
   },
 };
