@@ -176,6 +176,9 @@ export default {
       return getOrderStatusClass(statusCode);
     },
     async updateOrderDeadline() {
+      if (!confirm("Вы уверены, что хотите обновить срок выполнения заказа?")) {
+        return;
+      }
       this.isUpdatingDeadline = true;
       await this.updateOrderDeadlineAction({
         id: this.order.id,
