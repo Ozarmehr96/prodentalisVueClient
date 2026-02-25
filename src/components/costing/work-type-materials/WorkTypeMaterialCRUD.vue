@@ -47,6 +47,7 @@
                 class="form-control form-control-sm"
                 v-model.number="item.norma"
                 min="1"
+                :readonly="item?.material?.is_oplata_truda"
               />
             </td>
             <td>
@@ -56,6 +57,7 @@
                 v-model.number="item.price"
                 :step="0.01"
                 min="0"
+                :readonly="item?.material?.is_nalog || item?.material?.is_oplata_truda"
               />
             </td>
             <td>
@@ -64,11 +66,13 @@
                 class="form-control form-control-sm"
                 v-model.number="item.quantity"
                 min="1"
+                :readonly="item?.material?.is_nalog || item?.material?.is_oplata_truda"
               />
             </td>
-            <td>{{ ((item.norma * item.price) / item.quantity).toFixed(3) }}</td>
+            <td>{{ getsum(item) }}</td>
             <td>
               <button
+                v-if="!item?.material?.is_oplata_truda"
                 class="btn btn-sm btn-danger"
                 @click="removeMaterial(item.id, index)"
               >
@@ -94,6 +98,13 @@
         />
       </div>
     </div>
+
+    <span
+      class="pb-3"
+      style="color: red"
+      v-if="materialsList.some((m) => m?.material?.is_nalog)"
+      >Налог будет пересчитан после сохранения.</span
+    >
 
     <SelectMaterialsWizard
       v-model:visible="showSelectMaterialWizard"
@@ -140,6 +151,7 @@ export default {
     return {
       materialsList: [],
       showSelectMaterialWizard: false,
+      materialsListChanged: false,
     };
   },
   computed: {
@@ -176,6 +188,13 @@ export default {
         this.materialsList = this.sortedData(materials);
       },
     },
+    materialsList: {
+      immediate: true,
+      deep: true,
+      handler(newVal) {
+        this.materialsListChanged = !this.materialsListChanged;
+      },
+    },
   },
   beforeDestroy() {
     this.materialsList.length = 0;
@@ -188,19 +207,35 @@ export default {
       this.showSelectMaterialWizard = true;
     },
     onMaterialSelected(material) {
+      console.log(material);
       if (this.$data.materialsList.find((m) => m.material_id === material.id)) {
         alert("Этот материал уже добавлен.");
         return;
       }
 
-      this.materialsList.push({
+      let newMaterial = {
         material_id: material.id,
         name: material.name,
         norma: 1,
         price: 0,
         quantity: 1,
         comment: "",
-      });
+      };
+
+      if (material.is_nalog) {
+        newMaterial.quantity = 100;
+        newMaterial.material = {
+          is_nalog: true,
+        };
+      }
+
+      if (material.is_oplata_truda) {
+        newMaterial.material = {
+          is_oplata_truda: true,
+        };
+      }
+
+      this.materialsList.push(newMaterial);
       this.showSelectMaterialWizard = false;
     },
     addMaterial() {
@@ -220,6 +255,9 @@ export default {
       }
       this.materialsList.splice(index, 1);
     },
+    getsum(material) {
+      return ((material.norma * material.price) / material.quantity).toFixed(3);
+    },
     async saveMaterials() {
       if (!confirm("Сохранить изменения в расходных материалах?")) {
         return;
@@ -230,7 +268,7 @@ export default {
         materials: this.materialsList,
         callback: () => {
           this.$toast("Расходные материалы сохранены");
-          this.$router.push("/management/work-type-materials");
+          this.$router.go();
         },
       });
     },

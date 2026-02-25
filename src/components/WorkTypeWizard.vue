@@ -261,8 +261,8 @@ export default {
         id: this.workType.id,
         callback: (newWorkStep) => {
           this.$toast(`Тип работы обновлён`, 5000);
-          // this.$router.go(-1); - пока нельзя использовать потому что картинка не обновляется, так как кэшируется и еще название картинки это иД тип работы
-          window.location.href = "/work-types";
+          this.$router.go(-1); // - пока нельзя использовать потому что картинка не обновляется, так как кэшируется и еще название картинки это иД тип работы
+          // window.location.href = "/work-types";
         },
       });
 

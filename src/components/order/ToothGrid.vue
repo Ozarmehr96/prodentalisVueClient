@@ -60,16 +60,24 @@ export default {
   },
   computed: {
     quadrant1() {
-      return this.teeth.filter((t) => t.toothId >= 11 && t.toothId <= 18);
+      return this.teeth
+        .filter((t) => t.toothId >= 11 && t.toothId <= 18)
+        .map((t) => t.toothId % 10); // берём только последнюю цифру
     },
     quadrant2() {
-      return this.teeth.filter((t) => t.toothId >= 21 && t.toothId <= 28);
+      return this.teeth
+        .filter((t) => t.toothId >= 21 && t.toothId <= 28)
+        .map((t) => t.toothId % 10); // берём только последнюю цифру
     },
     quadrant3() {
-      return this.teeth.filter((t) => t.toothId >= 31 && t.toothId <= 38);
+      return this.teeth
+        .filter((t) => t.toothId >= 31 && t.toothId <= 38)
+        .map((t) => t.toothId % 10); // берём только последнюю цифру
     },
     quadrant4() {
-      return this.teeth.filter((t) => t.toothId >= 41 && t.toothId <= 48);
+      return this.teeth
+        .filter((t) => t.toothId >= 41 && t.toothId <= 48)
+        .map((t) => t.toothId % 10); // берём только последнюю цифру
     },
   },
   methods: {
