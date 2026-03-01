@@ -164,6 +164,35 @@
             <div class="invalid-feedback">{{ errors.lab_id }}</div>
           </div>
 
+          <div class="row mb-3">
+            <!-- Тип заработной платы -->
+            <div class="col-md-7 mb-3">
+              <label class="form-label">Тип выплаты</label>
+              <select
+                :class="{ 'is-invalid': errors.salary_type }"
+                class="form-select"
+                v-model="user.salary_type"
+                required
+              >
+                <option v-for="type in salaryTypes" :key="type.id" :value="type.code">
+                  {{ type.name }}
+                </option>
+              </select>
+              <div class="invalid-feedback">{{ errors.salary_type }}</div>
+            </div>
+            <!-- Специализация -->
+            <div class="col-md-5 mb-3">
+              <label class="form-label">Базовая зарплата сотрудника</label>
+              <input
+                type="number"
+                min="0"
+                class="form-control"
+                v-model.trim="user.base_salary"
+                placeholder="Например: техник, керамист и т.д."
+              />
+            </div>
+          </div>
+
           <!-- Специализация -->
           <div class="mb-3">
             <label class="form-label">Специализация</label>
@@ -200,6 +229,8 @@ import {
   LOAD_LABS,
   ROLES,
   LOAD_ROLES,
+  SALARY_TYPES,
+  LOAD_SALARY_TYPES,
 } from "../store/types";
 import Spinner from "./Spinner.vue";
 import errors from "../store/modules/errors";
@@ -225,6 +256,8 @@ export default {
         lab_id: "",
         specialization: "",
         roles: [],
+        salary_type: null,
+        base_salary: 0,
       },
       errors: {},
       isSaving: false,
@@ -234,6 +267,7 @@ export default {
   async beforeMount() {
     await this.loadMainRoles();
     await this.loadRoles();
+    await this.loadSalaryTypes();
     if (this.isSystemAdmin) await this.loadLabs();
 
     if (this.existingUser) {
@@ -243,6 +277,7 @@ export default {
       this.$nextTick(() => {
         this.user.role = this.user.role; // принудительно триггерим обновление select
         this.user.roles = this.user.roles;
+        this.user.salary_type = this.user.salary_type.code;
       });
     }
   },
@@ -255,6 +290,7 @@ export default {
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
       labs: LABS,
+      salaryTypes: SALARY_TYPES,
     }),
     maxDate() {
       const today = new Date();
@@ -271,6 +307,7 @@ export default {
       loadMainRoles: LOAD_MAIN_ROLES,
       loadLabs: LOAD_LABS,
       loadRoles: LOAD_ROLES,
+      loadSalaryTypes: LOAD_SALARY_TYPES,
     }),
     generatePassword() {
       const chars = "abcde123456789";
@@ -331,6 +368,11 @@ export default {
 
         case "role":
           if (!value) this.errors[field] = "Выберите роль";
+          else this.errors[field] = "";
+          break;
+
+        case "salary_type":
+          if (!value) this.errors[field] = "Выберите тип выплаты";
           else this.errors[field] = "";
           break;
 

@@ -37,6 +37,7 @@
                     :src="card.svgPath"
                     alt="icon"
                     class="svg-icon"
+                    :style="card.imageStyle"
                   />
                 </div>
 
@@ -95,6 +96,16 @@ export default {
               action: () => (this.showFinanceExportModal = true), // Открытие модального окна
               svgPath: "/images/finance-export.svg",
               canShow: this.canView,
+            },
+            {
+              id: "salary-payment-journal",
+              iconClass: "brand-style",
+              title: "Журнал выплат зарплаты",
+              description: "Учёт и контроль выплат зарплаты сотрудникам",
+              action: "/management/salary-payment-journal",
+              svgPath: "/images/zarplata.svg",
+              canShow: this.canView,
+              imageStyle: "width:64px !important; height:64px!important;",
             },
             {
               id: "payment-journal",

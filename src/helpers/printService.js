@@ -30,7 +30,7 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
                 continue; // если зуб не найден, пропускаем его
             }
             const color = tooth?.work_types?.[0]?.background_color || "#f0f0f0";
-            html += `<div class="tooth-ongrid" style="background-color:${color}">${i}</div>`;
+            html += `<div class="tooth-ongrid" style="background-color:${color}">${i %10}</div>`;
         }
         html += '</div>';
         return html;
