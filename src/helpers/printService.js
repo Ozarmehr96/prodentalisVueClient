@@ -22,19 +22,32 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
     doc.open();
 
     // Формируем квадранты зубов
-    const quadrants = [[11,18],[21,28],[31,38],[41,48]].map(range => {
-        let html = '<div class="quadrant">';
+    const quadrants = [[11,18],[21,28],[31,38],[41,48]].map((range, index) => {
+    let html = '<div class="quadrant">';
+
+    const isReverse = index === 0 || index === 2; // 1 и 3 квадрант
+
+    if (isReverse) {
+        for (let i = range[1]; i >= range[0]; i--) {
+            const tooth = order.teeth.find(t => t.tooth_id === i);
+            if (!tooth) continue;
+
+            const color = tooth?.work_types?.[0]?.background_color || "#000000";
+            html += `<span class="tooth-number" style="color:${color};">${i % 10}</span>`;
+        }
+    } else {
         for (let i = range[0]; i <= range[1]; i++) {
             const tooth = order.teeth.find(t => t.tooth_id === i);
-            if (!tooth) {
-                continue; // если зуб не найден, пропускаем его
-            }
+            if (!tooth) continue;
+
             const color = tooth?.work_types?.[0]?.background_color || "#000000";
-            html += `<span class="tooth-number" style="color:${color}; margin-right:0px;">${i % 10}</span>`;
+            html += `<span class="tooth-number" style="color:${color};">${i % 10}</span>`;
         }
-        html += '</div>';
-        return html;
-    }).join('');
+    }
+
+    html += '</div>';
+    return html;
+}).join('');
 
     // Формируем список работ с квадратиками цветов
     const worksHtml = convertOrderTeethToWorkTypes(order.teeth.slice())
@@ -69,12 +82,13 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
                 .tooth-grid {
                 padding-right: 10px;
     display: grid;
+    max-width: 245px !important;
     grid-template-columns: 1fr 1fr;
     gap: 0;
     margin: 0;
     align-self: start; /* вот эта строчка фиксирует высоту по контенту */
 }
-                .works-list { margin-top: 10px; }
+                .works-list { margin-top: 10px; display:inline-flex; }
                 .work-row { display: flex; align-items: center; margin-bottom: 4px; }
                 
                 .work-row-inline {
@@ -108,24 +122,25 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
                 </div>
 
                 <!-- QR -->
-                <div class="qr">
+                <div class="qr" id="qr">
                     <img src="${qrCanvas.toDataURL('image/png')}" alt="QR Code" />
                 </div>
 
                 <!-- Квадрант зубов -->
+                <div style="max-width: 350px">
+                <div style="margin-top:-55px;"><h3>Типы работ:</h3></div>
                 <div class="tooth-grid" id="tooth-grid">
                     ${quadrants}
                 </div>
-            </div>
-   
-            <strong>Типы работ:</strong>
-            <div class="works-list">
+                 
+                 <div style="margin-top:5px;">
                         ${worksHtml}
                     </div>
+                </div>
+            </div>
         </body>
         </html>
     `);
-
 
     doc.close();
 
@@ -133,5 +148,22 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
         console.log("Печать завершена");
+
+        const qrDiv = iframe.contentDocument.getElementById("qr");
+        if (qrDiv) {
+        const rect1 = qrDiv.getBoundingClientRect();
+        console.log("QR Ширина:", rect1.width, "px");
+        console.log("QR Высота:", rect1.height, "px");
+    } else {
+        console.log("QR не найден в iframe!");
+    }
+        const quadrantDiv = iframe.contentDocument.getElementById("tooth-grid");
+    if (quadrantDiv) {
+        const rect = quadrantDiv.getBoundingClientRect();
+        console.log("Ширина:", rect.width, "px");
+        console.log("Высота:", rect.height, "px");
+    } else {
+        console.log("Квадрант не найден в iframe!");
+    }
     }, 300);
 }
