@@ -6,7 +6,7 @@ import { convertOrderTeethToWorkTypes } from "./order-helpers";
  * @param {string} orderBlockId - ID блока заказа с QR canvas
  */
 export function printOrder(order, created_at_formatted, expired_at_formatted) {
-    const orderBlock =document.getElementById(`order-${order.id}-body`);
+    const orderBlock = document.getElementById(`order-${order.id}-body`);
     if (!orderBlock) return console.log("Блок заказа не найден!");
 
     const qrCanvas = orderBlock.querySelector("canvas");
@@ -29,14 +29,14 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
             if (!tooth) {
                 continue; // если зуб не найден, пропускаем его
             }
-            const color = tooth?.work_types?.[0]?.background_color || "#f0f0f0";
-            html += `<div class="tooth-ongrid" style="background-color:${color}">${i %10}</div>`;
+            const color = tooth?.work_types?.[0]?.background_color || "#000000";
+            html += `<span class="tooth-number" style="color:${color}; margin-right:0px;">${i % 10}</span>`;
         }
         html += '</div>';
         return html;
     }).join('');
 
-// Формируем список работ с квадратиками цветов
+    // Формируем список работ с квадратиками цветов
     const worksHtml = convertOrderTeethToWorkTypes(order.teeth.slice())
     .map(w => `<span class="work-row-inline"><span class="work-color" style="background-color:${w.background_color}"></span><span class="work-name">${w.name}</span></span>`)
     .join('') || '';
@@ -54,11 +54,18 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
                 .info div { margin-bottom: 6px; }
                 .info .label { display: inline-block; width: 100px; font-weight: 600; color: #555; }
                 .info .value { font-weight: 600; }
-                .qr { min-width: 150px; }
+                .qr { min-width: 150px; margin-top:-10px;}
                 .qr img { width: 150px; height: 150px; display: block; }
-                .quadrant { min-height: 50px !important; display: grid; grid-template-columns: repeat(4, 27px); grid-auto-rows: 27px; gap: 4px; border: 0.1px solid #000; padding: 8px; }
                 .tooth-ongrid { display: flex; align-items: center; justify-content: center; width: 27px; height: 27px; font-weight: 400; font-size: 14px; border-radius: 1px; color: #000; }
-                
+.quadrant {
+    display: flex;
+    flex-direction: row;
+    gap: 4px; /* можно оставить или заменить на margin у span */
+    border: 0.01px solid #000;
+    padding: 8px;
+    min-height:18px !important;
+    min-width:100px !important;
+}
                 .tooth-grid {
                 padding-right: 10px;
     display: grid;
@@ -106,7 +113,7 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
                 </div>
 
                 <!-- Квадрант зубов -->
-                <div class="tooth-grid">
+                <div class="tooth-grid" id="tooth-grid">
                     ${quadrants}
                 </div>
             </div>
@@ -119,12 +126,12 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
         </html>
     `);
 
+
     doc.close();
 
     setTimeout(() => {
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
-        document.body.removeChild(iframe);
         console.log("Печать завершена");
     }, 300);
 }
