@@ -234,3 +234,6 @@ export const SALARY_PAYMENT_TYPES = "salaryPaymentJournal/SALARY_PAYMENT_TYPES";
 export const SALARY_TYPES = "salaryPaymentJournal/SALARY_TYPES";
 export const MUTATE_SALARY_TYPES = "salaryPaymentJournal/MUTATE_SALARY_TYPES";
 export const LOAD_SALARY_TYPES = "salaryPaymentJournal/MUTATE_SALARY_TYPES";
+export const LOAD_USERS_SALARY_STATS = "salaryPaymentJournal/LOAD_USERS_SALARY_STATS"; // стастистика сотрудников (сколько начислено, сколько выплачено, сколько к выплате)
+export const MUTATE_USERS_SALARY_STATS = "salaryPaymentJournal/MUTATE_USERS_SALARY_STATS";
+export const USERS_SALARY_STATS = "salaryPaymentJournal/MUTATE_USERS_SALARY_STATS";

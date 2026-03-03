@@ -18,6 +18,9 @@ import {
   LOAD_SALARY_TYPES,
   MUTATE_SALARY_TYPES,
   SALARY_TYPES,
+  MUTATE_USERS_SALARY_STATS,
+  USERS_SALARY_STATS,
+  LOAD_USERS_SALARY_STATS,
 } from "../types";
 
 const state = {
@@ -26,6 +29,7 @@ const state = {
   salaryJournal: [],
   salaryPaymentTypes: [],
   salaryTypes: [],
+  usersSalaryStats: []
 };
 
 const mutations = {
@@ -34,6 +38,7 @@ const mutations = {
   [MUTATE_SALARY_PAYMENT_JOURNAL]: (state, salaryJournal) => (state.salaryJournal = salaryJournal),
   [MUTATE_SALARY_PAYMENT_TYPES]: (state, salaryPaymentTypes) => (state.salaryPaymentTypes = salaryPaymentTypes),
   [MUTATE_SALARY_TYPES]: (state, salaryTypes) => (state.salaryTypes = salaryTypes),
+  [MUTATE_USERS_SALARY_STATS]: (state, usersSalaryStats) => (state.usersSalaryStats = usersSalaryStats),
 };
 
 const actions = {
@@ -153,6 +158,20 @@ const actions = {
       throw e;
     }
   },
+
+  [LOAD_USERS_SALARY_STATS]: async ({ commit }, params = {}) => {
+    try {
+      await commit(MUTATE_IS_SALARY_PAYMENT_JOURNALS_LOADING, true);
+      const response = await api.get(`/stats/users-salary-stats`, { params });
+      await commit(MUTATE_USERS_SALARY_STATS, response.data);
+      await commit(MUTATE_IS_SALARY_PAYMENT_JOURNALS_LOADING, false);
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      await commit(MUTATE_IS_SALARY_PAYMENT_JOURNALS_LOADING, false);
+      return [];
+    }
+  },
 };
 
 const getters = {
@@ -161,6 +180,7 @@ const getters = {
   [IS_SALARY_PAYMENT_JOURNALS_LOADING]: (state) => state.isLoading,
   [SALARY_PAYMENT_TYPES]: (state) => state.salaryPaymentTypes,
   [SALARY_TYPES]: (state) => state.salaryTypes,
+  [USERS_SALARY_STATS]: (state) => state.usersSalaryStats,
 };
 
 export default {

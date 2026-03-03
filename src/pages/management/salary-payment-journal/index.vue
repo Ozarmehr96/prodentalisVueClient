@@ -133,11 +133,9 @@ import {
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
   IS_LAB_ADMIN,
-  LOAD_USERS,
   LOAD_SALARY_PAYMENT_JOURNALS,
   DELETE_SALARY_PAYMENT_JOURNAL,
   SALARY_PAYMENT_JOURNALS,
-  SAVE_SALARY_PAYMENT_JOURNAL,
 } from "../../../store/types";
 import SalaryJournalModal from "../../../components/costing/salary-payment-journal/SalaryJournalModal.vue";
 

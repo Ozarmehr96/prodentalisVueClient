@@ -57,12 +57,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import {
-  IS_CUSTOMER,
-  IS_LAB_ADMIN,
-  IS_LAB_DIRECTOR,
-  IS_SYSTEM_ADMIN,
-} from "../../store/types";
+import { IS_LAB_ADMIN, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../../store/types";
 import FinanceExportModal from "../../components/costing/FinanceExportModal.vue";
 
 export default {
@@ -98,20 +93,31 @@ export default {
               canShow: this.canView,
             },
             {
+              id: "users-salary-stats",
+              iconClass: "brand-style",
+              title: "Зарплата сотрудников",
+              description:
+                "Кому сколько начислено, сколько выплачено и сколько осталось выплатить",
+              action: "/management/users-salary-stats",
+              svgPath: "/images/user_salary.svg",
+              canShow: this.isDirector || this.isSystemAdmin,
+              imageStyle: "width:64px !important; height:64px!important;",
+            },
+            {
               id: "salary-payment-journal",
               iconClass: "brand-style",
               title: "Журнал выплат зарплаты",
-              description: "Учёт и контроль выплат зарплаты сотрудникам",
+              description: "Кто сколько получил зарплаты",
               action: "/management/salary-payment-journal",
               svgPath: "/images/zarplata.svg",
-              canShow: this.canView,
+              canShow: this.isDirector || this.isSystemAdmin,
               imageStyle: "width:64px !important; height:64px!important;",
             },
             {
               id: "payment-journal",
               iconClass: "brand-style",
               title: "Журнал платежей заказчиков",
-              description: "Прайс-листы и расценки для различных клиник и заказчиков",
+              description: "Оплаты заказчиков (кто сколько заплатил)",
               action: "/management/payment-journal",
               // svgPath: "/images/users.svg",
               svgPath: "/images/payment-journal.svg",
@@ -125,7 +131,7 @@ export default {
               action: "/management/customer-work-type-prices",
               // svgPath: "/images/users.svg",
               svgPath: "/images/price-price-tag-cost-svgrepo-com.svg",
-              canShow: this.canView,
+              canShow: this.isDirector || this.isSystemAdmin,
             },
             {
               id: "material-expenses",
@@ -143,7 +149,7 @@ export default {
               description: "Расчёт затрат на материалы и накладные расходы",
               action: "/management/work-type-materials",
               svgPath: "/images/calculator.svg",
-              canShow: this.canView,
+              canShow: this.isDirector || this.isSystemAdmin,
             },
           ],
         },
