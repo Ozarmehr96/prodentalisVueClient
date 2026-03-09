@@ -7,7 +7,6 @@ import dayjs from "dayjs";
  */
 export function convertOrderTeethToWorkTypes(orderSelectedTeeth) {
       let workTypes = [];
-
       orderSelectedTeeth.forEach((tooth) => {
         let orderWorkTypes = tooth.hasOwnProperty("work_types") ? tooth.work_types : tooth.workTypes;
         // перебираем все типы работ у зуба

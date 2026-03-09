@@ -83,6 +83,23 @@
               </div>
             </div>
 
+            <div class="col-12 col-md-6" v-if="canShowPersent">
+              <div class="form-floating">
+                <input
+                  type="number"
+                  min="0"
+                  class="form-control"
+                  :class="{
+                    'is-invalid': localCustomer.commission_percent && !isCommissionValid,
+                  }"
+                  v-model.trim="localCustomer.commission_percent"
+                  placeholder="Телефон"
+                />
+                <div class="invalid-feedback">Минимум 0</div>
+                <label for="phone">Комиссия заказчика</label>
+              </div>
+            </div>
+
             <!-- Комментарий -->
             <div class="col-12">
               <div class="form-floating">
@@ -123,7 +140,13 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import ButtonWithLoader from "../ButtonWithLoader.vue";
-import { IS_CUSTOMERS_LOADING, SAVE_CUSTOMER, UPDATE_CUSTOMER } from "../../store/types";
+import {
+  CURRENT_USER,
+  IS_CUSTOMERS_LOADING,
+  SAVE_CUSTOMER,
+  UPDATE_CUSTOMER,
+} from "../../store/types";
+import { VAHOBOV_LAB } from "../../helpers/labsEnum";
 
 const emptyCustomer = () => ({
   id: null,
@@ -132,6 +155,7 @@ const emptyCustomer = () => ({
   comment: "",
   pass: "",
   login: "",
+  commission_percent: 0,
 });
 
 export default {
@@ -179,7 +203,12 @@ export default {
   computed: {
     ...mapGetters({
       isLoading: IS_CUSTOMERS_LOADING,
+      currentUser: CURRENT_USER,
     }),
+
+    canShowPersent() {
+      return this.currentUser.lab_id == VAHOBOV_LAB;
+    },
 
     // Валидность формы
     isValid() {
@@ -187,7 +216,8 @@ export default {
         this.isFullNameValid &&
         this.isLoginValid &&
         this.isPasswordValid &&
-        this.isPhoneValid
+        this.isPhoneValid &&
+        this.isCommissionValid
       );
     },
 
@@ -198,6 +228,10 @@ export default {
       const lettersCount = (name.match(/[a-zA-Zа-яА-ЯёЁ]/g) || []).length;
 
       return lettersCount >= 4;
+    },
+
+    isCommissionValid() {
+      return this.localCustomer?.commission_percent >= 0;
     },
 
     isLoginValid() {

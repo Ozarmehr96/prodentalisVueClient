@@ -116,7 +116,7 @@
                       <div class="task-line" v-if="executor.status.code == 'Finished'">
                         <span class="text-muted">Завершен:</span>
                         <span>
-                          {{ $toDateTimeFormat(executor.started_at) }}
+                          {{ $toDateTimeFormat(executor?.finishedAt) }}
                         </span>
                       </div>
 
@@ -233,6 +233,9 @@ export default {
 
         displayTask.total_price =
           task.total_price + relatedTasks.reduce((sum, t) => sum + t.total_price, 0);
+
+        displayTask.teeth_count =
+          task.teeth_count + relatedTasks.reduce((sum, t) => sum + t.teeth_count, 0);
 
         displayTasks.push(displayTask);
         addedTaskIds.add(task.id);

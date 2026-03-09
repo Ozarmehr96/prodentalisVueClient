@@ -137,7 +137,7 @@ export default {
 
       if (!existedOrderTooth) {
         // если зуб не найден, добавляем его в начало массива
-        const a = [orderTooth, ...this.orderSelectedTeeth];
+        const a = [...this.orderSelectedTeeth, orderTooth];
         this.setOrderSelectedTeeth(a); // сохраняем в Vuex
       } else {
         existedOrderTooth = orderTooth; // если есть — обновляем объект

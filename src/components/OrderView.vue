@@ -18,6 +18,7 @@
           </div>
         </div>
       </div>
+
       <!-- Левая колонка: данные заказа и стоимость -->
       <div class="col-md-4 col-md-8 col-md-6 col-lg-8">
         <div class="card mb-3 shadow-sm">
@@ -37,6 +38,16 @@
             <div class="d-flex justify-content-between mb-2">
               <span class="text-muted">Дата создания:</span>
               <span class="fw-semibold">{{ $toDateTimeFormat(order.created_at) }}</span>
+            </div>
+            <div
+              v-for="(primerka, index) in primerkaList"
+              :key="`primerka${index}`"
+              class="d-flex justify-content-between mb-2"
+            >
+              <span class="text-muted">Примерка {{ primerka.workTypeName }}:</span>
+              <span class="fw-semibold" :title="getPrimerkaTitle(primerka)">{{
+                primerka.startedAt
+              }}</span>
             </div>
             <div class="d-flex justify-content-between">
               <span class="text-muted">Срок сдачи:</span>
@@ -126,8 +137,8 @@ import {
   IS_LAB_ADMIN,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
-  UPDATE_ORDER,
   UPDATE_ORDER_DEAD_LINE,
+  WORK_STEPS,
 } from "../store/types";
 import OrderTasksGraphView from "./order-tasks/OrderTasksGraphView.vue";
 import ButtonWithLoader from "./ButtonWithLoader.vue";
@@ -157,6 +168,27 @@ export default {
       isSystemAdmin: IS_SYSTEM_ADMIN,
       isLabAdmin: IS_LAB_ADMIN,
     }),
+    primerkaList() {
+      let primerkas = [];
+      this.order.tasks.forEach((task) => {
+        let startedAt =
+          task.executors?.length > 0 ? task?.executors[0]?.started_at : null;
+        if (task.is_primerka && startedAt) {
+          primerkas.push({
+            workTypeId: task.work_type.id,
+            workTypeName: task.work_type.name,
+            startedAt: this.$toDateFormat(startedAt),
+            startedAtTitle: this.$toDateTimeFormat(startedAt),
+            finishedAt:
+              task.executors?.length > 0
+                ? this.$toDateTimeFormat(task?.executors[0]?.finishedAt)
+                : null,
+          });
+        }
+      });
+
+      return primerkas;
+    },
     isValidNewDeadline() {
       return (
         this.newDeadline &&
@@ -172,6 +204,9 @@ export default {
     ...mapActions({
       updateOrderDeadlineAction: UPDATE_ORDER_DEAD_LINE,
     }),
+    getPrimerkaTitle(primerka) {
+      return `Дата отправки: ${primerka?.startedAtTitle}\nДата прихода: ${primerka?.finishedAt}`;
+    },
     getStatusOrderStatus(statusCode) {
       return getOrderStatusClass(statusCode);
     },

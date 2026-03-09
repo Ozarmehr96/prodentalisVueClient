@@ -1,11 +1,14 @@
-import { downloadFile, getFinanceReportFileName } from "../../helpers/download";
+import { downloadFile, getFinanceReportFileName, getOrdersByCustomersReportFileName } from "../../helpers/download";
 import api from "../../services/api";
 import {
  EXPORT_FINANCE_REPORT,
+ EXPORT_ORDERS_BY_CUSTOMERS,
  IS_LOADING_EXPORT_FINANCE_REPORT,
+ IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS,
  IS_STATS_LOADING,
  LOAD_USER_STAT,
  MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT,
+ MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS,
  MUTATE_IS_STATS_LOADING,
  MUTATE_USER_STAT,
  USER_STAT,
@@ -19,11 +22,13 @@ const state = {
  },
  isExportingFinanceReport: false,
  isLoading: false,
+ isExportingOrdersByCustomers: false
 };
 
 const mutations = {
  [MUTATE_USER_STAT]: (state, userStat) => (state.userStat = userStat),
  [MUTATE_IS_STATS_LOADING]: (state, isLoading) => (state.isLoading = isLoading),
+ [MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS]: (state, isExportingOrdersByCustomers) => (state.isExportingOrdersByCustomers = isExportingOrdersByCustomers),
  [MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT]: (state, isExportingFinanceReport) =>
   (state.isExportingFinanceReport = isExportingFinanceReport),
 };
@@ -41,6 +46,7 @@ const actions = {
    await commit(MUTATE_IS_STATS_LOADING, false);
   }
  },
+
  [EXPORT_FINANCE_REPORT]: async ({ commit }, params) => {
   try {
     let fileName = "";
@@ -68,12 +74,41 @@ const actions = {
    await commit(MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT, false);
   }
  },
+
+  [EXPORT_ORDERS_BY_CUSTOMERS]: async ({ commit }, params) => {
+  try {
+    let fileName = "";
+   await commit(MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS, true);
+   const response = await api.get("/stats/export/orders-by-customers", { params });
+   await commit(MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS, false);
+   await api({
+    method: "GET",
+    responseType: "blob", // important
+    url: `/download/` + response.data,
+    data: {
+    },
+   }).then(async (res) => {
+    fileName = getOrdersByCustomersReportFileName(params.date_from, params.date_to);
+    downloadFile(res, fileName);
+    await commit(MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS, false);
+   });
+
+   if (params.callback) {
+    params.callback(fileName);
+   }
+   return response.data;
+  } catch (e) {
+   console.error(e);
+   await commit(MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS, false);
+  }
+ },
 };
 
 const getters = {
  [IS_LOADING_EXPORT_FINANCE_REPORT]: (state) => state.isExportingFinanceReport,
  [USER_STAT]: (state) => state.userStat,
  [IS_STATS_LOADING]: (state) => state.isLoading,
+ [IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS]: (state) => state.isExportingOrdersByCustomers,
 };
 
 export default {

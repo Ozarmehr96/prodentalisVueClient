@@ -21,6 +21,9 @@ dayjs.locale('ru')
 
 // Глобальный метод
 app.config.globalProperties.$toDateFormat = (d, format = 'DD.MM.YYYY') => {
+  if (!d) {
+    return null;
+  }
   return dayjs(d).local().format(format)
 };
 

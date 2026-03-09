@@ -9,10 +9,11 @@
   </app-page>
 </template>
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import AppPage from "../../../components/AppPage.vue";
 import OrderView from "../../../components/OrderView.vue";
-import { LOAD_ORDER } from "../../../store/types";
+import { LOAD_ORDER, LOAD_WORK_STEPS, WORK_STEPS } from "../../../store/types";
+
 /**
  * Страница "Редактирование заказа"
  *
@@ -35,6 +36,7 @@ export default {
     next();
   },
   async beforeMount() {
+    this.set;
     await this.loadOrder(this.$route.params.id);
   },
   methods: {

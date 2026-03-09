@@ -1,0 +1,1 @@
+export const VAHOBOV_LAB = 'd674d53e-21a5-4d67-7a68-08de0e0e421f';

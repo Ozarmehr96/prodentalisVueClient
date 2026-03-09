@@ -4,7 +4,7 @@
       <div class="modal-content p-4 position-relative">
         <!-- Заголовок -->
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="mb-0">Экспорт финансового отчёта</h5>
+          <h5 class="mb-0">Экспорт заказов по заказчикам</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
 
@@ -35,7 +35,7 @@
             Отмена
           </button>
           <ButtonWithLoader
-            @click="exportFinanceReport"
+            @click="exportOrdersByCustomes"
             type="submit"
             :isLoading="isExporting"
             title="Экспортировать"
@@ -52,11 +52,10 @@
 </template>
 
 <script>
-import dayjs from "dayjs";
 import { mapActions, mapGetters } from "vuex";
 import {
-  EXPORT_FINANCE_REPORT,
-  IS_LOADING_EXPORT_FINANCE_REPORT,
+  EXPORT_ORDERS_BY_CUSTOMERS,
+  IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS,
 } from "../../store/types";
 import ButtonWithLoader from "../ButtonWithLoader.vue";
 import { getDefaultPeriod } from "../../helpers/timeHelpers";
@@ -84,7 +83,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isExporting: IS_LOADING_EXPORT_FINANCE_REPORT,
+      isExporting: IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS,
     }),
     isValid() {
       return this.dateFrom && this.dateTo;
@@ -92,7 +91,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      exportFinanceReportAction: EXPORT_FINANCE_REPORT,
+      exportAction: EXPORT_ORDERS_BY_CUSTOMERS,
     }),
     close() {
       this.$emit("update:show", false);
@@ -102,13 +101,13 @@ export default {
       this.dateTo = defaultPeriod.date_to;
       this.dateFrom = defaultPeriod.date_from;
     },
-    async exportFinanceReport() {
-      await this.exportFinanceReportAction({
+    async exportOrdersByCustomes() {
+      await this.exportAction({
         date_from: this.dateFrom,
         date_to: this.dateTo,
         callback: (fileName) => {
           this.close();
-          this.$toast(`Финансовый отчёт успешно экспортирован \n'${fileName}'`, 10000);
+          this.$toast(`Отчет сформирован \n'${fileName}'`, 10000);
         },
       });
     },

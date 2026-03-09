@@ -25,6 +25,19 @@ export function getFinanceReportFileName(dateFrom, dateTo) {
     const time = dayjs().format("HH_mm_ss");
 
     // Итоговое имя файла
-    const fileName = `Финансовый отчет c ${from} по ${to} ${time}.xlsx`;
+    const fileName = `Финансовый отчет c ${from} по ${to}.xlsx`;
+    return fileName;
+}
+
+export function getOrdersByCustomersReportFileName(dateFrom, dateTo) {
+    // Формируем дату в формате дд_мм_ггг
+    const from = dayjs(dateFrom).format("DD-MM-YYYY");
+    const to = dayjs(dateTo).format("DD-MM-YYYY");
+
+    // Формируем текущее время в формате hh.mm.ss
+    const time = dayjs().format("HH_mm_ss");
+
+    // Итоговое имя файла
+    const fileName = `Отчет заказов по заказчикам c ${from} по ${to}.xlsx`;
     return fileName;
 }

@@ -155,10 +155,18 @@
           "
         >
           <ButtonWithLoader
+            :isLoading="isCanceling"
+            title="Отменить"
+            :customClasses="['btn-secondary flex-fill']"
+            :loadingText="'Отмена...'"
+            @click="cancelTask(orderTask.id, true)"
+          />
+
+          <ButtonWithLoader
             :isLoading="isFinishing"
             title="Завершить"
             :customClasses="['btn-primary flex-fill']"
-            :loadingText="''"
+            :loadingText="'Завершение...'"
             @click="finishTaskByDirector(orderTask.id)"
           />
         </div>
@@ -310,8 +318,13 @@ export default {
 
       await this.finishTask(orderTaskId);
     },
-    async cancelTask(orderTaskId) {
-      if (!confirm("Вы действительно хотите отменить выполнение этой задачи?")) return;
+    async cancelTask(orderTaskId, isByDirector = false) {
+      let prefix = "";
+      if (isByDirector) {
+        prefix = "Вы не являетесь исполнителем этой задач.\n";
+      }
+      if (!confirm(prefix + "Вы действительно хотите отменить выполнение этой задачи?"))
+        return;
 
       this.isCanceling = true;
       await this.cancelOrderTaskAction({
