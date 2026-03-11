@@ -52,7 +52,11 @@ body {
   background-color: #08c2ba !important;
   border-color: #08c2ba !important;
 }
-.brand-style:hover {
+.brand-style-outline {
+  border-color: #08c2ba !important;
+}
+.brand-style:hover,
+.brand-style-outline:hover {
   background-color: #0ca8a3 !important;
 }
 .teeth {

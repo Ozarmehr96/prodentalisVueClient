@@ -8,32 +8,66 @@
           <button type="button" class="btn-close" @click="close"></button>
         </div>
 
-        <!-- Выбор периода -->
-        <div class="mb-3">
-          <label class="form-label">Дата с</label>
-          <input
-            type="date"
-            v-model="dateFrom"
-            class="form-control"
-            :disabled="isExporting"
-          />
+        <!-- Период в одной линии -->
+        <div class="mb-4 d-flex flex-wrap gap-2">
+          <div class="flex-grow-1">
+            <label class="form-label">Дата с</label>
+            <input
+              type="date"
+              v-model="dateFrom"
+              class="form-control"
+              :disabled="isExporting"
+            />
+          </div>
+
+          <div class="flex-grow-1">
+            <label class="form-label">Дата по</label>
+            <input
+              type="date"
+              v-model="dateTo"
+              class="form-control"
+              :disabled="isExporting"
+            />
+          </div>
         </div>
 
+        <!-- Статус toggle -->
         <div class="mb-4">
-          <label class="form-label">Дата по</label>
-          <input
-            type="date"
-            v-model="dateTo"
-            class="form-control"
-            :disabled="isExporting"
-          />
-        </div>
+          <label class="form-label d-block">Статус</label>
 
+          <!-- btn-group Bootstrap -->
+          <div class="btn-group w-100" role="group" aria-label="Статусы">
+            <button
+              type="button"
+              class="btn"
+              :class="
+                status === '' && status !== null ? 'btn-primary' : 'btn-outline-primary'
+              "
+              @click="status = ''"
+            >
+              Все
+            </button>
+
+            <button
+              type="button"
+              class="btn"
+              :class="status === 'Finished' ? 'btn-primary' : 'btn-outline-primary'"
+              @click="status = 'Finished'"
+            >
+              Завершенные
+            </button>
+          </div>
+        </div>
         <!-- Кнопки -->
         <div class="d-flex justify-content-end gap-2">
-          <button class="btn btn-secondary" @click="close" :disabled="isExporting">
+          <button
+            class="btn btn-outline-secondary"
+            @click="close"
+            :disabled="isExporting"
+          >
             Отмена
           </button>
+
           <ButtonWithLoader
             @click="exportOrdersByCustomes"
             type="submit"
@@ -41,7 +75,10 @@
             title="Экспортировать"
             loadingText="Создаётся отчёт..."
             :isValid="isValid"
-            :customClasses="['btn', isValid ? 'brand-style' : 'btn-outline-secondary']"
+            :customClasses="[
+              'btn',
+              isValid ? 'brand-style' : 'btn-outline-secondary disabled',
+            ]"
           />
         </div>
       </div>
@@ -72,12 +109,14 @@ export default {
     return {
       dateFrom: null,
       dateTo: null,
+      status: null,
     };
   },
   watch: {
     show(val) {
       if (val) {
         this.setDefaultPeriod();
+        this.status = null;
       }
     },
   },
@@ -86,7 +125,7 @@ export default {
       isExporting: IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS,
     }),
     isValid() {
-      return this.dateFrom && this.dateTo;
+      return this.dateFrom && this.dateTo && this.status !== null;
     },
   },
   methods: {
@@ -105,6 +144,7 @@ export default {
       await this.exportAction({
         date_from: this.dateFrom,
         date_to: this.dateTo,
+        status: this.status,
         callback: (fileName) => {
           this.close();
           this.$toast(`Отчет сформирован \n'${fileName}'`, 10000);
@@ -128,5 +168,25 @@ export default {
 }
 .modal-dialog {
   z-index: 1050;
+}
+
+/* Toggle-style кнопки статуса */
+.toggle-btn {
+  flex: 1;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.toggle-btn.active {
+  background-color: #0d6efd; /* брендовый цвет */
+  color: white;
+  border-color: #0d6efd;
+}
+.toggle-btn:not(.active):hover {
+  background-color: #e2e6ea;
+}
+
+/* Сделать input одинаковой высоты и красивым на мобильных */
+input[type="date"].form-control {
+  height: 38px;
 }
 </style>

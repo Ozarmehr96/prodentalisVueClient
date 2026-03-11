@@ -22,13 +22,13 @@
 
 <script>
 import { mapActions } from "vuex";
-import AppPage from "../../../components/AppPage.vue";
-import SalaryJournalView from "../../../components/costing/salary-journal/SalaryJournalView.vue";
-import SalaryJournalModal from "../../../components/costing/salary-journal/SalaryJournalModal.vue";
+import AppPage from "../../../../components/AppPage.vue";
+import SalaryJournalView from "../../../../components/costing/salary-payment-journal/SalaryJournalView.vue";
+import SalaryJournalModal from "../../../../components/costing/salary-payment-journal/SalaryJournalModal.vue";
 import {
-  LOAD_SALARY_JOURNAL,
-  DELETE_SALARY_JOURNAL,
-} from "../../../store/types";
+  DELETE_SALARY_PAYMENT_JOURNAL,
+  LOAD_SALARY_PAYMENT_JOURNAL,
+} from "../../../../store/types";
 
 export default {
   name: "SalaryJournalViewPage",
@@ -54,8 +54,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadItemAction: LOAD_SALARY_JOURNAL,
-      deleteItemAction: DELETE_SALARY_JOURNAL,
+      loadItemAction: LOAD_SALARY_PAYMENT_JOURNAL,
+      deleteItemAction: DELETE_SALARY_PAYMENT_JOURNAL,
     }),
     async loadItem(id) {
       this.isLoading = true;
@@ -101,4 +101,3 @@ export default {
   transform: translate(-50%, -50%);
 }
 </style>
-
