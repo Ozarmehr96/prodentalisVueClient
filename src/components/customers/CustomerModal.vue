@@ -78,7 +78,7 @@
                   v-model.trim="localCustomer.phone"
                   placeholder="Телефон"
                 />
-                <div class="invalid-feedback">Максимум 9 цифр</div>
+                <div class="invalid-feedback">Минимум 9 цифр</div>
                 <label for="phone">Телефон</label>
               </div>
             </div>
@@ -253,7 +253,9 @@ export default {
 
     isPhoneValid() {
       const phone = this.localCustomer?.phone?.trim();
-      const regex = /^\d{9}$/; // ровно 9 цифр
+      // Проверяем что номер содержит только цифры и минимум 9 символов
+      const regex = /^\d{9,}$/;
+
       return regex.test(phone);
     },
   },

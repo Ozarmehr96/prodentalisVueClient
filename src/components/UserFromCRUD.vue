@@ -68,7 +68,7 @@
                 v-model.trim="user.phone_number"
                 :class="{ 'is-invalid': errors.phone_number }"
                 @blur="validateField('phone_number')"
-                placeholder="+992XXXXXXXXX"
+                placeholder="Телефон"
               />
               <div class="invalid-feedback">{{ errors.phone_number }}</div>
             </div>
@@ -343,9 +343,11 @@ export default {
           break;
 
         case "phone_number":
-          if (!value || !/^(\+992)?\d{9}$/.test(value))
-            this.errors[field] = "Формат: +992XXXXXXXXX или 9 цифр";
-          else this.errors[field] = "";
+          if (!value || !/^\d{9,}$/.test(value)) {
+            this.errors[field] = "Номер должен содержать минимум 9 цифр";
+          } else {
+            this.errors[field] = "";
+          }
           break;
 
         case "login":
