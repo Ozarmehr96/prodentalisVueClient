@@ -23,7 +23,13 @@
 import { mapGetters } from "vuex";
 import AppPage from "../../components/AppPage.vue";
 import OrderList from "../../components/order/OrderList.vue";
-import { IS_LAB_ADMIN, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../../store/types";
+import {
+  CURRENCY,
+  CURRENT_USER,
+  IS_LAB_ADMIN,
+  IS_LAB_DIRECTOR,
+  IS_SYSTEM_ADMIN,
+} from "../../store/types";
 import OrderExportModal from "../../components/costing/OrderExportModal.vue";
 /**
  * Страница "Заказы"
@@ -46,6 +52,8 @@ export default {
       isSystemAdmin: IS_SYSTEM_ADMIN,
       isLabAdmin: IS_LAB_ADMIN,
       isLabDirector: IS_LAB_DIRECTOR,
+      currentUser: CURRENT_USER,
+      currency: CURRENCY,
     }),
   },
 };

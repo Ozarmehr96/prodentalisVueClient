@@ -63,7 +63,7 @@
         <!-- Цена -->
         <div class="d-flex mb-2" v-if="(isSystemAdmin || isLabDirector) && order.price">
           <span class="text-muted orderKey">Цена:</span>
-          <span class="fw-semibold">{{ order.price }} TJS</span>
+          <span class="fw-semibold">{{ order.price }} {{ currency }}</span>
         </div>
 
         <!-- Комментарий -->
@@ -191,6 +191,7 @@ import {
   CURRENT_USER,
   INVOKE_USER_REQUEST,
   LOAD_ACTIVE_REQUEST_BY_TYPE,
+  CURRENCY,
 } from "../store/types";
 
 export default {
@@ -208,6 +209,7 @@ export default {
       isSystemAdmin: IS_SYSTEM_ADMIN,
       isLabAdmin: IS_LAB_ADMIN,
       currentUser: CURRENT_USER,
+      currency: CURRENCY,
     }),
     teethColorList() {
       const result = [];

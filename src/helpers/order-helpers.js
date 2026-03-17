@@ -161,3 +161,8 @@ export function getDataFromType(dateType) {
     to
   };
 }
+
+export function getCurrency(amount, currency)
+{
+  return `${amount} ${currency}`;
+}

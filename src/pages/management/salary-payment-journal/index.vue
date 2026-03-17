@@ -136,8 +136,10 @@ import {
   LOAD_SALARY_PAYMENT_JOURNALS,
   DELETE_SALARY_PAYMENT_JOURNAL,
   SALARY_PAYMENT_JOURNALS,
+  CURRENCY,
 } from "../../../store/types";
 import SalaryJournalModal from "../../../components/costing/salary-payment-journal/SalaryJournalModal.vue";
+import { getCurrency } from "../../../helpers/order-helpers";
 
 export default {
   components: {
@@ -162,6 +164,7 @@ export default {
       isSystemAdmin: IS_SYSTEM_ADMIN,
       isAdmin: IS_LAB_ADMIN,
       salaryJournals: SALARY_PAYMENT_JOURNALS,
+      currency: CURRENCY,
     }),
     canControl() {
       return this.isLabDirector || this.isSystemAdmin || this.isAdmin;
@@ -190,11 +193,7 @@ export default {
       this.loadItems();
     },
     formatAmount(amount) {
-      return new Intl.NumberFormat("ru-RU", {
-        style: "currency",
-        currency: "TJS",
-        minimumFractionDigits: 0,
-      }).format(amount);
+      return getCurrency(amount, this.currency);
     },
     openModal(item) {
       this.selectedItem = item;

@@ -100,7 +100,7 @@
           <div class="card-body bg-success bg-opacity-10 rounded text-center">
             <h5 class="card-title text-success small mb-1">Стоимость</h5>
             <p class="fs-2 fw-bold text-success" style="margin-bottom: 0px">
-              {{ order.price }} TJS
+              {{ order.price }} {{ currency }}
             </p>
           </div>
         </div>
@@ -134,6 +134,7 @@ import {
 } from "../helpers/order-helpers";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 import {
+  CURRENCY,
   IS_LAB_ADMIN,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
@@ -167,6 +168,7 @@ export default {
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
       isLabAdmin: IS_LAB_ADMIN,
+      currency: CURRENCY,
     }),
     primerkaList() {
       let primerkas = [];

@@ -44,7 +44,8 @@
           <div class="d-flex justify-content-between">
             <small class="text-muted">Стоимость</small>
             <small class="fw-bold"
-              >{{ orderTask.total_price }} TJS / {{ orderTask.teeth_count }} ед.</small
+              >{{ orderTask.total_price }} {{ currency }} /
+              {{ orderTask.teeth_count }} ед.</small
             >
           </div>
           <div class="d-flex justify-content-between">
@@ -192,6 +193,7 @@
 import { mapActions, mapGetters } from "vuex";
 import {
   CANCEL_ORDER_TASK,
+  CURRENCY,
   CURRENT_USER,
   FINISH_ORDER_TASK,
   IS_LAB_DIRECTOR,
@@ -235,6 +237,7 @@ export default {
     ...mapGetters({
       currentUser: CURRENT_USER,
       isLabDirector: IS_LAB_DIRECTOR,
+      currency: CURRENCY,
     }),
     canShowTimer() {
       return (

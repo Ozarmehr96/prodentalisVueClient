@@ -54,7 +54,8 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../../../store/types";
+import { CURRENCY, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../../../store/types";
+import { getCurrency } from "../../../helpers/order-helpers";
 
 export default {
   name: "SalaryJournalView",
@@ -68,6 +69,7 @@ export default {
     ...mapGetters({
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
+      currency: CURRENCY,
     }),
     canControl() {
       return this.isLabDirector || this.isSystemAdmin;
@@ -75,11 +77,7 @@ export default {
   },
   methods: {
     formatAmount(amount) {
-      return new Intl.NumberFormat("ru-RU", {
-        style: "currency",
-        currency: "TJS",
-        minimumFractionDigits: 0,
-      }).format(amount);
+      return getCurrency(amount, this.currency);
     },
     deleteItem() {
       this.$emit("delete", this.item.id);

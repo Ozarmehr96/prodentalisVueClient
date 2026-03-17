@@ -148,10 +148,12 @@ import {
   LOAD_CUSTOMERS,
   IS_PAYMENT_JOURNALS_LOADING,
   IS_LAB_ADMIN,
+  CURRENCY,
 } from "../../../store/types";
 import PaymentJournalModal from "../../../components/costing/payment-journal/PaymentJournalModal.vue";
 import Spinner from "../../../components/Spinner.vue";
 import SelectCustomersWizard from "../../../components/customers/SelectCustomersWizard.vue";
+import { getCurrency } from "../../../helpers/order-helpers";
 
 export default {
   components: {
@@ -184,6 +186,7 @@ export default {
       paymentJournals: PAYMENT_JOURNALS,
       customers: CUSTOMERS,
       isJournalLoading: IS_PAYMENT_JOURNALS_LOADING,
+      currency: CURRENCY
     }),
     canControl() {
       return this.isLabDirector || this.isSystemAdmin;
@@ -236,11 +239,7 @@ export default {
     },
 
     formatAmount(amount) {
-      return new Intl.NumberFormat("ru-RU", {
-        style: "currency",
-        currency: "TJS",
-        minimumFractionDigits: 0,
-      }).format(amount);
+      return getCurrency(amount, this.currency);
     },
 
     goToView(id) {

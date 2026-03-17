@@ -181,6 +181,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import {
+  CURRENCY,
   CURRENT_USER,
   IS_STATS_LOADING,
   LOAD_ROLES,
@@ -192,7 +193,7 @@ import {
   SET_ORDER_TASK_FILTERS,
   USER_STAT,
 } from "../store/types";
-import { getDataFromType } from "../helpers/order-helpers";
+import { getCurrency, getDataFromType } from "../helpers/order-helpers";
 import Spinner from "./Spinner.vue";
 
 export default {
@@ -231,6 +232,7 @@ export default {
       isStatsLoading: IS_STATS_LOADING, // загрузка статистики
       userStat: USER_STAT, // статистика пользователя
       orderTaskFilters: ORDER_TASK_FILTERS,
+      currency: CURRENCY,
     }),
 
     /**
@@ -299,11 +301,7 @@ export default {
         if (!this.created_from || !this.created_to) return "-";
       }
 
-      return new Intl.NumberFormat("ru-RU", {
-        style: "currency",
-        currency: "TJS",
-        minimumFractionDigits: 0,
-      }).format(amount);
+      return getCurrency(amount, this.currency);
     },
 
     // Формат телефона

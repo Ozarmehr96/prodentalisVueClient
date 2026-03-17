@@ -42,18 +42,10 @@
         </div>
 
         <div class="d-flex gap-2 mt-4" v-if="canControl">
-          <button
-            class="btn btn-warning"
-            @click="$emit('edit', payment)"
-          >
+          <button class="btn btn-warning" @click="$emit('edit', payment)">
             Редактировать
           </button>
-          <button
-            class="btn btn-danger"
-            @click="deletePayment"
-          >
-            Удалить
-          </button>
+          <button class="btn btn-danger" @click="deletePayment">Удалить</button>
         </div>
       </div>
     </div>
@@ -62,10 +54,8 @@
 
 <script>
 import { mapGetters } from "vuex";
-import {
-  IS_LAB_DIRECTOR,
-  IS_SYSTEM_ADMIN,
-} from "../../../store/types";
+import { CURRENCY, IS_LAB_DIRECTOR, IS_SYSTEM_ADMIN } from "../../../store/types";
+import { getCurrency } from "../../../helpers/order-helpers";
 
 export default {
   name: "PaymentJournalView",
@@ -79,6 +69,7 @@ export default {
     ...mapGetters({
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
+      currency: CURRENCY,
     }),
     canControl() {
       return this.isLabDirector || this.isSystemAdmin;
@@ -86,11 +77,7 @@ export default {
   },
   methods: {
     formatAmount(amount) {
-      return new Intl.NumberFormat("ru-RU", {
-        style: "currency",
-        currency: "TJS",
-        minimumFractionDigits: 0,
-      }).format(amount);
+      return getCurrency(amount, this.currency);
     },
     deletePayment() {
       this.$emit("delete", this.payment.id);

@@ -53,7 +53,7 @@
             <!-- Итоговая себестоимость -->
             <tr class="table-primary fw-bold">
               <td colspan="5" class="text-end">Итоговая себестоимость</td>
-              <td class="text-end">{{ workType.final_price }} TJS</td>
+              <td class="text-end">{{ workType.final_price }} {{ currency }}</td>
             </tr>
           </tbody>
         </table>
@@ -63,6 +63,9 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import { CURRENCY } from "../../../store/types";
+
 export default {
   name: "SimpleWorkTypeTable",
   props: {
@@ -86,6 +89,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      currency: CURRENCY,
+    }),
     filtredMaterials() {
       // Сортируем копию массива, чтобы не мутировать оригинальный
       return [...this.workType.materials].sort((a, b) => {

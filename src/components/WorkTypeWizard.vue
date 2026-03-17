@@ -69,13 +69,18 @@
             />
           </div>
 
-          <button
+          <ButtonWithLoader
+            class="mb-3"
             type="submit"
-            class="btn btn-primary w-100 brand-style"
-            :disabled="!isValid"
-          >
-            Сохранить
-          </button>
+            :isLoading="isSaving"
+            title="Сохранить"
+            loadingText="Сохранение..."
+            :isValid="isValid"
+            :customClasses="[
+              'btn btn-primary w-100',
+              isValid ? 'brand-style' : 'btn-outline-secondary disabled',
+            ]"
+          />
         </form>
       </div>
     </div>
@@ -93,12 +98,14 @@ import {
 } from "../store/types";
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 import ColorPalette from "./ColorPalette.vue";
+import ButtonWithLoader from "./ButtonWithLoader.vue";
 
 export default {
   components: {
     SelectWorkStepWizard,
     WorkTypeCardItem,
     ColorPalette,
+    ButtonWithLoader,
   },
   props: {
     workTypeData: {
@@ -249,6 +256,7 @@ export default {
         return;
       }
       this.isSaving = true;
+
       let params = {
         ...this.workType,
         id: this.workType.id,

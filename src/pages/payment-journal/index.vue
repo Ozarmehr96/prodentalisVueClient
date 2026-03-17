@@ -124,8 +124,10 @@ import {
   LOAD_PAYMENT_JOURNALS,
   CUSTOMERS,
   LOAD_CUSTOMERS,
+  CURRENCY,
 } from "../../store/types";
 import PaymentJournalModal from "../../components/costing/payment-journal/PaymentJournalModal.vue";
+import { getCurrency } from "../../helpers/order-helpers";
 
 export default {
   components: {
@@ -149,6 +151,7 @@ export default {
       isSystemAdmin: IS_SYSTEM_ADMIN,
       paymentJournals: PAYMENT_JOURNALS,
       customers: CUSTOMERS,
+      currency: CURRENCY,
     }),
     canControl() {
       return this.isLabDirector || this.isSystemAdmin;
@@ -179,11 +182,7 @@ export default {
       this.loadPayments();
     },
     formatAmount(amount) {
-      return new Intl.NumberFormat("ru-RU", {
-        style: "currency",
-        currency: "TJS",
-        minimumFractionDigits: 0,
-      }).format(amount);
+      return getCurrency(amount, this.currency);
     },
     goToView(id) {
       this.$router.push(`/payment-journal/view/${id}`);

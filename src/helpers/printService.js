@@ -22,7 +22,7 @@ export function printOrder(order, created_at_formatted, expired_at_formatted) {
     doc.open();
 
     // Формируем квадранты зубов
-    const quadrants = [[11,18],[21,28],[31,38],[41,48]].map((range, index) => {
+    const quadrants = [[11,18],[21,28],[41,48],[31,38]].map((range, index) => {
     let html = '<div class="quadrant">';
 
     const isReverse = index === 0 || index === 2; // 1 и 3 квадрант

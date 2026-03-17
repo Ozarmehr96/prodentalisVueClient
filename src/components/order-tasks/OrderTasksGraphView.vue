@@ -92,7 +92,8 @@
                     >
                       <span class="text-muted">Стоимость:</span>
                       <span class="fw-bold">
-                        {{ task.total_price }} TJS / {{ task.teeth_count }} ед.</span
+                        {{ task.total_price }} {{ currency }} /
+                        {{ task.teeth_count }} ед.</span
                       >
                     </div>
 
@@ -157,7 +158,7 @@
 import { mapActions, mapGetters } from "vuex";
 import { getTaskStatusClass, msToTime } from "../../helpers/order-helpers";
 import OrderTaskWizard from "./OrderTaskWizard.vue";
-import { IS_CUSTOMER, LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
+import { CURRENCY, IS_CUSTOMER, LOAD_WORK_TYPES, WORK_TYPES } from "../../store/types";
 import Timer from "../order/Timer.vue";
 
 export default {
@@ -187,6 +188,7 @@ export default {
     ...mapGetters({
       workTypes: WORK_TYPES,
       isCustomer: IS_CUSTOMER,
+      currency: CURRENCY,
     }),
     tasks() {
       if (this.displayMode === "grouped") {

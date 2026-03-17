@@ -14,6 +14,7 @@ const state = {
   accessToken: "",
   accessTokenExpires: 0,
   currentUser: {},
+  currency: ""
 };
 
 const mutations = {
@@ -21,6 +22,8 @@ const mutations = {
     (state.accessToken = accessToken),
   [types.MUTATE_CURRENT_USER]: (state, currentUser) =>
     (state.currentUser = currentUser),
+  [types.MUTATE_CURRENCY]: (state, currency) =>
+    (state.currency = currency),
 };
 
 const actions = {
@@ -38,6 +41,7 @@ const actions = {
     }
 
     commit(types.MUTATE_CURRENT_USER, currentUser);
+    commit(types.MUTATE_CURRENCY, currentUser?.lab?.currency);
   },
   [types.LOGIN]: async ({ commit, dispatch }, params) => {
     try {
@@ -67,6 +71,8 @@ const actions = {
       types.MUTATE_CURRENT_USER,
       getObjectFromSessionStorage("currentUser")
     );
+
+    commit(types.MUTATE_CURRENCY, getObjectFromSessionStorage("currentUser")?.lab?.currency);
   },
 };
 
@@ -74,6 +80,7 @@ const getters = {
   [types.IS_CUSTOMER]: (state) => state.currentUser.role == "Customer",
   [types.ACCESS_TOKEN]: (state) => state.accessToken,
   [types.CURRENT_USER]: (state) => state.currentUser,
+  [types.CURRENCY]: (state) => state.currency,
   [types.IS_LAB_ADMIN]: (state) => state.currentUser.role == "AdminLab",
   [types.IS_LAB_DIRECTOR]: (state) => state.currentUser.role == "LabDirector",
   [types.IS_SYSTEM_ADMIN]: (state) => state.currentUser.role == "SystemAdmin",

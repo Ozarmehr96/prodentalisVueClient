@@ -96,13 +96,18 @@
             ></textarea>
           </div>
 
-          <button
+          <ButtonWithLoader
+            class="mb-3"
             type="submit"
-            class="btn btn-primary w-100 brand-style"
-            :disabled="!isValid"
-          >
-            Сохранить
-          </button>
+            :isLoading="isSaving"
+            title="Сохранить"
+            loadingText="Сохранение..."
+            :isValid="isValid"
+            :customClasses="[
+              'btn btn-primary w-100',
+              isValid ? 'brand-style' : 'btn-outline-secondary disabled',
+            ]"
+          />
         </form>
       </div>
     </div>
@@ -121,11 +126,13 @@ import {
 } from "../store/types";
 import MultiSelect from "./MultiSelect.vue";
 import SelectWorkStepWizard from "./SelectWorkStepWizard.vue";
+import ButtonWithLoader from "./ButtonWithLoader.vue";
 
 export default {
   components: {
     MultiSelect,
     SelectWorkStepWizard,
+    ButtonWithLoader,
   },
   props: {
     workStepData: {
@@ -139,6 +146,7 @@ export default {
   },
   data() {
     return {
+      isSaving: false,
       workStep: {
         name: "",
         priority: null,
@@ -218,6 +226,7 @@ export default {
       setSelectedWorkTypeStep: SET_SELECTED_WORK_TYPE_STEPS,
     }),
     async save() {
+      this.isSaving = true;
       let params = {
         ...this.workStep,
         related_steps: this.workStep.is_primerka
@@ -230,8 +239,10 @@ export default {
       };
 
       await this.saveWorkStep(params);
+      this.isSaving = false;
     },
     async update() {
+      this.isSaving = true;
       let params = {
         ...this.workStep,
         id: this.workStep.id,
@@ -243,6 +254,7 @@ export default {
       };
 
       await this.updateWorkStep(params);
+      this.isSaving = false;
     },
   },
 };

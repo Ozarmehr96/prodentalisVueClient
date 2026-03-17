@@ -98,9 +98,11 @@ import {
   LOAD_USERS_SALARY_STATS,
   USERS_SALARY_STATS,
   IS_SALARY_PAYMENT_JOURNALS_LOADING,
+  CURRENCY,
 } from "../../../store/types";
 import { getDefaultPeriod } from "../../../helpers/timeHelpers";
 import Spinner from "../../../components/Spinner.vue";
+import { getCurrency } from "../../../helpers/order-helpers";
 
 export default {
   components: {
@@ -123,6 +125,7 @@ export default {
       isAdmin: IS_LAB_ADMIN,
       usersSalaryStats: USERS_SALARY_STATS,
       isLoading: IS_SALARY_PAYMENT_JOURNALS_LOADING,
+      currency: CURRENCY,
     }),
     canControl() {
       return this.isLabDirector || this.isSystemAdmin || this.isAdmin;
@@ -158,11 +161,7 @@ export default {
       this.loadItems();
     },
     formatAmount(amount) {
-      return new Intl.NumberFormat("ru-RU", {
-        style: "currency",
-        currency: "TJS",
-        minimumFractionDigits: 0,
-      }).format(amount);
+      return getCurrency(amount, this.currency);
     },
   },
 };

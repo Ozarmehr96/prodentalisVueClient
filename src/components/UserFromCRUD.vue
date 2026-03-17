@@ -204,10 +204,18 @@
             />
           </div>
 
-          <spinner v-if="isSaving" />
-          <button v-else type="submit" class="btn btn-primary w-100 brand-style">
-            Сохранить
-          </button>
+          <ButtonWithLoader
+            class="mb-3"
+            type="submit"
+            :isLoading="isSaving"
+            title="Сохранить"
+            loadingText="Сохранение..."
+            :isValid="!isSaving"
+            :customClasses="[
+              'btn btn-primary w-100',
+              !isSaving ? 'brand-style' : 'btn-outline-secondary disabled',
+            ]"
+          />
         </form>
       </div>
     </div>
@@ -235,10 +243,11 @@ import {
 import Spinner from "./Spinner.vue";
 import errors from "../store/modules/errors";
 import MultiSelect from "./MultiSelect.vue";
+import ButtonWithLoader from "./ButtonWithLoader.vue";
 
 export default {
   name: "UserFormCRUD",
-  components: { Spinner, MultiSelect },
+  components: { Spinner, MultiSelect, ButtonWithLoader },
   props: {
     existingUser: { type: Object, default: null },
   },
@@ -343,7 +352,7 @@ export default {
           break;
 
         case "phone_number":
-          if (!value || !/^\d{9,}$/.test(value)) {
+          if (!value || !/^\+?\d{9,}$/.test(value)) {
             this.errors[field] = "Номер должен содержать минимум 9 цифр";
           } else {
             this.errors[field] = "";
