@@ -31,7 +31,7 @@
               {{ step.price }}
             </td>
             <td class="d-none d-sm-table-cell">{{ step.description }}</td>
-            <td v-if="isLabDirector">
+            <td v-if="isLabDirector && !step.is_primerka && !step.is_order_handover">
               <button class="btn btn-danger btn-sm" @click.stop="deleteWorkStep(step.id)">
                 <i class="bi bi-trash"></i>
                 <!-- иконка из Bootstrap Icons -->

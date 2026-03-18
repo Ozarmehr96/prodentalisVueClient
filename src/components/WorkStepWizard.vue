@@ -8,6 +8,7 @@
             <label for="nameInput" class="form-label">Название этапа работы</label>
             <input
               type="text"
+              :disabled="isPrimerkaOrSdacha"
               id="nameInput"
               class="form-control"
               v-model="workStep.name"
@@ -32,21 +33,6 @@
               required
             />
             <div class="invalid-feedback">Цена должна быть неотрицательным числом.</div>
-          </div>
-
-          <div class="mb-3">
-            <div class="form-check">
-              <!-- Чекбокс -->
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="isPrimerka"
-                v-model="workStep.is_primerka"
-              />
-              <label class="form-check-label" for="isPrimerka">
-                Отметьте, если это примерка
-              </label>
-            </div>
           </div>
 
           <!-- Основная роль -->
@@ -127,6 +113,7 @@ import {
 import MultiSelect from "./MultiSelect.vue";
 import SelectWorkStepWizard from "./SelectWorkStepWizard.vue";
 import ButtonWithLoader from "./ButtonWithLoader.vue";
+import { readonly } from "vue";
 
 export default {
   components: {
@@ -209,6 +196,9 @@ export default {
     isPriceValid() {
       return this.workStep.price !== null && this.workStep.price >= 0;
     },
+    isPrimerkaOrSdacha() {
+      return this.workStep?.is_primerka || this.workStep?.is_order_handover;
+    },
     isValid() {
       return (
         this.isNameValid &&
@@ -226,6 +216,7 @@ export default {
       setSelectedWorkTypeStep: SET_SELECTED_WORK_TYPE_STEPS,
     }),
     async save() {
+      if (this.isPrimerkaOrSdacha) return;
       this.isSaving = true;
       let params = {
         ...this.workStep,
@@ -242,6 +233,7 @@ export default {
       this.isSaving = false;
     },
     async update() {
+      if (this.isPrimerkaOrSdacha) return;
       this.isSaving = true;
       let params = {
         ...this.workStep,

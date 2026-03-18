@@ -110,16 +110,6 @@
 
       <div class="ms-auto d-none d-sm-flex">
         <button
-          v-if="canControl && order.status.code === 'Primerka' && false"
-          class="btn btn-sm btn-success ms-auto me-2 footerButton"
-          @click="finishPrimerka"
-          title="Завершить примерку"
-          style="min-width: 150px"
-        >
-          Завершить примерку
-        </button>
-
-        <button
           v-if="canControl && order.status.code === 'Created'"
           class="btn btn-sm btn-success ms-auto me-2 footerButton"
           @click="startOrder"
