@@ -113,7 +113,6 @@ import {
 import MultiSelect from "./MultiSelect.vue";
 import SelectWorkStepWizard from "./SelectWorkStepWizard.vue";
 import ButtonWithLoader from "./ButtonWithLoader.vue";
-import { readonly } from "vue";
 
 export default {
   components: {
