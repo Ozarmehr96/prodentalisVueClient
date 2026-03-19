@@ -36,7 +36,7 @@
           </div>
 
           <!-- Основная роль -->
-          <div class="mb-3" v-if="!workStep.is_primerka">
+          <div class="mb-3">
             <label class="form-label">Исполнители этапа</label>
             <MultiSelect
               v-model="workStep.roles"
@@ -215,7 +215,6 @@ export default {
       setSelectedWorkTypeStep: SET_SELECTED_WORK_TYPE_STEPS,
     }),
     async save() {
-      if (this.isPrimerkaOrSdacha) return;
       this.isSaving = true;
       let params = {
         ...this.workStep,
@@ -232,7 +231,6 @@ export default {
       this.isSaving = false;
     },
     async update() {
-      if (this.isPrimerkaOrSdacha) return;
       this.isSaving = true;
       let params = {
         ...this.workStep,

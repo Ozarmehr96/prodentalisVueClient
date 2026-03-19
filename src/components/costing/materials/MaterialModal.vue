@@ -166,7 +166,8 @@ export default {
      * Валидна ли форма
      */
     isValid() {
-      return this.isValidName && this.localMaterial.type.trim() !== "";
+      let isNotNalog = this?.material?.is_nalog || this?.material?.is_oplata_truda;
+      return !isNotNalog && this.isValidName && this.localMaterial.type.trim() !== "";
     },
   },
   methods: {

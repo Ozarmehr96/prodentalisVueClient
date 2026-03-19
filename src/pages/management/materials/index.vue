@@ -34,6 +34,7 @@
             <td v-if="canControl">
               <div class="d-flex justify-content-center gap-2 flex-wrap">
                 <button
+                  v-if="!material.is_nalog && !material.is_oplata_truda"
                   class="btn btn-sm btn-warning"
                   @click="openMaterialModal(material)"
                 >
@@ -41,6 +42,7 @@
                 </button>
 
                 <button
+                  v-if="!material.is_nalog && !material.is_oplata_truda"
                   class="btn btn-sm btn-danger"
                   @click="deleteMaterial(material.id)"
                 >
