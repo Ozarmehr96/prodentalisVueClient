@@ -1,5 +1,5 @@
 <template>
-  <app-page title="Добавление заказа" :showBackButton="true">
+  <app-page title="Новый заказ" :showBackButton="true">
     <OrderWizard />
   </app-page>
 </template>

@@ -1,13 +1,13 @@
 <template>
   <div
     class="position-fixed bottom-0 end-0 p-3"
-    style="z-index: 1050;"
+    style="z-index: 1050; bottom: 40px !important"
   >
     <div
       v-for="t in toasts"
       :key="t.id"
       :class="`toast show bg-${t.type} text-white`"
-      style="width: auto; max-width: 400px;"
+      style="width: auto; max-width: 400px"
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
@@ -50,7 +50,7 @@ export default {
 
     // предупреждение
     //this.$toast("Внимание! Проверьте данные", "warning");
-    showToast(text, delay = 5000, type = 'success', title = '') {
+    showToast(text, delay = 5000, type = "success", title = "") {
       const id = idCounter++;
       const time = new Date().toLocaleTimeString();
       this.toasts.push({ id, text, type, delay, time, title });
