@@ -107,6 +107,11 @@ const actions = {
   } catch (e) {
    console.error(e);
   }
+  finally {
+    if (params.error) {
+      params.error();
+    }
+  }
  },
 
  [PAUSE_ORDER_TASK]: async ({ commit }, params) => {
@@ -119,6 +124,11 @@ if (params.callback) {
    return response.data;
   } catch (e) {
    console.error(e);
+  }
+  finally {
+    if (params.error) {
+      params.error();
+    }
   }
  },
 
@@ -133,6 +143,11 @@ if (params.callback) {
   } catch (e) {
    console.error(e);
   }
+  finally {
+    if (params.error) {
+      params.error();
+    }
+  }
  },
 
  [CANCEL_ORDER_TASK]: async ({ commit }, params) => {
@@ -145,6 +160,11 @@ if (params.callback) {
    return response.data;
   } catch (e) {
    console.error(e);
+  }
+  finally {
+    if (params.error) {
+      params.error();
+    }
   }
  },
 };

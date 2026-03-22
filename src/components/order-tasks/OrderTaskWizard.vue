@@ -289,6 +289,10 @@ export default {
       await this.startOrderTaskAction({
         orderTaskId,
         callback: (orderTask) => this.$emit("refreshTasks"),
+        error: (orderTask) => {
+          this.isSaving = false;
+          this.$emit("refreshTasks");
+        },
       });
       this.isSaving = false;
     },
@@ -297,6 +301,10 @@ export default {
       await this.pauseOrderTaskAction({
         orderTaskId,
         callback: (orderTask) => this.$emit("refreshTasks"),
+        error: (orderTask) => {
+          this.isStopping = false;
+          this.$emit("refreshTasks");
+        },
       });
       this.isStopping = false;
     },
@@ -305,6 +313,10 @@ export default {
       await this.finishOrderTaskAction({
         orderTaskId,
         callback: (orderTask) => this.$emit("refreshTasks"),
+        error: (orderTask) => {
+          this.isFinishing = false;
+          this.$emit("refreshTasks");
+        },
       });
       this.isFinishing = false;
     },
@@ -333,6 +345,10 @@ export default {
       await this.cancelOrderTaskAction({
         orderTaskId,
         callback: (orderTask) => this.$emit("refreshTasks"),
+        error: (orderTask) => {
+          this.isCanceling = false;
+          this.$emit("refreshTasks");
+        },
       });
       this.isCanceling = false;
     },
