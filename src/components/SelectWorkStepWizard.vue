@@ -29,7 +29,6 @@
                   type="number"
                   min="0"
                   step="0.01"
-                  max="10000"
                   class="form-control form-control-sm"
                   v-model.number="step.price"
                   @input="emitUpdate"

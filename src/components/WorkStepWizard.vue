@@ -27,7 +27,6 @@
               class="form-control"
               v-model.number="workStep.price"
               min="0"
-              max="10000"
               step="0.01"
               placeholder="Цена по умолчанию (≥ 0)"
               required

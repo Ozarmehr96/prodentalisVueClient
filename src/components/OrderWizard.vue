@@ -55,7 +55,6 @@
               v-model="price"
               min="0"
               step="0.01"
-              max="10000"
               class="form-control"
               id="floatingInput"
               :readonly="true"
