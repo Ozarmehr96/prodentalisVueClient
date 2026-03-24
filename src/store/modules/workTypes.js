@@ -55,9 +55,10 @@ const actions = {
     }
   },
 
-  [DELETE_WORK_TYPE]: async ({}, id) => {
+  [DELETE_WORK_TYPE]: async ({commit, state}, id) => {
     try {
       let response = await api.delete("/work-types/" + id);
+      commit(MUTATE_WORK_TYPES, state.workTypes.filter((t) => t.id !== id));
       return response.data;
     } catch (error) {
       console.error("Error deleting work type:", error);

@@ -28,7 +28,7 @@
             <td v-if="isLabDirector">
               <button
                 class="btn btn-danger btn-sm"
-                @click.stop="deleteWorkType(workType.id)"
+                @click.stop="deleteWorkType(workType)"
               >
                 <i class="bi bi-trash"></i>
                 <!-- иконка из Bootstrap Icons -->
@@ -97,10 +97,12 @@ export default {
       loadWorkTypes: LOAD_WORK_TYPES,
       deleteWorkTypeAction: DELETE_WORK_TYPE,
     }),
-    async deleteWorkType(id) {
-      await this.deleteWorkTypeAction(id).then(() => {
-        this.$toast(`Тип работы успешно удален`);
-        this.workTypes = this.workTypes.filter((type) => type.id !== id);
+    async deleteWorkType(workType) {
+      if (!confirm(`Вы действительно хотите удалить тип работы '${workType.name}'?`))
+        return;
+
+      await this.deleteWorkTypeAction(workType.id).then(() => {
+        this.$toast(`Тип работы '${workType.name}' успешно удален`);
       });
     },
   },

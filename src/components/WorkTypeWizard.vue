@@ -119,6 +119,7 @@ export default {
   },
   data() {
     return {
+      fileMaxSize: 1 * 1024 * 1024,
       workType: {
         name: "",
         description: "",
@@ -209,7 +210,19 @@ export default {
     },
     onFileChange(event) {
       const file = event.target.files[0];
+
       if (file) {
+        console.log(file.size);
+        // 🔴 Проверка размера файла
+        if (file.size > this.fileMaxSize) {
+          this.$toastError(
+            `Файл слишком большой. Максимум ${this.fileMaxSize / (1024 * 1024)} MB`
+          );
+          // очищаем input
+          this.workType.image = null;
+          return;
+        }
+
         this.workType.image = file;
 
         const reader = new FileReader();
