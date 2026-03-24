@@ -62,7 +62,7 @@
 
         <!-- Цена -->
         <div class="d-flex mb-2" v-if="(isSystemAdmin || isLabDirector) && order.price">
-          <span class="text-muted orderKey">Цена:</span>
+          <span class="text-muted orderKey">Оплата труда:</span>
           <span class="fw-semibold">{{ order.price }} {{ currency }}</span>
         </div>
 

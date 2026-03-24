@@ -14,7 +14,12 @@
             <tr>
               <th style="width: 40px">#</th>
               <th>Название этапа</th>
-              <th style="width: 150px">Стоимость</th>
+              <th
+                style="width: 150px"
+                title="«Стоимость» — здесь стоимость работы для сотрудника, то есть внутренний расход на оплату труда."
+              >
+                Стоимость для сотрудника
+              </th>
               <th style="width: 150px" v-if="!isSelecteOnlyMode">Тип стоимости</th>
               <th style="width: 120px">Действия</th>
             </tr>

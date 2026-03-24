@@ -92,16 +92,41 @@
           </div>
         </div>
 
+        <div class="card text-center mb-3" v-if="isCustomer">
+          <div class="card-body bg-primary bg-opacity-10 rounded text-center">
+            <h5 class="card-title text-primary small mb-1">Стоимость</h5>
+            <p class="fs-2 fw-bold text-primary" style="margin-bottom: 0px">
+              {{ order.price }} {{ currency }}
+            </p>
+          </div>
+        </div>
         <!-- Сумма заработка -->
         <div
           class="card text-center mb-3"
           v-if="isSystemAdmin || isLabDirector || isLabAdmin"
         >
-          <div class="card-body bg-success bg-opacity-10 rounded text-center">
-            <h5 class="card-title text-success small mb-1">Стоимость</h5>
-            <p class="fs-2 fw-bold text-success" style="margin-bottom: 0px">
-              {{ order.price }} {{ currency }}
-            </p>
+          <div class="row g-1 text-center">
+            <!-- Оплата труда -->
+            <div class="col-12 col-md-6">
+              <div class="card-body bg-success bg-opacity-10 rounded">
+                <h5 class="card-title text-success small mb-1">Оплата труда</h5>
+                <p class="fs-2 fw-bold text-success mb-0">
+                  {{ order.price }} {{ currency }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Стоимость для заказчика -->
+            <div class="col-12 col-md-6">
+              <div class="card-body bg-primary bg-opacity-10 rounded">
+                <h5 class="card-title text-primary small mb-1">
+                  Стоимость для заказчика
+                </h5>
+                <p class="fs-2 fw-bold text-primary mb-0">
+                  {{ order.price_for_customer }} {{ currency }}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -135,6 +160,7 @@ import {
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 import {
   CURRENCY,
+  IS_CUSTOMER,
   IS_LAB_ADMIN,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
@@ -169,6 +195,7 @@ export default {
       isSystemAdmin: IS_SYSTEM_ADMIN,
       isLabAdmin: IS_LAB_ADMIN,
       currency: CURRENCY,
+      isCustomer: IS_CUSTOMER,
     }),
     primerkaList() {
       let primerkas = [];

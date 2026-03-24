@@ -59,7 +59,7 @@
               id="floatingInput"
               :readonly="true"
             />
-            <label for="floatingInput">Стоимость</label>
+            <label for="floatingInput">Оплата труда</label>
           </div>
 
           <div class="form-floating mb-4">
@@ -223,6 +223,10 @@ export default {
     if (this.isEditMode) {
       // в режиме редактирования выделяем первый зуб из заказа
       this.orderToEdit.teeth.forEach(async (t) => {
+        t.work_types.forEach((wT) => {
+          wT.steps = this.workTypes.find((tt) => tt.id == wT.id)?.steps;
+        });
+
         let selectedTooth = {};
         selectedTooth.id = t.tooth_id;
         selectedTooth.isSelected = false;

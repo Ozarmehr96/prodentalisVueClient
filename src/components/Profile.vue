@@ -36,7 +36,7 @@
       </div>
 
       <!-- Заработок -->
-      <div class="card mb-3 shadow-lg border-0">
+      <div class="card mb-3 shadow-lg border-0" v-if="!isCustomer">
         <div class="card-body">
           <h5 class="mb-3">Заработок</h5>
 
@@ -104,7 +104,7 @@
       </div>
 
       <!-- UserStat -->
-      <div class="card shadow-lg border-0 mb-3">
+      <div class="card shadow-lg border-0 mb-3" v-if="!isCustomer">
         <div class="card-body">
           <h5 class="mb-3">Статистика</h5>
           <Spinner v-show="isStatsLoading" />
@@ -183,6 +183,7 @@ import { mapGetters, mapActions } from "vuex";
 import {
   CURRENCY,
   CURRENT_USER,
+  IS_CUSTOMER,
   IS_STATS_LOADING,
   LOAD_ROLES,
   LOAD_USER_STAT,
@@ -233,6 +234,7 @@ export default {
       userStat: USER_STAT, // статистика пользователя
       orderTaskFilters: ORDER_TASK_FILTERS,
       currency: CURRENCY,
+      isCustomer: IS_CUSTOMER,
     }),
 
     /**
