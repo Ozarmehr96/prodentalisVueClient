@@ -2,7 +2,7 @@
   <app-page
     title="Заказы"
     @onAddButtonClickEvent="() => $router.push('/orders/add')"
-    :isShowAddButton="isSystemAdmin || isLabAdmin || isLabDirector"
+    :isShowAddButton="isSystemAdmin || isLabAdmin || isLabDirector || isCustomer"
   >
     <template v-if="isSystemAdmin || isLabAdmin || isLabDirector" v-slot:headerline>
       <!-- Кнопка обновить в правом верхнем углу -->
@@ -26,6 +26,7 @@ import OrderList from "../../components/order/OrderList.vue";
 import {
   CURRENCY,
   CURRENT_USER,
+  IS_CUSTOMER,
   IS_LAB_ADMIN,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
@@ -54,6 +55,7 @@ export default {
       isLabDirector: IS_LAB_DIRECTOR,
       currentUser: CURRENT_USER,
       currency: CURRENCY,
+      isCustomer: IS_CUSTOMER,
     }),
   },
 };

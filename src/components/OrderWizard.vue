@@ -9,7 +9,7 @@
       <div class="col-md-4">
         <h5 class="mb-3">Пациент и заказ</h5>
         <form>
-          <div class="form-floating mb-4">
+          <div class="form-floating mb-4" v-if="!isCustomer">
             <input
               type="text"
               :value="customer ? customer.full_name : ''"
@@ -38,6 +38,7 @@
           <div
             class="form-floating mb-4"
             title="До какого числа необходимо выполнить заказ"
+            v-if="!isCustomer"
           >
             <input
               type="date"
@@ -49,7 +50,7 @@
             <label for="floatingInput">Срок</label>
           </div>
 
-          <div class="form-floating mb-4">
+          <div class="form-floating mb-4" v-if="!isCustomer">
             <input
               type="number"
               v-model="price"
@@ -138,7 +139,9 @@ import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 import ToothSelection from "./ToothSelection.vue";
 import {
   CREATE_ORDER,
+  CURRENT_USER,
   CUSTOMERS,
+  IS_CUSTOMER,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
   LOAD_WORK_STEPS,
@@ -220,6 +223,13 @@ export default {
     await this.loadWorkSteps();
   },
   async mounted() {
+    if (this.isCustomer) {
+      this.expectedDate = new Date().toISOString().split("T")[0];
+      this.customer = {
+        id: this.currentUser.id,
+        full_name: this.currentUser.full_name,
+      };
+    }
     if (this.isEditMode) {
       // в режиме редактирования выделяем первый зуб из заказа
       this.orderToEdit.teeth.forEach(async (t) => {
@@ -249,7 +259,9 @@ export default {
       orderSelectedTeeth: ORDER_SELECTED_TEETH,
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
+      isCustomer: IS_CUSTOMER,
       customers: CUSTOMERS,
+      currentUser: CURRENT_USER,
       steps: WORK_STEPS,
     }),
     isValid() {

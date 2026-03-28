@@ -12,7 +12,13 @@
         ></button>
 
         <h5 class="mb-3">
-          {{ isEdit ? "Редактирование платежа" : "Добавление платежа" }}
+          {{
+            isOrderPay
+              ? `Внесение платежа по заказу №${localPayment.order_number}`
+              : isEdit
+              ? "Редактирование платежа"
+              : "Внесение платежа"
+          }}
         </h5>
 
         <form @submit.prevent="savePayment">
@@ -22,7 +28,7 @@
               <div class="form-floating">
                 <input
                   type="text"
-                  :disabled="isEdit"
+                  :disabled="isEdit || isOrderPay"
                   :class="{ 'is-invalid': !isCustomerValid }"
                   :value="`${localPayment.customer_name} ${localPayment.customer_phone}`"
                   class="form-control"
@@ -52,7 +58,7 @@
                   placeholder="Сумма"
                   required
                 />
-                <div class="invalid-feedback">Сумма должна быть больше 0</div>
+                <div class="invalid-feedback">{{ amountErrorText }}</div>
                 <label for="amount">Сумма</label>
               </div>
             </div>
@@ -130,6 +136,9 @@ const emptyPayment = () => ({
   amount: 0,
   payment_date: "",
   comment: "",
+  order_number: null,
+  ostatok: null,
+  order_id: null,
 });
 
 export default {
@@ -144,6 +153,10 @@ export default {
       default: null,
     },
     isEdit: {
+      type: Boolean,
+      default: false,
+    },
+    isOrderPay: {
       type: Boolean,
       default: false,
     },
@@ -172,6 +185,7 @@ export default {
     return {
       localPayment: emptyPayment(),
       showCustomerCanvas: false,
+      amountErrorText: "Сумма должна быть больше 0",
     };
   },
   computed: {
@@ -199,7 +213,8 @@ export default {
     },
 
     isAmountValid() {
-      return this.localPayment.amount > 0;
+      let maxVal = this.localPayment.amount <= this.localPayment.ostatok;
+      return this.localPayment.amount > 0 && (this.isOrderPay ? maxVal : true);
     },
 
     isPaymentDateValid() {
@@ -248,7 +263,7 @@ export default {
         payment_date: this.localPayment.payment_date,
       };
 
-      if (this.isEdit) {
+      if (this.isEdit && !this.isOrderPay) {
         await this.updatePaymentAction({
           ...paymentData,
           id: this.payment.id,
@@ -264,7 +279,9 @@ export default {
           callback: () => {
             this.close();
             this.$toast("Платеж успешно создан");
-            this.$emit("reloadJournal");
+            if (this.isOrderPay) {
+              this.$emit("reloadJournal", this.localPayment);
+            } else this.$emit("reloadJournal");
           },
         });
       }
@@ -277,6 +294,9 @@ export default {
           id: this.payment.id,
           customer_id: this.payment.customer_id,
           amount: this.payment.amount,
+          order_number: this.payment.order_number,
+          ostatok: this.payment.ostatok,
+          order_id: this.payment.order_id,
           payment_date: this.payment.payment_date
             ? this.$toDateFormat(this.payment.payment_date, "YYYY-MM-DD")
             : "",
@@ -286,6 +306,13 @@ export default {
         };
       } else {
         this.localPayment = emptyPayment();
+      }
+
+      if (this.isOrderPay) {
+        this.amountErrorText =
+          "Сумма должна быть больше 0.\nМаксимальная сумма " + this.localPayment.ostatok;
+        this.localPayment.amount = this.localPayment.ostatok;
+        this.localPayment.payment_date = new Date().toISOString().split("T")[0];
       }
     },
   },

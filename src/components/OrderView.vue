@@ -96,7 +96,7 @@
           <div class="card-body bg-primary bg-opacity-10 rounded text-center">
             <h5 class="card-title text-primary small mb-1">Стоимость</h5>
             <p class="fs-2 fw-bold text-primary" style="margin-bottom: 0px">
-              {{ order.price }} {{ currency }}
+              {{ order.price_for_customer }} {{ currency }}
             </p>
           </div>
         </div>

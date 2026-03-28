@@ -84,6 +84,16 @@ export default {
           groupTitle: "Финансы",
           cards: [
             {
+              id: "customers-orders-balances",
+              iconClass: "brand-style",
+              title: "Оплаты и задолженности",
+              description:
+                "Сводка по заказам: сколько оплачено и сколько осталось к оплате по заказчикам",
+              action: "/management/customers-orders-balances",
+              svgPath: "/images/finance-export.svg",
+              canShow: this.canView,
+            },
+            {
               id: "export-finance",
               iconClass: "brand-style",
               title: "Финансовый отчёт",

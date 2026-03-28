@@ -12,7 +12,7 @@
       >
         <span>Заказ №{{ orderTask.order_number }}</span>
       </div>
-      <div class="card-body p-4">
+      <div class="card-body p-4" v-if="!isCustomer">
         <!-- Верхняя строка: слева текст, справа статус -->
         <div
           v-if="!showButtonsOnly"
@@ -196,6 +196,7 @@ import {
   CURRENCY,
   CURRENT_USER,
   FINISH_ORDER_TASK,
+  IS_CUSTOMER,
   IS_LAB_DIRECTOR,
   PAUSE_ORDER_TASK,
   START_ORDER_TASK,
@@ -238,6 +239,7 @@ export default {
       currentUser: CURRENT_USER,
       isLabDirector: IS_LAB_DIRECTOR,
       currency: CURRENCY,
+      isCustomer: IS_CUSTOMER,
     }),
     canShowTimer() {
       return (

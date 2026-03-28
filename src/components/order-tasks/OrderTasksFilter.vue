@@ -44,13 +44,13 @@
       </div>
 
       <!-- Дата до -->
-      <div class="col-12 col-sm-auto" v-if="filters && filters.finished_at">
-        <label for="finished_at" class="form-label small">До</label>
+      <div class="col-12 col-sm-auto" v-if="filters && filters.created_at">
+        <label for="created_at" class="form-label small">От</label>
         <input
           type="date"
-          id="finished_at"
+          id="created_at"
           class="form-control"
-          v-model="filters.finished_at"
+          v-model="filters.created_at"
           @change="applyFilter"
         />
       </div>

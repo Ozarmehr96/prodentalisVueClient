@@ -190,6 +190,20 @@ const actions = {
   [types.SET_ORDER_LOADING]: async ({ commit }, isLoading) => {
     await commit(types.MUTATE_IS_ORDER_LOADING, isLoading);
   },
+
+  [types.LOAD_CUSTOMERS_ORDERS_BALANCES]: async ({ commit }, params) => {
+    try {
+      const response = await api.get(`/orders/balances`, { params } );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+    }
+    finally {
+      if (params.callback) {
+        params.callback();
+      }
+    }
+  },
 };
 
 const getters = {

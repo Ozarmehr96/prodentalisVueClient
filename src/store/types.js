@@ -136,6 +136,7 @@ export const PAUSE_ORDER_TASK = "orderTasks/PAUSE_ORDER_TASK"; // Пауза з�
 export const FINISH_ORDER_TASK = "orderTasks/FINISH_ORDER_TASK"; // Завершение задачи заказа
 export const CANCEL_ORDER_TASK = "orderTasks/CANCEL_ORDER_TASK"; // Отмена задачи заказа
 export const RESET_ORDER_TASK_FILTERS = "orderTasks/RESET_ORDER_TASK_FILTERS";
+export const LOAD_CUSTOMERS_ORDERS_BALANCES = "orders/LOAD_CUSTOMERS_ORDERS_BALANCES"; // кто что заказал, сколько оплатил и сколько осталось
 
 // Фильтр по задачам
 export const ORDER_TASK_FILTERS = "orderTasks/ORDER_TASK_FILTERS";
