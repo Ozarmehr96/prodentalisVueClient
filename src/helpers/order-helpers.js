@@ -166,3 +166,26 @@ export function getCurrency(amount, currency)
 {
   return `${amount} ${currency}`;
 }
+
+export function formatMoney(value) {
+  if (value == null) return "-";
+
+  // Обрезаем без округления
+  let truncated =
+    value >= 0 ? Math.floor(value * 10000) / 10000 : Math.ceil(value * 10000) / 10000;
+
+  // Проверяем: есть ли дробная часть
+  let hasDecimal = truncated % 1 !== 0;
+
+  // Формируем строку
+  let str = hasDecimal
+    ? truncated.toFixed(4) // показываем 4 знака
+    : truncated.toString(); // просто число
+
+  let parts = str.split(".");
+
+  // Форматируем тысячи
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+  return parts.join(".");
+}

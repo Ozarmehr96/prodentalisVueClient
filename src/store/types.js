@@ -245,3 +245,18 @@ export const LOAD_SALARY_TYPES = "salaryPaymentJournal/MUTATE_SALARY_TYPES";
 export const LOAD_USERS_SALARY_STATS = "salaryPaymentJournal/LOAD_USERS_SALARY_STATS"; // стастистика сотрудников (сколько начислено, сколько выплачено, сколько к выплате)
 export const MUTATE_USERS_SALARY_STATS = "salaryPaymentJournal/MUTATE_USERS_SALARY_STATS";
 export const USERS_SALARY_STATS = "salaryPaymentJournal/MUTATE_USERS_SALARY_STATS";
+
+// Журнал закупок
+export const PURCHASE_JOURNALS = "purchaseJournal/PURCHASE_JOURNALS";
+export const LOAD_PURCHASE_JOURNALS = "purchaseJournal/LOAD_PURCHASE_JOURNALS";
+export const LOAD_PURCHASE_JOURNAL = "purchaseJournal/LOAD_PURCHASE_JOURNAL";
+export const PURCHASE_JOURNAL = "purchaseJournal/PURCHASE_JOURNAL";
+export const MUTATE_PURCHASE_JOURNALS = "purchaseJournal/MUTATE_PURCHASE_JOURNALS";
+export const MUTATE_PURCHASE_JOURNAL = "purchaseJournal/MUTATE_PURCHASE_JOURNAL";
+export const SAVE_PURCHASE_JOURNAL = "purchaseJournal/SAVE_PURCHASE_JOURNAL";
+export const UPDATE_PURCHASE_JOURNAL = "purchaseJournal/UPDATE_PURCHASE_JOURNAL";
+export const DELETE_PURCHASE_JOURNAL = "purchaseJournal/DELETE_PURCHASE_JOURNAL";
+export const IS_PURCHASE_JOURNALS_LOADING = "purchaseJournal/IS_PURCHASE_JOURNALS_LOADING";
+export const MUTATE_IS_PURCHASE_JOURNALS_LOADING =
+  "purchaseJournal/MUTATE_IS_PURCHASE_JOURNALS_LOADING";
+export const SET_IS_PURCHASE_JOURNALS_LOADING = "purchaseJournal/SET_IS_PURCHASE_JOURNALS_LOADING";

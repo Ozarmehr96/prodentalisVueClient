@@ -1,0 +1,297 @@
+<template>
+  <app-page
+    title="Закупки"
+    @onAddButtonClickEvent="openModal(null)"
+    :showBackButton="true"
+    v-if="canControl"
+  >
+    <template v-slot:headerline>
+      <button
+        class="btn position-absolute top-3 end-3 d-flex align-items-center me-3 brand-style"
+        @click="openModal(null)"
+        style="gap: 5px; right: 0px !important; color: white"
+      >
+        Добавить закупку
+      </button>
+    </template>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-12 col-md-3" style="width: auto">
+            <label for="created_from" class="form-label"
+              >Дата закупки ({{ $toDateFormat(filters.date_from) }} -
+              {{ $toDateFormat(filters.date_to) }})</label
+            >
+            <DateFilter
+              initialDateType="month"
+              ref="dateFilter"
+              @onDateChanged="onDateChanged"
+            />
+          </div>
+
+          <div class="col-12 col-md-2 d-flex align-items-end">
+            <button class="btn btn-outline-secondary w-100" @click="clearFilters">
+              Сбросить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-sm">
+        <div class="card metric-card bg-gradient-orange">
+          <div class="card-body">
+            <p class="mb-1 ostatokText" style="font-size: 14px">Сумма затрат за период</p>
+            <h3 class="h4 fw-bold text-orange mb-1">
+              {{ formatAmount(totalAmount) }} {{ currency }}
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <Spinner
+      v-if="isLoading"
+      style="position: initial; margin-left: 50%; margin-top: 12.5%"
+    />
+
+    <div class="table-responsive" v-if="!isLoading">
+      <table
+        class="table table-bordered border-primary align-middle text-center table-hover"
+      >
+        <thead>
+          <tr>
+            <th>Наименование</th>
+            <th>Количество</th>
+            <th>Цена за ед.</th>
+            <th>Сумма</th>
+            <th>Дата закупки</th>
+            <th>Комментарий</th>
+            <th>Создал</th>
+            <th>Дата создания</th>
+            <th v-if="canControl">Действия</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            v-for="item in purchaseJournals"
+            :key="item.id"
+            @click="() => openModal(item)"
+            style="cursor: pointer"
+          >
+            <!-- Материал -->
+            <td>
+              {{ item.material_name || "—" }}
+            </td>
+
+            <!-- Количество -->
+            <td>
+              {{ item.quantity || "—" }}
+              <small class="text-muted">{{ item.unit }}</small>
+            </td>
+
+            <!-- Цена за единицу -->
+            <td>
+              {{ formatAmount(item.price) }}
+            </td>
+
+            <!-- Итог -->
+            <td>
+              {{ formatAmount(item.total_amount) }}
+            </td>
+
+            <!-- Дата закупки -->
+            <td>
+              {{ $toDateFormat(item.purchase_date) }}
+            </td>
+
+            <!-- Комментарий -->
+            <td>
+              {{ item.comment || "—" }}
+            </td>
+
+            <!-- Кто создал -->
+            <td>
+              {{ item.created_by_name || "—" }}
+            </td>
+
+            <!-- Дата создания -->
+            <td>
+              {{ $toDateTimeFormat(item.created_at) }}
+            </td>
+
+            <!-- Кнопки -->
+            <td v-if="canControl" @click.stop>
+              <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-sm btn-warning" @click="() => openModal(item)">
+                  Редактировать
+                </button>
+
+                <button class="btn btn-sm btn-danger" @click="deleteItem(item.id)">
+                  Удалить
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Нет данных -->
+          <tr v-if="!purchaseJournals || purchaseJournals.length === 0">
+            <td :colspan="canControl ? 9 : 8" class="text-muted py-3">
+              Нет данных. Попробуйте изменить фильтр.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <PurchaseJournalModal
+      v-model:show="showModal"
+      :item="selectedItem"
+      :isEdit="selectedItem !== null"
+      @saved="applyFilters"
+    />
+  </app-page>
+</template>
+
+<script>
+import { mapActions, mapGetters } from "vuex";
+import AppPage from "../../../components/AppPage.vue";
+import Spinner from "../../../components/Spinner.vue";
+import PurchaseJournalModal from "../../../components/costing/purchase-journal/PurchaseJournalModal.vue";
+import DateFilter from "../../../components/DateFilter.vue";
+import {
+  IS_LAB_DIRECTOR,
+  IS_SYSTEM_ADMIN,
+  IS_LAB_ADMIN,
+  PURCHASE_JOURNALS,
+  LOAD_PURCHASE_JOURNALS,
+  DELETE_PURCHASE_JOURNAL,
+  IS_PURCHASE_JOURNALS_LOADING,
+  CURRENCY,
+} from "../../../store/types";
+import { formatMoney } from "../../../helpers/order-helpers";
+
+export default {
+  components: {
+    AppPage,
+    Spinner,
+    PurchaseJournalModal,
+    DateFilter,
+  },
+  data() {
+    return {
+      showModal: false,
+      selectedItem: null,
+      filters: {
+        date_from: "",
+        date_to: "",
+      },
+      totalAmount: 0,
+    };
+  },
+  computed: {
+    ...mapGetters({
+      isLabDirector: IS_LAB_DIRECTOR,
+      isSystemAdmin: IS_SYSTEM_ADMIN,
+      isAdmin: IS_LAB_ADMIN,
+      purchaseJournals: PURCHASE_JOURNALS,
+      isLoading: IS_PURCHASE_JOURNALS_LOADING,
+      currency: CURRENCY,
+    }),
+    canControl() {
+      return this.isLabDirector || this.isSystemAdmin || this.isAdmin;
+    },
+  },
+  async beforeMount() {
+    // await this.loadItems(); // 🔥 убрал, чтобы не дергать API без необходимости. Данные загрузятся при выборе периода в фильтре
+  },
+  methods: {
+    ...mapActions({
+      loadPurchaseJournals: LOAD_PURCHASE_JOURNALS,
+      deletePurchase: DELETE_PURCHASE_JOURNAL,
+    }),
+    async loadItems() {
+      this.totalAmount = 0;
+      this.purchaseJournals.length = 0; // Очищаем список перед загрузкой новых данных
+      await this.loadPurchaseJournals(this.filters);
+      this.calcTotalAmount();
+    },
+    calcTotalAmount() {
+      this.totalAmount = (this.purchaseJournals || []).reduce(
+        (acc, item) => acc + (Number(item.total_amount) || 0),
+        0
+      );
+    },
+    applyFilters() {
+      this.loadItems();
+    },
+    clearFilters() {
+      this.filters = {
+        date_from: "",
+        date_to: "",
+      };
+      // 🔥 дергаем метод дочернего компонента
+      this.$refs.dateFilter.setDateType("month");
+      // this.loadItems();
+    },
+    formatAmount(amount) {
+      return formatMoney(amount);
+    },
+    openModal(item) {
+      this.selectedItem = item;
+      this.showModal = true;
+    },
+    deleteItem(id) {
+      if (!confirm("Вы уверены, что хотите удалить закупку?")) {
+        return;
+      }
+
+      this.deletePurchase({
+        id,
+        callback: () => {
+          this.$toast("Закупка успешно удалена");
+          this.loadItems();
+        },
+      });
+    },
+    onDateChanged(period) {
+      this.filters.date_from = period.date_from;
+      this.filters.date_to = period.date_to;
+      this.applyFilters();
+    },
+  },
+};
+</script>
+
+<style scoped>
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+.card-body {
+  padding: 10px;
+  padding-left: 14px;
+}
+.metric-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+.bg-gradient-orange {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-left: 4px solid #ff9800;
+}
+.text-orange {
+  color: #7e2a0c;
+}
+.ostatokText {
+  color: #d95900;
+}
+</style>

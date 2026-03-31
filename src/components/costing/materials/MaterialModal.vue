@@ -155,12 +155,7 @@ export default {
       isLoading: IS_MATERIALS_LOADING,
     }),
     isValidName() {
-      const regex = /^[A-Za-zА-Яа-я0-9]+( [A-Za-zА-Яа-я0-9]+)*$/;
-
-      if (!regex.test(this.localMaterial.name)) {
-        return false;
-      }
-      return true;
+      return !!this.localMaterial.name && !this.localMaterial.name.startsWith(" ");
     },
     /**
      * Валидна ли форма

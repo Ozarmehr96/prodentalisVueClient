@@ -1,5 +1,10 @@
 <template>
-  <div class="offcanvas offcanvas-start" tabindex="-1" ref="offcanvasRef">
+  <div
+    class="offcanvas offcanvas-start"
+    tabindex="-1"
+    ref="offcanvasRef"
+    style="z-index: 1200"
+  >
     <div class="offcanvas-header">
       <h5 class="offcanvas-title">Выбор расходного материала</h5>
       <button type="button" class="btn-close" @click="closeOffcanvas"></button>

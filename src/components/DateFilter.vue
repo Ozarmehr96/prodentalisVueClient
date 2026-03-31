@@ -71,17 +71,24 @@ import dayjs from "dayjs";
 
 export default {
   name: "DateFilterButtons",
+  props: {
+    // начальные значения для фильтра, если нужно
+    initialDateType: {
+      type: String,
+      default: "today",
+    },
+  },
   data() {
     return {
       filters: {
-        date_type: "today",
+        date_type: this.initialDateType,
         date_from: null,
         date_to: null,
       },
     };
   },
   mounted() {
-    this.setDateType("today");
+    this.setDateType(this.initialDateType);
   },
   methods: {
     setDateType(type) {

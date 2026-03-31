@@ -94,6 +94,15 @@ export default {
               canShow: this.canView,
             },
             {
+              id: "purchase-journal",
+              iconClass: "brand-style",
+              title: "Закупки",
+              description: "Журнал закупок с фильтрацией по периоду",
+              action: "/management/material-purchase-journal",
+              svgPath: "/images/finance-export.svg",
+              canShow: this.canView,
+            },
+            {
               id: "export-finance",
               iconClass: "brand-style",
               title: "Финансовый отчёт",
