@@ -1,6 +1,6 @@
 <template>
   <app-page
-    title="Расходные материалы"
+    title="Справочник материалов"
     :isShowAddButton="canControl"
     :showBackButton="true"
     @onAddButtonClickEvent="openMaterialModal"

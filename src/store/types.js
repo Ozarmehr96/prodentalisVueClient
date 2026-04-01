@@ -260,3 +260,4 @@ export const IS_PURCHASE_JOURNALS_LOADING = "purchaseJournal/IS_PURCHASE_JOURNAL
 export const MUTATE_IS_PURCHASE_JOURNALS_LOADING =
   "purchaseJournal/MUTATE_IS_PURCHASE_JOURNALS_LOADING";
 export const SET_IS_PURCHASE_JOURNALS_LOADING = "purchaseJournal/SET_IS_PURCHASE_JOURNALS_LOADING";
+export const LOAD_MATERIALS_PURCHASES_SUMMARY = "purchaseJournal/LOAD_MATERIALS_PURCHASES_SUMMARY"; // итоговая сумма закупок материалов за период

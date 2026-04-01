@@ -103,6 +103,15 @@ export default {
               canShow: this.canView,
             },
             {
+              id: "purchase-journal",
+              iconClass: "brand-style",
+              title: "Расходные материалы",
+              description: "Остатки материалов с учётом закупок",
+              action: "/management/material-purchase-summary",
+              svgPath: "/images/material.svg",
+              canShow: this.canView,
+            },
+            {
               id: "export-finance",
               iconClass: "brand-style",
               title: "Финансовый отчёт",
@@ -155,10 +164,10 @@ export default {
             {
               id: "material-expenses",
               iconClass: "brand-style",
-              title: "Расходные материалы",
-              description: "Учёт и контроль расходных материалов в производстве",
+              title: "Справочник материалов",
+              description: "",
               action: "/management/materials",
-              svgPath: "/images/material.svg",
+              svgPath: "/images/finance-export.svg",
               canShow: this.canView,
             },
             {

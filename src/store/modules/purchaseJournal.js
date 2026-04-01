@@ -12,6 +12,7 @@ import {
   SAVE_PURCHASE_JOURNAL,
   SET_IS_PURCHASE_JOURNALS_LOADING,
   UPDATE_PURCHASE_JOURNAL,
+  LOAD_MATERIALS_PURCHASES_SUMMARY,
 } from "../types";
 
 const state = {
@@ -50,6 +51,19 @@ const actions = {
       await commit(MUTATE_IS_PURCHASE_JOURNALS_LOADING, true);
       const response = await api.get("/material-purchases/" + id);
       await commit(MUTATE_PURCHASE_JOURNAL, response.data);
+      await commit(MUTATE_IS_PURCHASE_JOURNALS_LOADING, false);
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      await commit(MUTATE_IS_PURCHASE_JOURNALS_LOADING, false);
+      return null;
+    }
+  },
+
+  [LOAD_MATERIALS_PURCHASES_SUMMARY]: async ({ commit }, params) => {
+    try {
+      await commit(MUTATE_IS_PURCHASE_JOURNALS_LOADING, true);
+      const response = await api.get("/material-purchases/summary", { params });
       await commit(MUTATE_IS_PURCHASE_JOURNALS_LOADING, false);
       return response.data;
     } catch (e) {

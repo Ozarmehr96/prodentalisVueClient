@@ -1,6 +1,6 @@
 <template>
   <app-page
-    title="Закупки"
+    title="Расходные материалы"
     @onAddButtonClickEvent="openModal(null)"
     :showBackButton="true"
     v-if="canControl"
@@ -46,24 +46,14 @@
         <thead>
           <tr>
             <th>Наименование</th>
-            <th>Количество</th>
-            <th>Цена за ед.</th>
-            <th>Сумма</th>
-            <th>Дата закупки</th>
-            <th>Комментарий</th>
-            <th>Создал</th>
-            <th>Дата создания</th>
-            <th v-if="canControl">Действия</th>
+            <th>Куплено</th>
+            <th>Сумма закупок</th>
+            <th>Средняя цена, ед.</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr
-            v-for="item in purchaseJournals"
-            :key="item.id"
-            @click="() => openModal(item)"
-            style="cursor: pointer"
-          >
+          <tr v-for="item in items" :key="item.id" style="cursor: pointer">
             <!-- Материал -->
             <td>
               {{ item.material_name || "—" }}
@@ -75,53 +65,20 @@
               <small class="text-muted">{{ item.unit }}</small>
             </td>
 
-            <!-- Цена за единицу -->
-            <td>
-              {{ formatAmount(item.price) }}
-            </td>
-
             <!-- Итог -->
             <td>
               {{ formatAmount(item.total_amount) }}
             </td>
 
-            <!-- Дата закупки -->
+            <!-- Цена за единицу -->
             <td>
-              {{ $toDateFormat(item.purchase_date) }}
-            </td>
-
-            <!-- Комментарий -->
-            <td>
-              {{ item.comment || "—" }}
-            </td>
-
-            <!-- Кто создал -->
-            <td>
-              {{ item.created_by_name || "—" }}
-            </td>
-
-            <!-- Дата создания -->
-            <td>
-              {{ $toDateTimeFormat(item.created_at) }}
-            </td>
-
-            <!-- Кнопки -->
-            <td v-if="canControl" @click.stop>
-              <div class="d-flex justify-content-center gap-2">
-                <button class="btn btn-sm btn-warning" @click="() => openModal(item)">
-                  Редактировать
-                </button>
-
-                <button class="btn btn-sm btn-danger" @click="deleteItem(item.id)">
-                  Удалить
-                </button>
-              </div>
+              {{ formatAmount(item.price) }}
             </td>
           </tr>
 
           <!-- Нет данных -->
-          <tr v-if="!purchaseJournals || purchaseJournals.length === 0">
-            <td :colspan="canControl ? 9 : 8" class="text-muted py-3">
+          <tr v-if="!items || items.length === 0">
+            <td :colspan="4" class="text-muted py-3">
               Нет данных. Попробуйте изменить фильтр.
             </td>
           </tr>
@@ -148,11 +105,10 @@ import {
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
   IS_LAB_ADMIN,
-  PURCHASE_JOURNALS,
-  LOAD_PURCHASE_JOURNALS,
   DELETE_PURCHASE_JOURNAL,
   IS_PURCHASE_JOURNALS_LOADING,
   CURRENCY,
+  LOAD_MATERIALS_PURCHASES_SUMMARY,
 } from "../../../store/types";
 import { formatMoney } from "../../../helpers/order-helpers";
 
@@ -166,6 +122,7 @@ export default {
   data() {
     return {
       showModal: false,
+      items: [],
       selectedItem: null,
       filters: {
         date_from: "",
@@ -179,7 +136,6 @@ export default {
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
       isAdmin: IS_LAB_ADMIN,
-      purchaseJournals: PURCHASE_JOURNALS,
       isLoading: IS_PURCHASE_JOURNALS_LOADING,
       currency: CURRENCY,
     }),
@@ -192,17 +148,17 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadPurchaseJournals: LOAD_PURCHASE_JOURNALS,
+      loadMaterialsPurchasesSummary: LOAD_MATERIALS_PURCHASES_SUMMARY,
       deletePurchase: DELETE_PURCHASE_JOURNAL,
     }),
     async loadItems() {
       this.totalAmount = 0;
-      this.purchaseJournals.length = 0; // Очищаем список перед загрузкой новых данных
-      await this.loadPurchaseJournals(this.filters);
+      this.items = []; // Очищаем список перед загрузкой новых данных
+      this.items = await this.loadMaterialsPurchasesSummary(this.filters);
       this.calcTotalAmount();
     },
     calcTotalAmount() {
-      this.totalAmount = (this.purchaseJournals || []).reduce(
+      this.totalAmount = (this.items || []).reduce(
         (acc, item) => acc + (Number(item.total_amount) || 0),
         0
       );
@@ -225,19 +181,6 @@ export default {
     openModal(item) {
       this.selectedItem = item;
       this.showModal = true;
-    },
-    deleteItem(id) {
-      if (!confirm("Вы уверены, что хотите удалить закупку?")) {
-        return;
-      }
-
-      this.deletePurchase({
-        id,
-        callback: () => {
-          this.$toast("Закупка успешно удалена");
-          this.loadItems();
-        },
-      });
     },
     onDateChanged(period) {
       this.filters.date_from = period.date_from;
