@@ -101,10 +101,7 @@
           </div>
         </div>
         <!-- Сумма заработка -->
-        <div
-          class="card text-center mb-3"
-          v-if="isSystemAdmin || isLabDirector || isLabAdmin"
-        >
+        <div class="card text-center mb-3" v-if="canShowPrice">
           <div class="row g-1 text-center">
             <!-- Оплата труда -->
             <div class="col-12 col-md-6">
@@ -160,6 +157,7 @@ import {
 import WorkTypeCardItem from "./WorkTypeCardItem.vue";
 import {
   CURRENCY,
+  CURRENT_USER,
   IS_CUSTOMER,
   IS_LAB_ADMIN,
   IS_LAB_DIRECTOR,
@@ -169,6 +167,7 @@ import {
 } from "../store/types";
 import OrderTasksGraphView from "./order-tasks/OrderTasksGraphView.vue";
 import ButtonWithLoader from "./ButtonWithLoader.vue";
+import { VAHOBOV_LAB } from "../helpers/labsEnum";
 
 export default {
   name: "OrderView",
@@ -196,6 +195,7 @@ export default {
       isLabAdmin: IS_LAB_ADMIN,
       currency: CURRENCY,
       isCustomer: IS_CUSTOMER,
+      currentUser: CURRENT_USER,
     }),
     primerkaList() {
       let primerkas = [];
@@ -217,6 +217,13 @@ export default {
       });
 
       return primerkas;
+    },
+    canShowPrice() {
+      if (this.currentUser.lab_id === VAHOBOV_LAB) {
+        return this.isLabDirector;
+      }
+
+      return this.isSystemAdmin || this.isLabDirector || this.isLabAdmin;
     },
     isValidNewDeadline() {
       return (

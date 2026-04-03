@@ -50,19 +50,6 @@
             <label for="floatingInput">Срок</label>
           </div>
 
-          <div class="form-floating mb-4" v-if="!isCustomer">
-            <input
-              type="number"
-              v-model="price"
-              min="0"
-              step="0.01"
-              class="form-control"
-              id="floatingInput"
-              :readonly="true"
-            />
-            <label for="floatingInput">Оплата труда</label>
-          </div>
-
           <div class="form-floating mb-4">
             <textarea
               type="text"

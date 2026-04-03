@@ -1,87 +1,126 @@
 <template>
-  <div class="matrix-container">
-    <!-- Спиннер -->
-    <div v-if="loading" class="d-flex justify-content-center align-items-center h-100">
-      <div class="text-center">
-        <div class="spinner-border spinner-border-lg text-primary" role="status"></div>
-        <p class="mt-3">Загрузка матрицы цен...</p>
-      </div>
+  <div class="matrix-container d-flex">
+    <!-- Список заказчиков слева -->
+
+    <div class="customers-list border-end">
+      <h5 class="p-2 sticky-header" style="font-size: 16px">Заказчики</h5>
+      <ul class="list-group list-group-flush">
+        <li
+          v-for="customer in customers"
+          :key="customer.id"
+          class="list-group-item sticky-col"
+          :class="{ active: selectedCustomer?.id === customer.id }"
+          @click="selectCustomer(customer)"
+        >
+          {{ customer.full_name }}
+        </li>
+      </ul>
     </div>
 
-    <div v-else class="table-outer-wrapper" style="max-width: 1230px">
-      <div class="table-scroll-container">
-        <table class="table table-bordered table-sm price-matrix mb-0">
+    <!-- Список работ справа -->
+    <div class="work-types-container flex-grow-1">
+      <div v-if="loading" class="d-flex justify-content-center align-items-center h-100">
+        <div class="text-center">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2">Загрузка типов работ...</p>
+        </div>
+      </div>
+
+      <div v-else class="table-scroll-container" style="max-width: 1000px">
+        <table
+          class="table table-bordered table-sm price-matrix mb-0"
+          v-if="selectedCustomer"
+        >
           <thead>
-            <tr>
-              <th
-                class="sticky-col sticky-header corner-cell"
-                style="width: 180px; min-width: 180px"
-              >
-                Тип работы
-              </th>
-              <th
-                v-for="customer in filtredcustomers"
-                :key="customer.id"
-                class="sticky-header text-center px-2 text-nowrap"
-                style="min-width: 140px; width: 140px"
-              >
-                {{ customer.full_name }}
-              </th>
+            <tr class="sticky-header">
+              <th class="sticky-header work-name-col type-col">Тип работы</th>
+              <th class="sticky-header price-col cell-input">Цена</th>
+              <th class="sticky-header mode-col price-mode-col">Тип цены</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="workType in workTypes" :key="workType.id">
+            <tr v-for="work in workTypes" :key="work.id">
               <td
-                class="sticky-col fw-semibold text-nowrap px-2"
-                :style="{ background: workType.background_color, color: '#fff' }"
+                class="sticky-col type-col"
+                :style="{ background: work.background_color, color: '#fff' }"
               >
-                {{ workType.name }}
+                {{ work.name }}
               </td>
-              <td v-for="customer in filtredcustomers" :key="customer.id" class="p-0">
+
+              <!-- Input для цены -->
+              <td class="cell-input">
                 <input
                   type="number"
-                  :title="`Введите цену`"
                   step="0.01"
                   placeholder="—"
                   min="0"
-                  class="form-control form-control-sm border-0 text-end rounded-0 shadow-none w-100 h-100"
-                  v-model.number="pricesMatrix[workType.id][customer.id]"
+                  class="form-control form-control-sm сell-input"
+                  v-model.number="pricesMatrix[work.id][selectedCustomer.id].price"
                   :class="{
-                    'changed-cell': isCellChanged(workType.id, customer.id),
-                    'invalid-cell': isCellInvalid(workType.id, customer.id),
+                    'changed-cell': isCellChanged(work.id),
+                    'invalid-cell': isCellInvalid(work.id),
                   }"
+                  :title="'Введите цену'"
                 />
+              </td>
+
+              <!-- Кнопки выбора типа цены -->
+              <td class="d-flex gap-2 price-mode-col">
+                <button
+                  class="btn btn-sm"
+                  :class="{
+                    'btn-primary text-white':
+                      pricesMatrix[work.id][selectedCustomer.id].price_mode ===
+                      'PerTooth',
+                  }"
+                  @click="setPriceType(work.id, 'PerTooth')"
+                  title="За зуб"
+                >
+                  За один зуб
+                </button>
+                <button
+                  class="btn btn-sm"
+                  :class="{
+                    'btn-primary text-white':
+                      pricesMatrix[work.id][selectedCustomer.id].price_mode === 'PerStep',
+                  }"
+                  @click="setPriceType(work.id, 'PerStep')"
+                  title="За работу"
+                >
+                  За работу
+                </button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
 
-    <div class="d-flex justify-content-end mt-3 gap-2">
-      <button
-        class="btn btn-outline-secondary"
-        @click="resetChanges"
-        :disabled="!hasChanges || isLoading"
-      >
-        Отменить изменения
-      </button>
-
-      <ButtonWithLoader
-        :disabled="!hasChanges || isLoading"
-        @click="saveOnlyChanges"
-        :isLoading="isLoading"
-        title="Сохранить"
-        loadingText="Сохранение..."
-        :isValid="hasChanges"
-        :customClasses="['btn', hasChanges ? 'brand-style' : 'btn-outline-secondary']"
-      />
+      <!-- Фиксированные кнопки -->
+      <div class="matrix-actions">
+        <button
+          class="btn btn-outline-secondary"
+          @click="resetChanges"
+          :disabled="!hasChanges || isLoading"
+        >
+          Отменить изменения
+        </button>
+        <ButtonWithLoader
+          :disabled="!hasChanges || isLoading"
+          @click="saveOnlyChanges"
+          :isLoading="isLoading"
+          title="Сохранить"
+          loadingText="Сохранение..."
+          :isValid="hasChanges"
+          :customClasses="['btn', hasChanges ? 'brand-style' : 'btn-outline-secondary']"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import ButtonWithLoader from "../../ButtonWithLoader.vue";
 import {
   LOAD_CUSTOMERS,
   LOAD_WORK_TYPES,
@@ -92,21 +131,18 @@ import {
   CUSTOMERS_WORK_TYPE_PRICES,
   IS_LOADING_CUSTOMERS_WORK_TYPE_PRICES,
 } from "../../../store/types";
-import ButtonWithLoader from "../../ButtonWithLoader.vue";
 
 export default {
-  name: "WorkTypeCustomerPriceMatrix",
-  components: {
-    ButtonWithLoader,
-  },
+  name: "VerticalMatrix",
+  components: { ButtonWithLoader },
   data() {
     return {
       loading: true,
+      selectedCustomer: null,
       pricesMatrix: {},
       originalMatrix: {},
     };
   },
-
   computed: {
     ...mapGetters({
       customers: CUSTOMERS,
@@ -116,63 +152,58 @@ export default {
     }),
 
     isLoading() {
-      return this.isCustomersWorkTypePricesLoading || this.loading;
+      return this.loading || this.isCustomersWorkTypePricesLoading;
     },
 
-    filtredcustomers() {
-      return this.customers.sort((a, b) => a.full_name.localeCompare(b.full_name));
-    },
+    changes() {
+      const changesList = [];
 
-    hasChanges() {
-      return (
-        JSON.stringify(this.pricesMatrix) !== JSON.stringify(this.originalMatrix) &&
-        this.changedData.length > 0 &&
-        this.changedData.every(
-          (item) =>
-            item.price !== null &&
-            item.price !== "" &&
-            !isNaN(Number(item.price)) &&
-            item.price >= 0
-        )
-      );
-    },
-
-    changedData() {
-      const changes = [];
       this.workTypes.forEach((wt) => {
-        this.filtredcustomers.forEach((cust) => {
-          const current = this.pricesMatrix[wt.id]?.[cust.id];
+        if (!this.pricesMatrix[wt.id]) return; // пропускаем, если workId ещё нет
+
+        this.customers.forEach((cust) => {
+          if (!cust?.id) return; // пропускаем, если нет id заказчика
+          const data = this.pricesMatrix[wt.id][cust.id];
           const original = this.originalMatrix[wt.id]?.[cust.id];
-          if (current !== original && current !== "") {
-            changes.push({
+
+          if (!data) return; // пропускаем, если данных нет
+
+          const changed = JSON.stringify(data) !== JSON.stringify(original);
+          const valid = data.price !== null && data.price !== "" && data.price_mode;
+
+          if (changed && valid) {
+            changesList.push({
               work_type_id: wt.id,
               customer_id: cust.id,
-              price: current === null || isNaN(current) ? null : Number(current),
+              price: data.price,
+              price_mode: data.price_mode,
             });
           }
         });
       });
 
-      return changes;
+      return changesList;
+    },
+
+    // Есть ли изменения для активации кнопки
+    hasChanges() {
+      return this.changes.length > 0;
     },
   },
-
   async beforeMount() {
-    this.loading = true;
     try {
+      this.loading = true;
       await Promise.all([
         this.loadWorkTypes(),
         this.loadCustomers(),
         this.loadCustomersWorkTypePrices(),
       ]);
       this.initializeMatrix();
-    } catch (err) {
-      console.error("Ошибка загрузки данных:", err);
+      this.selectedCustomer = this.customers[0] || null;
     } finally {
       this.loading = false;
     }
   },
-
   methods: {
     ...mapActions({
       loadWorkTypes: LOAD_WORK_TYPES,
@@ -181,73 +212,53 @@ export default {
       loadCustomersWorkTypePrices: LOAD_CUSTOMERS_WORK_TYPE_PRICES,
     }),
 
-    initializeMatrix() {
-      if (!this.workTypes.length || !this.filtredcustomers.length) return;
+    selectCustomer(customer) {
+      this.selectedCustomer = customer;
+    },
 
+    initializeMatrix() {
       const matrix = {};
-      this.workTypes.forEach((wt) => {
-        matrix[wt.id] = {};
-        this.filtredcustomers.forEach((cust) => {
-          matrix[wt.id][cust.id] = null;
+      this.workTypes.forEach((work) => {
+        matrix[work.id] = {};
+        this.customers.forEach((cust) => {
+          matrix[work.id][cust.id] = { price: null, price_mode: null };
         });
       });
-
       this.pricesMatrix = matrix;
-      this.applyExistingPrices();
-      this.cloneOriginalMatrix();
-    },
 
-    applyExistingPrices() {
-      this.customersWorkTypePrices.forEach(({ work_type_id, customer_id, price }) => {
-        if (
-          this.pricesMatrix[work_type_id] &&
-          customer_id in this.pricesMatrix[work_type_id]
-        ) {
-          this.pricesMatrix[work_type_id][customer_id] = Number(price) || null;
+      this.customersWorkTypePrices.forEach(
+        ({ work_type_id, customer_id, price, price_mode }) => {
+          if (
+            this.pricesMatrix[work_type_id] &&
+            customer_id in this.pricesMatrix[work_type_id]
+          ) {
+            this.pricesMatrix[work_type_id][customer_id] = {
+              price: Number(price) || null,
+              price_mode: price_mode || null,
+            };
+          }
         }
-      });
-    },
+      );
 
-    cloneOriginalMatrix() {
       this.originalMatrix = JSON.parse(JSON.stringify(this.pricesMatrix));
     },
 
-    // Проверка корректности значения цены
-    isCellInvalid(workTypeId, customerId) {
-      const value = this.pricesMatrix?.[workTypeId]?.[customerId];
-
-      // Пусто — НЕ ошибка (можно менять под свои правила)
-      if (value === null || value === "") return false;
-
-      // Не число
-      if (isNaN(value)) return true;
-
-      const num = Number(value);
-
-      // Отрицательное значение
-      if (num < 0) return true;
-
-      return false;
+    setPriceType(workId, mode) {
+      if (!this.selectedCustomer) return;
+      this.pricesMatrix[workId][this.selectedCustomer.id].price_mode = mode;
     },
 
-    isCellChanged(work_type_id, customer_id) {
-      try {
-        const current = this.pricesMatrix[work_type_id][customer_id];
-        const original = this.originalMatrix[work_type_id][customer_id];
+    isCellChanged(workId) {
+      if (!this.selectedCustomer) return false;
+      const current = this.pricesMatrix[workId][this.selectedCustomer.id];
+      const original = this.originalMatrix[workId][this.selectedCustomer.id];
+      return JSON.stringify(current) !== JSON.stringify(original);
+    },
 
-        // Приводим пустые значения к null
-        const currVal =
-          current === null || current === "" || isNaN(current) ? null : Number(current);
-        const origVal =
-          original === null || original === "" || isNaN(original)
-            ? null
-            : Number(original);
-
-        // Если текущее значение отличается от исходного, считаем изменённой
-        return currVal !== origVal;
-      } catch {
-        return false;
-      }
+    isCellInvalid(workId) {
+      if (!this.selectedCustomer) return false;
+      const value = this.pricesMatrix[workId][this.selectedCustomer.id].price;
+      return value !== null && value !== "" && (isNaN(value) || value < 0);
     },
 
     resetChanges() {
@@ -255,10 +266,10 @@ export default {
     },
 
     async saveOnlyChanges() {
-      if (!this.changedData.length) return;
+      if (!this.changes.length) return;
 
       await this.saveCustomersWorkTypePrices({
-        prices: this.changedData,
+        prices: this.changes,
         callback: async () => {
           await this.loadCustomersWorkTypePrices();
           this.initializeMatrix();
@@ -269,164 +280,111 @@ export default {
   },
 };
 </script>
-
 <style scoped>
-/* Главный контейнер занимает всю доступную высоту страницы */
 .matrix-container {
-  height: calc(
-    100vh - 80px
-  ); /* или calc(100vh - 60px) если есть фиксированная шапка приложения */
+  height: calc(100vh - 80px);
   display: flex;
-  width: calc(100vw - 60px);
-  min-width: calc(100vw - 10vw);
-  flex-direction: column;
-}
-
-/* Обёртка таблицы, занимает всё оставшееся место */
-.table-outer-wrapper {
-  flex: 1 1 auto;
-  overflow: hidden;
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  background: white;
-}
-
-/* Единственный контейнер со скроллом */
-.table-scroll-container {
   width: 100%;
-  height: 100%;
-  overflow-x: auto;
-  overflow-y: auto;
   position: relative;
+}
+
+/* Список заказчиков слева */
+.customers-list {
+  width: 300px !important;
+  overflow-y: auto;
+  border-right: 1px solid #dee2e6;
+  position: relative;
+}
+.customers-list .sticky-header {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 10;
+  border-bottom: 2px solid #dee2e6;
+}
+.customers-list .sticky-col {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 5;
+  border-right: 1px solid #dee2e6;
+}
+
+.customers-list .list-group-item.active.sticky-col {
+  background-color: #0d6efd; /* твой основной брендовый цвет */
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Список работ справа */
+.work-types-container {
+  flex-grow: 1;
+  overflow: auto;
+  position: relative;
+}
+.table-scroll-container {
+  overflow-x: auto;
 }
 
 /* Таблица */
 .price-matrix {
+  width: 100%;
   border-collapse: collapse;
-  width: max-content;
-  min-width: 100%;
-  margin: 0;
 }
-
-/* Фиксированная шапка */
-.sticky-header {
+.price-matrix th,
+.price-matrix td {
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
+}
+.price-matrix th.sticky-header {
   position: sticky;
   top: 0;
+  background: #f8f9fa;
   z-index: 10;
-  background-color: #f8f9fa;
-  border-bottom: 2px solid #dee2e6 !important;
+  border-bottom: 2px solid #dee2e6;
 }
-
-/* Фиксированный первый столбец */
-.sticky-col {
+.price-matrix td.sticky-col {
   position: sticky;
   left: 0;
-  background-color: white;
+  background: #f8f9fa;
   z-index: 5;
-  border-right: 2px solid #dee2e6 !important;
+  border-right: 2px solid #dee2e6;
 }
 
-/* Угол таблицы */
-.corner-cell {
-  z-index: 11 !important;
-  background-color: #f8f9fa;
-}
-
-/* Изменённые ячейки */
-.changed-cell {
-  background-color: #fff3cd !important;
-  font-weight: 500;
-}
-
-/* Input занимает всю ячейку и выглядит интерактивно */
+/* Input */
 td input {
-  height: 100% !important;
-  width: 100% !important;
-  border-radius: 0.25rem !important;
-  border: 1px solid #ced4da;
-  padding: 0.25rem 0.5rem;
+  width: 100%;
+}
+
+/* Кнопки выбора типа цены */
+td .btn {
+  flex: 1;
   font-size: 0.875rem;
-  text-align: right;
-  transition: all 0.2s ease-in-out;
-  background-color: #fdfdfd;
-  cursor: text;
+  white-space: nowrap;
 }
 
-/* Подсветка при фокусе */
-td input:focus {
-  border-color: #0d6efd;
-  background-color: #e7f1ff;
-  outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
-/* Эффект при наведении на интерактивные ячейки */
-td input:hover {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Подсветка изменённых ячеек с лёгкой анимацией */
+/* Изменённая ячейка */
 .changed-cell {
-  animation: pulse 1s ease-in-out infinite alternate;
-  border-color: #ffc107 !important;
+  background-color: #fff3cd;
+  border-color: #ffc107;
 }
 
-@keyframes pulse {
-  0% {
-    background-color: #fff3cd;
-  }
-  100% {
-    background-color: #ffe8a1;
-  }
-}
-
-/* Placeholder */
-td input::placeholder {
-  color: #6c757d;
-  opacity: 1;
-}
-
-/* Подсветка изменённых ячеек */
-.changed-cell {
-  background-color: #fff3cd !important;
-  font-weight: 500;
-  border-color: #ffc107 !important;
-}
-
-/* Подсказка пользователю, что сюда можно кликнуть */
-td input::placeholder {
-  color: #6c757d;
-  opacity: 1;
-}
-
-/* Адаптивность для мобильных */
-@media (min-width: 1190px) {
-  .matrix-container {
-    width: fit-content !important;
-    min-width: calc(100vw - 300px) !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .sticky-col {
-    min-width: 140px;
-  }
-  th.sticky-header:not(.sticky-col),
-  td:not(.sticky-col) {
-    min-width: 110px;
-  }
-}
-
-/* Ошибка ввода */
+/* Ошибочная ячейка */
 .invalid-cell {
-  background-color: #f8d7da !important;
-  border-color: #dc3545 !important;
-  font-weight: 600;
+  background-color: #f8d7da;
+  border-color: #dc3545;
 }
 
-/* Фокус на ошибке */
-.invalid-cell:focus {
-  background-color: #f1aeb5 !important;
-  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+/* Фиксированные кнопки */
+.matrix-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px;
+  background: #fff;
+  border-top: 1px solid #dee2e6;
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
 }
 </style>
