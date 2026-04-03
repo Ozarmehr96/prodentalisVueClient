@@ -20,15 +20,6 @@
       <div class="card-body">
         <div class="row g-3">
           <div class="col-12 col-md-3">
-            <label for="floatingInput" class="form-label">Заказчик</label>
-            <input
-              type="text"
-              :readonly="true"
-              class="form-control"
-              id="floatingInput"
-              :value="filters.customer?.full_name"
-              @click="showCustomerCanvas = true"
-            />
             <SelectCustomersWizard
               v-model:visible="showCustomerCanvas"
               @select-customer="onCustomerSelected"
@@ -186,7 +177,7 @@ export default {
       paymentJournals: PAYMENT_JOURNALS,
       customers: CUSTOMERS,
       isJournalLoading: IS_PAYMENT_JOURNALS_LOADING,
-      currency: CURRENCY
+      currency: CURRENCY,
     }),
     canControl() {
       return this.isLabDirector || this.isSystemAdmin;

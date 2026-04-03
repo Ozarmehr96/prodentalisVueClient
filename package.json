@@ -1,7 +1,7 @@
 {
   "name": "prodentalis-client",
   "private": true,
-  "version": "2026.04.03.1",
+  "version": "2026.04.04.1",
   "type": "module",
   "scripts": {
     "dev": "vite",

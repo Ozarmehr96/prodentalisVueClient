@@ -1,44 +1,61 @@
 <template>
-  <div class="offcanvas offcanvas-start" tabindex="-1" ref="offcanvasRef">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title">Выбор заказчика</h5>
-      <button type="button" class="btn-close" @click="closeOffcanvas"></button>
-    </div>
-    <button
-      type="button"
-      class="btn btn-primary me-3 ms-3 brand-style"
-      @click="showCustomerModal = true"
-    >
-      Добавить нового заказчика
-    </button>
+  <div :class="showLabel ? 'form-floating' : ''">
+    <input
+      :disabled="disabled"
+      type="text"
+      :readonly="true"
+      class="form-control form-floating"
+      id="floatingInput"
+      :value="val"
+      @click="
+        () => {
+          this.bsOffcanvas.show();
+        }
+      "
+    />
+    <label v-if="showLabel" for="floatingInput" class="form-label">Заказчик</label>
+    <div class="invalid-feedback">Выберите заказчика</div>
+    <div class="offcanvas offcanvas-start" tabindex="-1" ref="offcanvasRef">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Выбор заказчика</h5>
+        <button type="button" class="btn-close" @click="closeOffcanvas"></button>
+      </div>
+      <button
+        type="button"
+        class="btn btn-primary me-3 ms-3 brand-style"
+        @click="showCustomerModal = true"
+      >
+        Добавить нового заказчика
+      </button>
 
-    <div class="offcanvas-body">
-      <input
-        type="text"
-        class="form-control mb-3"
-        placeholder="Поиск заказчика..."
-        v-model="searchQuery"
-      />
+      <div class="offcanvas-body">
+        <input
+          type="text"
+          class="form-control mb-3"
+          placeholder="Поиск заказчика..."
+          v-model="searchQuery"
+        />
 
-      <div class="list-group">
-        <button
-          v-for="customer in filteredCustomers"
-          :key="customer.id"
-          type="button"
-          class="list-group-item list-group-item-action"
-          @click="selectCustomer(customer)"
-        >
-          <div class="fw-bold" style="color: black">{{ customer.full_name }}</div>
-          <small class="text-muted">{{ customer.phone }}</small>
-        </button>
+        <div class="list-group">
+          <button
+            v-for="customer in filteredCustomers"
+            :key="customer.id"
+            type="button"
+            class="list-group-item list-group-item-action"
+            @click="selectCustomer(customer)"
+          >
+            <div class="fw-bold" style="color: black">{{ customer.full_name }}</div>
+            <small class="text-muted">{{ customer.phone }}</small>
+          </button>
 
-        <div v-if="filteredCustomers.length === 0" class="text-muted mt-2">
-          Заказчики не найдены
+          <div v-if="filteredCustomers.length === 0" class="text-muted mt-2">
+            Заказчики не найдены
+          </div>
         </div>
       </div>
-    </div>
 
-    <CustomerModal v-model:show="showCustomerModal" />
+      <CustomerModal v-model:show="showCustomerModal" />
+    </div>
   </div>
 </template>
 
@@ -59,13 +76,28 @@ export default {
       type: Boolean,
       default: false,
     },
+    isGetLastSelected: {
+      type: Boolean,
+      default: false,
+    },
+    showLabel: {
+      type: Boolean,
+      default: true,
+    },
+    defaultVal: {
+      type: [String, null],
+      default: null,
+    },
+
     isAddAllButton: false,
+    disabled: false,
   },
   data() {
     return {
       searchQuery: "",
       bsOffcanvas: null,
       showCustomerModal: false,
+      selectedCustomer: null,
     };
   },
   computed: {
@@ -73,6 +105,25 @@ export default {
       customers: CUSTOMERS,
       customer: CUSTOMER,
     }),
+    val() {
+      if (this.defaultVal) {
+        return this.defaultVal;
+      }
+
+      if (this.isGetLastSelected && this.customer) {
+        return this.customer.full_name;
+      }
+
+      let fio = this.selectedCustomer?.full_name;
+      if (fio && this.selectedCustomer?.phone) {
+        return `${fio} (${this.selectedCustomer.phone})`;
+      }
+
+      if (!fio && this.isAddAllButton) {
+        return "Все заказчики";
+      }
+      return fio;
+    },
     filteredCustomers() {
       let customers = [];
 
@@ -130,7 +181,12 @@ export default {
     closeOffcanvas() {
       this.bsOffcanvas.hide();
     },
+    reset() {
+      this.selectedCustomer = null;
+      this.setCustomer(null);
+    },
     selectCustomer(customer) {
+      this.selectedCustomer = customer;
       this.$emit("select-customer", customer);
       this.setCustomer(customer);
       this.closeOffcanvas();

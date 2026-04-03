@@ -3,7 +3,7 @@
     <!-- Список заказчиков слева -->
 
     <div class="customers-list border-end">
-      <h5 class="p-2 sticky-header" style="font-size: 16px">Заказчики</h5>
+      <h5 class="p-2 sticky-header" style="font-size: 16px">Заказчик</h5>
       <ul class="list-group list-group-flush">
         <li
           v-for="customer in customers"

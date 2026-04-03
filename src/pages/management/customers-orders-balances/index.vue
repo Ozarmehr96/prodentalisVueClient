@@ -6,15 +6,9 @@
         <div class="row g-3">
           <div class="col-12 col-md-3">
             <label for="floatingInput" class="form-label">Заказчик</label>
-            <input
-              type="text"
-              :readonly="true"
-              class="form-control"
-              id="floatingInput"
-              :value="filters.customer?.full_name"
-              @click="showCustomerCanvas = true"
-            />
             <SelectCustomersWizard
+              ref="selectCustomerWizard"
+              :showLabel="false"
               v-model:visible="showCustomerCanvas"
               @select-customer="onCustomerSelected"
               :isAddAllButton="true"
@@ -30,7 +24,7 @@
               class="form-control"
               v-model="filters.number"
               placeholder="№"
-              @input="applyFilters"
+              @input="searchByOrderId"
             />
           </div>
           <div class="col-12 col-md-3" style="width: auto">
@@ -308,7 +302,14 @@ export default {
     applyFilters() {
       this.loadItems();
     },
-    clearFilters() {
+    searchByOrderId() {
+      // При поиске по ID заказа, сбрасываем фильтр по заказчику и дате
+      this.filters.created_from = null;
+      this.filters.created_to = null;
+      this.applyFilters();
+    },
+    async clearFilters() {
+      await this.$refs.selectCustomerWizard.reset(); // сбрасываем выбор заказчика в дочернем компоненте
       this.filters = {
         user_id: "",
         created_from: "",

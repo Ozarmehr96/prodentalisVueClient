@@ -3,6 +3,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content p-3 position-relative">
         <button
+          v-if="!showSelectMaterialWizard"
           type="button"
           class="btn-close position-absolute top-0 end-0 m-2"
           aria-label="Close"
@@ -281,6 +282,7 @@ export default {
     }),
 
     close() {
+      this.showSelectMaterialWizard = false;
       this.$emit("update:show", false);
     },
 

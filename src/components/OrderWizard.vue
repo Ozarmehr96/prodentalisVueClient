@@ -9,21 +9,12 @@
       <div class="col-md-4">
         <h5 class="mb-3">Пациент и заказ</h5>
         <form>
-          <div class="form-floating mb-4" v-if="!isCustomer">
-            <input
-              type="text"
-              :value="customer ? customer.full_name : ''"
-              class="form-control"
-              id="floatingInput"
-              @click="showCustomerCanvas = true"
-              readonly
-            />
-            <label for="floatingInput">Заказчик</label>
-            <SelectCustomersWizard
-              v-model:visible="showCustomerCanvas"
-              @select-customer="onCustomerSelected"
-            />
-          </div>
+          <SelectCustomersWizard
+            v-if="!isCustomer"
+            class="form-floating mb-4"
+            v-model:visible="showCustomerCanvas"
+            @select-customer="onCustomerSelected"
+          />
 
           <div class="form-floating mb-4">
             <input

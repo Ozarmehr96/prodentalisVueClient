@@ -17,13 +17,12 @@
       <!-- Имя заказчика -->
       <div class="col-12 col-sm-auto">
         <label for="customer_name" class="form-label small">Заказчик</label>
-        <input
-          type="text"
-          id="customer_name"
-          class="form-control"
-          v-model="filters.customer_name"
-          placeholder="Введите имя"
-          @input="applyFilter"
+        <SelectCustomersWizard
+          ref="selectCustomerWizard"
+          :isAddAllButton="true"
+          :showLabel="false"
+          :isGetLastSelected="false"
+          @select-customer="onCustomerSelected"
         />
       </div>
 
@@ -114,19 +113,31 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { ORDER_FILTERS, SET_ORDER_FILTERS } from "../../store/types";
+import SelectCustomersWizard from "../customers/SelectCustomersWizard.vue";
+import { ORDER_FILTERS, SET_CUSTOMER, SET_ORDER_FILTERS } from "../../store/types";
 import { mapActions } from "vuex";
 import { getDataFromType } from "../../helpers/order-helpers";
 export default {
   name: "OrderFilter",
+  components: {
+    SelectCustomersWizard,
+  },
   computed: {
     ...mapGetters({
       filters: ORDER_FILTERS,
     }),
   },
+  async beforeMount() {
+    // при загрузке компонента пытаемся восстановить последний выбранный фильтр по заказчику
+    this.filters.customer_id = null;
+    this.$refs.selectCustomerWizard.reset(); // сбрасываем выбор заказчика в дочернем компоненте
+    this.setCustomer(null);
+    await this.setOrderFilters({ ...this.filters });
+  },
   methods: {
     ...mapActions({
       setOrderFilters: SET_ORDER_FILTERS,
+      setCustomer: SET_CUSTOMER,
     }),
     toggleStatus(status) {
       if (this.filters.status === status) {
@@ -142,8 +153,9 @@ export default {
       this.$emit("search", { ...this.filters });
     },
     async resetFilter() {
+      await this.$refs.selectCustomerWizard.reset(); // сбрасываем выбор заказчика в дочернем компоненте
       this.filters.number = null;
-      this.filters.customer_name = null;
+      this.filters.customer_id = null;
       this.filters.created_from = null;
       this.filters.created_to = null;
       this.filters.status = "";
@@ -158,6 +170,11 @@ export default {
       this.filters.created_to = data.to;
 
       // применяем изменения
+      this.applyFilter();
+    },
+
+    onCustomerSelected(customer) {
+      this.filters.customer_id = customer.id;
       this.applyFilter();
     },
   },

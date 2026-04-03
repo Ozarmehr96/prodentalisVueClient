@@ -26,19 +26,10 @@
             <!-- Заказчик -->
             <div class="col-12">
               <div class="form-floating">
-                <input
-                  type="text"
+                <SelectCustomersWizard
+                  :defaultVal="`${localPayment.customer_name} ${localPayment.customer_phone}`"
                   :disabled="isEdit || isOrderPay"
                   :class="{ 'is-invalid': !isCustomerValid }"
-                  :value="`${localPayment.customer_name} ${localPayment.customer_phone}`"
-                  class="form-control"
-                  id="floatingInput"
-                  @click="showCustomerCanvas = true"
-                  readonly
-                />
-                <label for="floatingInput">Заказчик</label>
-                <div class="invalid-feedback">Выберите заказчика</div>
-                <SelectCustomersWizard
                   v-model:visible="showCustomerCanvas"
                   @select-customer="onCustomerSelected"
                 />
