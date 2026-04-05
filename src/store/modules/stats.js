@@ -1,14 +1,23 @@
-import { downloadFile, getFinanceReportFileName, getOrdersByCustomersReportFileName } from "../../helpers/download";
+import {
+ downloadFile,
+ getFinanceReportFileName,
+ getOrdersByCustomersReportFileName,
+} from "../../helpers/download";
 import api from "../../services/api";
 import {
  EXPORT_FINANCE_REPORT,
  EXPORT_ORDERS_BY_CUSTOMERS,
+ FINANCE_REPORT,
  IS_LOADING_EXPORT_FINANCE_REPORT,
  IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS,
+ IS_LOADING_FINANCE_REPORT,
  IS_STATS_LOADING,
+ LOAD_FINANCE_REPORT,
  LOAD_USER_STAT,
+ MUTATE_FINANCE_REPORT,
  MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT,
  MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS,
+ MUTATE_IS_LOADING_FINANCE_REPORT,
  MUTATE_IS_STATS_LOADING,
  MUTATE_USER_STAT,
  USER_STAT,
@@ -22,18 +31,39 @@ const state = {
  },
  isExportingFinanceReport: false,
  isLoading: false,
- isExportingOrdersByCustomers: false
+ isExportingOrdersByCustomers: false,
+ isLoadingFinanceReport: false,
+ financeReport: null,
 };
 
 const mutations = {
+ [MUTATE_FINANCE_REPORT]: (state, report) => (state.financeReport = report),
+ [MUTATE_IS_LOADING_FINANCE_REPORT]: (state, isLoading) =>
+  (state.isLoadingFinanceReport = isLoading),
  [MUTATE_USER_STAT]: (state, userStat) => (state.userStat = userStat),
  [MUTATE_IS_STATS_LOADING]: (state, isLoading) => (state.isLoading = isLoading),
- [MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS]: (state, isExportingOrdersByCustomers) => (state.isExportingOrdersByCustomers = isExportingOrdersByCustomers),
+ [MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS]: (
+  state,
+  isExportingOrdersByCustomers,
+ ) => (state.isExportingOrdersByCustomers = isExportingOrdersByCustomers),
  [MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT]: (state, isExportingFinanceReport) =>
   (state.isExportingFinanceReport = isExportingFinanceReport),
 };
 
 const actions = {
+ [LOAD_FINANCE_REPORT]: async ({ commit }, params) => {
+  try {
+   await commit(MUTATE_IS_LOADING_FINANCE_REPORT, true);
+   const response = await api.get("/stats/finance-report", { params });
+   await commit(MUTATE_FINANCE_REPORT, response.data);
+   return response.data;
+  } catch (e) {
+   console.error(e);
+   await commit(MUTATE_IS_LOADING_FINANCE_REPORT, false);
+  } finally {
+   await commit(MUTATE_IS_LOADING_FINANCE_REPORT, false);
+  }
+ },
  [LOAD_USER_STAT]: async ({ commit }, params) => {
   try {
    await commit(MUTATE_IS_STATS_LOADING, true);
@@ -49,7 +79,7 @@ const actions = {
 
  [EXPORT_FINANCE_REPORT]: async ({ commit }, params) => {
   try {
-    let fileName = "";
+   let fileName = "";
    await commit(MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT, true);
    const response = await api.get("/stats/export/finance-report", { params });
    await commit(MUTATE_IS_LOADING_EXPORT_FINANCE_REPORT, false);
@@ -57,8 +87,7 @@ const actions = {
     method: "GET",
     responseType: "blob", // important
     url: `/download/` + response.data,
-    data: {
-    },
+    data: {},
    }).then(async (res) => {
     fileName = getFinanceReportFileName(params.date_from, params.date_to);
     downloadFile(res, fileName);
@@ -75,20 +104,24 @@ const actions = {
   }
  },
 
-  [EXPORT_ORDERS_BY_CUSTOMERS]: async ({ commit }, params) => {
+ [EXPORT_ORDERS_BY_CUSTOMERS]: async ({ commit }, params) => {
   try {
-    let fileName = "";
+   let fileName = "";
    await commit(MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS, true);
-   const response = await api.get("/stats/export/orders-by-customers", { params });
+   const response = await api.get("/stats/export/orders-by-customers", {
+    params,
+   });
    await commit(MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS, false);
    await api({
     method: "GET",
     responseType: "blob", // important
     url: `/download/` + response.data,
-    data: {
-    },
+    data: {},
    }).then(async (res) => {
-    fileName = getOrdersByCustomersReportFileName(params.date_from, params.date_to);
+    fileName = getOrdersByCustomersReportFileName(
+     params.date_from,
+     params.date_to,
+    );
     downloadFile(res, fileName);
     await commit(MUTATE_IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS, false);
    });
@@ -108,7 +141,10 @@ const getters = {
  [IS_LOADING_EXPORT_FINANCE_REPORT]: (state) => state.isExportingFinanceReport,
  [USER_STAT]: (state) => state.userStat,
  [IS_STATS_LOADING]: (state) => state.isLoading,
- [IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS]: (state) => state.isExportingOrdersByCustomers,
+ [IS_LOADING_EXPORT_ORDERS_BY_CUSTOMERS]: (state) =>
+  state.isExportingOrdersByCustomers,
+ [IS_LOADING_FINANCE_REPORT]: (state) => state.isLoadingFinanceReport,
+ [FINANCE_REPORT]: (state) => state.financeReport,
 };
 
 export default {

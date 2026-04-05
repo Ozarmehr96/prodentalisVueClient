@@ -16,6 +16,36 @@
           />
         </div>
 
+        <div class="col-12 col-md-3" style="width: auto" v-if="showStatus">
+          <label class="form-label">Статус заказа</label>
+          <div class="btn-group d-flex align-items-center flex-wrap" role="group">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              :class="{ active: filters.status == null }"
+              @click="setStatus(null)"
+            >
+              Все
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              :class="{ active: filters.status === 'Created' }"
+              @click="setStatus('Created')"
+            >
+              Созданные
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              :class="{ active: filters.status === 'Finished' }"
+              @click="setStatus('Finished')"
+            >
+              Завершенные
+            </button>
+          </div>
+        </div>
+        <slot name="additional-filters"></slot>
         <!-- Сброс -->
         <div class="col-12 col-md-2 d-flex align-items-end">
           <button class="btn btn-outline-secondary w-100" @click="clearFilters">
@@ -39,6 +69,10 @@ export default {
       type: String,
       default: "today",
     },
+    showStatus: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -46,6 +80,7 @@ export default {
       filters: {
         date_from: "",
         date_to: "",
+        status: null,
       },
     };
   },
@@ -63,13 +98,25 @@ export default {
       this.filters = {
         date_from: "",
         date_to: "",
+        status: null,
       };
 
       // сбрасываем DateFilter
       this.$refs.dateFilter.setDateType(this.initialDateType);
 
+      // this.$emit("onFilterChanged", this.filters);
+    },
+    setStatus(status) {
+      this.filters.status = status;
       this.$emit("onFilterChanged", this.filters);
     },
   },
 };
 </script>
+<style scoped>
+.btn.active {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}
+</style>

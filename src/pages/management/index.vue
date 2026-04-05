@@ -116,7 +116,8 @@ export default {
               iconClass: "brand-style",
               title: "Финансовый отчёт",
               description: "Доходы, расходы и чистая прибыль по заказчикам и типам работ",
-              action: () => (this.showFinanceExportModal = true), // Открытие модального окна
+              // action: () => (this.showFinanceExportModal = true), // Открытие модального окна
+              action: "/management/finance-report",
               svgPath: "/images/finance-export.svg",
               canShow: this.canView,
             },

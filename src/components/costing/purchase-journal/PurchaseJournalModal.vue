@@ -18,12 +18,14 @@
           <div class="row g-3">
             <!-- Материал -->
             <div class="col-12">
-              <div class="form-floating" @click="showSelectMaterialWizard = true">
+              <div class="form-floating">
                 <input
+                  @click="showSelectMaterialWizard = true"
+                  :disabled="isEdit"
                   type="text"
                   class="form-control"
-                  :class="{ 'is-invalid': !isNameValid && localItem.material_name }"
-                  v-model.trim="localItem.material_name"
+                  :class="{ 'is-invalid': !isNameValid && materialName }"
+                  v-model.trim="materialName"
                   placeholder="Наименование"
                   readonly
                   required
@@ -156,6 +158,7 @@ import SelectMaterialWizard from "../../../components/costing/materials/SelectMa
 
 import {
   IS_PURCHASE_JOURNALS_LOADING,
+  LOAD_MATERIALS,
   MATERIALS,
   SAVE_PURCHASE_JOURNAL,
   UPDATE_PURCHASE_JOURNAL,
@@ -242,11 +245,21 @@ export default {
     "localItem.price": "updateAmount",
   },
 
+  beforeMount() {
+    if (this.materials.length === 0) {
+      this.loadMaterials();
+    }
+  },
+
   computed: {
     ...mapGetters({
       isLoading: IS_PURCHASE_JOURNALS_LOADING,
       materials: MATERIALS,
     }),
+
+    materialName() {
+      return this.materials.find((m) => m.id === this.localItem.material_id)?.name || "";
+    },
 
     totalAmount() {
       return (this.localItem.quantity || 0) * (this.localItem.price || 0);
@@ -259,7 +272,7 @@ export default {
     },
 
     isNameValid() {
-      return !!this.localItem.material_name?.trim();
+      return !!this.materialName?.trim();
     },
 
     isQuantityValid() {
@@ -279,6 +292,7 @@ export default {
     ...mapActions({
       savePurchaseAction: SAVE_PURCHASE_JOURNAL,
       updatePurchaseAction: UPDATE_PURCHASE_JOURNAL,
+      loadMaterials: LOAD_MATERIALS,
     }),
 
     close() {

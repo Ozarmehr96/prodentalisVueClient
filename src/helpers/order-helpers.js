@@ -170,21 +170,26 @@ export function getCurrency(amount, currency)
 export function formatMoney(value) {
   if (value == null) return "-";
 
-  // Обрезаем без округления
+  // Обрезаем без округления до 4 знаков
   let truncated =
-    value >= 0 ? Math.floor(value * 10000) / 10000 : Math.ceil(value * 10000) / 10000;
+    value >= 0
+      ? Math.floor(value * 10000) / 10000
+      : Math.ceil(value * 10000) / 10000;
 
-  // Проверяем: есть ли дробная часть
-  let hasDecimal = truncated % 1 !== 0;
+  // Превращаем в строку с максимум 4 знаками после запятой
+  let str = truncated.toString();
 
-  // Формируем строку
-  let str = hasDecimal
-    ? truncated.toFixed(4) // показываем 4 знака
-    : truncated.toString(); // просто число
-
-  let parts = str.split(".");
+  if (str.includes(".")) {
+    // Берем только первые 4 цифры после запятой
+    let [intPart, decPart] = str.split(".");
+    decPart = decPart.substring(0, 4);
+    // Убираем лишние нули в конце
+    decPart = decPart.replace(/0+$/, "");
+    str = decPart ? `${intPart}.${decPart}` : intPart;
+  }
 
   // Форматируем тысячи
+  let parts = str.split(".");
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
   return parts.join(".");
