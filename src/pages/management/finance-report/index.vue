@@ -14,6 +14,7 @@
       :initialDateType="'month'"
       @onFilterChanged="onDateChanged"
       ref="filterWizard"
+      dateTitle="Период завершения заказа"
       :showStatus="false"
     />
     <div class="alert alert-info alert-dismissible fade show mt-3" role="alert">
@@ -101,7 +102,7 @@
 
     <Spinner v-if="isLoading" style="position: initial; margin-left: 50%" />
 
-    <div v-if="!isLoading">
+    <div v-if="!isLoading" style="max-width: 800px">
       <div class="table mt-4">
         <table class="table table-bordered text-center align-middle">
           <thead class="table-light">
@@ -123,6 +124,49 @@
                 </span>
               </td>
               <td>{{ totalMaterialPurchasesAmount }} {{ currency }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-responsive mt-3 mb-5">
+        <h5>Сводка по заказчикам</h5>
+        <small class="text-muted">
+          Показываются только заказчики с закрытыми заказами за выбранный период.
+        </small>
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light text-center">
+            <tr>
+              <th>Заказчик</th>
+              <th class="text-center">Сумма заказов</th>
+              <th class="text-center">Оплачено</th>
+              <th class="text-center">Долг</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr v-for="item in financeReport?.customers_report" :key="item.customer_id">
+              <td>
+                {{ item.customer_name }}
+              </td>
+
+              <td class="text-center">
+                {{ getFormattedMoney(item.total_price) }}
+              </td>
+
+              <td class="text-center">
+                {{ getFormattedMoney(item.total_paid) }}
+              </td>
+
+              <td
+                class="text-center fw-bold"
+                :class="{
+                  'text-danger': item.debt > 0,
+                  'text-success': item.debt === 0,
+                }"
+              >
+                {{ getFormattedMoney(item.debt) }} {{ currency }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -240,6 +284,9 @@ export default {
     },
 
     formatAmount(amount) {
+      return formatMoney(amount);
+    },
+    getFormattedMoney(amount) {
       return formatMoney(amount);
     },
     onDateChanged(period) {

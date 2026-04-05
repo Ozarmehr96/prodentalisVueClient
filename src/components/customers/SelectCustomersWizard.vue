@@ -88,6 +88,10 @@ export default {
       type: [String, null],
       default: null,
     },
+    selectedCustomerId: {
+      type: [String, null],
+      default: null,
+    },
 
     isAddAllButton: false,
     disabled: false,
@@ -149,7 +153,9 @@ export default {
   watch: {
     visible(val) {
       if (!this.bsOffcanvas) return;
-      if (val) this.bsOffcanvas.show();
+      if (val) {
+        this.bsOffcanvas.show();
+      }
       // не закрываем через watch, закрытие отслеживаем через событие Bootstrap
     },
   },
@@ -158,6 +164,12 @@ export default {
       await this.loadCustomers();
     }
 
+    if (this.selectedCustomerId) {
+      const customer = this.customers.find((c) => c.id === this.selectedCustomerId);
+      if (customer) {
+        this.selectedCustomer = customer;
+      }
+    }
     this.bsOffcanvas = new bootstrap.Offcanvas(this.$refs.offcanvasRef);
 
     // Подписка на событие закрытия offcanvas

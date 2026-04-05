@@ -19,6 +19,7 @@
       :initialDateType="'month'"
       @onFilterChanged="onDateChanged"
       ref="filterWizard"
+      dateTitle="Период закупки"
     />
 
     <div class="row g-3 mb-3">

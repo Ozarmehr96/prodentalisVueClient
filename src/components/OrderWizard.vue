@@ -12,6 +12,7 @@
           <SelectCustomersWizard
             v-if="!isCustomer"
             class="form-floating mb-4"
+            :selectedCustomerId="customerId"
             v-model:visible="showCustomerCanvas"
             @select-customer="onCustomerSelected"
           />
@@ -242,6 +243,9 @@ export default {
       currentUser: CURRENT_USER,
       steps: WORK_STEPS,
     }),
+    customerId() {
+      return this.customer ? this.customer.id : null;
+    },
     isValid() {
       let isValidData =
         this.customer &&

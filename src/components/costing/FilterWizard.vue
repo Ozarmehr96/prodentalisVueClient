@@ -5,7 +5,7 @@
         <!-- Фильтр по дате -->
         <div class="col-12 col-md-3" style="width: auto">
           <label class="form-label">
-            Дата закупки ({{ $toDateFormat(filters.date_from) }} -
+            {{ dateTitle }} ({{ $toDateFormat(filters.date_from) }} -
             {{ $toDateFormat(filters.date_to) }})
           </label>
 
@@ -68,6 +68,10 @@ export default {
     initialDateType: {
       type: String,
       default: "today",
+    },
+    dateTitle: {
+      type: String,
+      default: "",
     },
     showStatus: {
       type: Boolean,
