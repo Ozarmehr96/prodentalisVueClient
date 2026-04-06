@@ -4,7 +4,7 @@
     class="h-100 gradient-form"
     style="background-color: #eee"
   >
-    <div class="container py-5 h-100">
+    <div class="container py-5 h-100" @keyup.enter="auth">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-xl-10">
           <div class="card rounded-3 text-black">
@@ -112,6 +112,10 @@ export default {
       currentUser: CURRENT_USER,
     }),
     async auth() {
+      if (!this.isValid) {
+        this.$toastError("Пожалуйста, заполните все поля для входа.");
+        return;
+      }
       this.isLogging = true;
       await this.loginAction({
         login: this.login,

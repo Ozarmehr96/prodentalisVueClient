@@ -1,6 +1,6 @@
 <template>
   <app-page title="Финансовый отчет" v-if="canControl" :showBackButton="true">
-    <template v-slot:headerline>
+    <template v-if="canShowExportButton" v-slot:headerline>
       <button
         class="btn position-absolute top-3 end-3 d-flex align-items-center me-3 brand-style"
         @click="showFinanceExportModal = true"
@@ -192,9 +192,10 @@ import {
   FINANCE_REPORT,
   LOAD_FINANCE_REPORT,
   IS_LOADING_FINANCE_REPORT,
+  CURRENT_USER,
 } from "../../../store/types";
 import { formatMoney } from "../../../helpers/order-helpers";
-
+import { VAHOBOV_LAB } from "../../../helpers/labsEnum";
 export default {
   components: {
     AppPage,
@@ -220,7 +221,11 @@ export default {
       isLoading: IS_LOADING_FINANCE_REPORT,
       currency: CURRENCY,
       financeReport: FINANCE_REPORT,
+      currentUser: CURRENT_USER,
     }),
+    canShowExportButton() {
+      return this.currentUser && this.currentUser.lab_id === VAHOBOV_LAB;
+    },
     canControl() {
       return this.isLabDirector || this.isSystemAdmin || this.isAdmin;
     },

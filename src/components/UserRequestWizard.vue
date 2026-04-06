@@ -36,14 +36,20 @@
       <!-- Кнопки действий для Pending -->
       <div class="d-flex gap-2 mt-2">
         <button
-          v-if="isLabDirector && request.status_code === 'Pending'"
+          v-if="
+            (isLabDirector || request?.request_type === 'ApproveTelegram') &&
+            request.status_code === 'Pending'
+          "
           class="btn btn-success btn-sm"
           @click="updateRequest('Approved', request.id)"
         >
           Подтвердить
         </button>
         <button
-          v-if="isLabDirector && request.status_code === 'Pending'"
+          v-if="
+            (isLabDirector || request?.request_type === 'ApproveTelegram') &&
+            request.status_code === 'Pending'
+          "
           class="btn btn-danger btn-sm"
           @click="updateRequest('Rejected', request.id)"
         >
