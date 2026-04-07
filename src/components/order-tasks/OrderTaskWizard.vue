@@ -253,7 +253,7 @@ export default {
     },
     currentWorkTypeTeeth() {
       return this.workTypesWithTeeth.find((w) => w.id == this.orderTask.work_type.id)
-        .teeth;
+        ?.teeth;
     },
     /**
      * Текущий исполнитель задачи

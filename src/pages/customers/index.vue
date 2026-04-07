@@ -69,6 +69,7 @@ import AppPage from "../../components/AppPage.vue";
 import {
   CUSTOMERS,
   DELETE_CUSTOMER,
+  IS_LAB_ADMIN,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
   LOAD_CUSTOMERS,
@@ -96,10 +97,11 @@ export default {
     ...mapGetters({
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
+      isAdminLab: IS_LAB_ADMIN,
       customers: CUSTOMERS,
     }),
     canControl() {
-      return this.isLabDirector || this.isSystemAdmin;
+      return this.isLabDirector || this.isSystemAdmin || this.isAdminLab;
     },
   },
   async beforeMount() {

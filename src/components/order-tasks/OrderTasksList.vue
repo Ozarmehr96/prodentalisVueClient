@@ -75,8 +75,11 @@ export default {
   mounted() {
     // как только компонент смонтирован — инициируем первую загрузку
     this.$nextTick(() => {
-      if (this.$refs.infiniteLoading) {
-        this.$refs.infiniteLoading.stateChanger.reset(); // сброс состояния
+      const inf = this.$refs.infiniteLoading;
+
+      // проверяем, что infiniteLoading и stateChanger реально существуют
+      if (inf && inf.stateChanger && typeof inf.stateChanger.reset === "function") {
+        inf.stateChanger.reset(); // сброс состояния
       }
     });
   },

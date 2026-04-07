@@ -129,7 +129,7 @@ export default {
                 "Кому сколько начислено, сколько выплачено и сколько осталось выплатить",
               action: "/management/users-salary-stats",
               svgPath: "/images/user_salary.svg",
-              canShow: this.isDirector || this.isSystemAdmin,
+              canShow: this.canView,
               imageStyle: "width:64px !important; height:64px!important;",
             },
             {
@@ -139,7 +139,7 @@ export default {
               description: "Кто сколько получил зарплаты",
               action: "/management/salary-payment-journal",
               svgPath: "/images/zarplata.svg",
-              canShow: this.isDirector || this.isSystemAdmin,
+              canShow: this.canView,
               imageStyle: "width:64px !important; height:64px!important;",
             },
             {
@@ -160,7 +160,7 @@ export default {
               action: "/management/customer-work-type-prices",
               // svgPath: "/images/users.svg",
               svgPath: "/images/price-price-tag-cost-svgrepo-com.svg",
-              canShow: this.isDirector || this.isSystemAdmin,
+              canShow: this.canView,
             },
             {
               id: "material-expenses",
@@ -178,7 +178,7 @@ export default {
               description: "Расчёт затрат на материалы и накладные расходы",
               action: "/management/work-type-materials",
               svgPath: "/images/calculator.svg",
-              canShow: this.isDirector || this.isSystemAdmin,
+              canShow: this.isDirector || this.isSystemAdmin, // Только для директора и системного администратора
             },
           ],
         },

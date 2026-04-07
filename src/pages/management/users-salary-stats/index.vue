@@ -1,6 +1,6 @@
 <template>
   <app-page
-    title="Статистика зарплаты сотрудников"
+    title="Зарплата сотрудников"
     @onAddButtonClickEvent="openModal(null)"
     :showBackButton="true"
   >

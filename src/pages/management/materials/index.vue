@@ -79,6 +79,7 @@ import {
   DELETE_MATERIAL,
   IS_LAB_DIRECTOR,
   IS_SYSTEM_ADMIN,
+  IS_LAB_ADMIN,
 } from "../../../store/types";
 import MaterialModal from "../../../components/costing/materials/MaterialModal.vue";
 import WorkTypeMaterials from "../../../components/costing/work-type-materials/WorkTypeMaterialsTable.vue";
@@ -105,6 +106,7 @@ export default {
       materials: MATERIALS,
       isLabDirector: IS_LAB_DIRECTOR,
       isSystemAdmin: IS_SYSTEM_ADMIN,
+      isAdminLab: IS_LAB_ADMIN,
     }),
 
     myWorkTypeData() {
@@ -122,7 +124,7 @@ export default {
      * Может ли пользователь управлять данными
      */
     canControl() {
-      return this.isLabDirector || this.isSystemAdmin;
+      return this.isLabDirector || this.isSystemAdmin || this.isAdminLab;
     },
   },
 
