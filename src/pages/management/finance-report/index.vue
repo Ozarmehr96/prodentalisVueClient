@@ -37,7 +37,9 @@
             class="card-body d-flex flex-column justify-content-center align-items-center flex-grow-1"
           >
             <h5 class="card-title text-center">Сумма заказов</h5>
-            <p class="card-text fs-4 fw-bold">{{ totalOrdersAmount }} {{ currency }}</p>
+            <p class="card-text fs-4 fw-bold text-nowrap">
+              {{ totalOrdersAmount }} {{ currency }}
+            </p>
             <small class="text-muted text-center">по завершённым заказам</small>
           </div>
         </div>
@@ -51,7 +53,9 @@
             class="card-body d-flex flex-column justify-content-center align-items-center flex-grow-1"
           >
             <h5 class="card-title text-center">Оплачено</h5>
-            <p class="card-text fs-4 fw-bold">{{ totalPaid }} {{ currency }}</p>
+            <p class="card-text fs-4 fw-bold text-nowrap">
+              {{ totalPaid }} {{ currency }}
+            </p>
             <small class="text-muted text-center">получено от заказчиков</small>
           </div>
         </div>
@@ -65,7 +69,9 @@
             class="card-body d-flex flex-column justify-content-center align-items-center flex-grow-1"
           >
             <h5 class="card-title text-center">Долг</h5>
-            <p class="card-text fs-4 fw-bold">{{ totalCustomersDebt }} {{ currency }}</p>
+            <p class="card-text fs-4 fw-bold text-nowrap">
+              {{ totalCustomersDebt }} {{ currency }}
+            </p>
             <small class="text-muted text-center">неоплаченные заказы</small>
           </div>
         </div>
@@ -79,7 +85,9 @@
             class="card-body d-flex flex-column justify-content-center align-items-center flex-grow-1"
           >
             <h5 class="card-title text-center">Расход</h5>
-            <p class="card-text fs-4 fw-bold">{{ totalExpenses }} {{ currency }}</p>
+            <p class="card-text fs-4 fw-bold text-nowrap">
+              {{ totalExpenses }} {{ currency }}
+            </p>
             <small class="text-muted text-center">зарплата + материалы</small>
           </div>
         </div>
@@ -93,7 +101,7 @@
             class="card-body d-flex flex-column justify-content-center align-items-center flex-grow-1"
           >
             <h5 class="card-title text-center">Прибыль</h5>
-            <p class="card-text fs-4 fw-bold">{{ profit }} {{ currency }}</p>
+            <p class="card-text fs-4 fw-bold text-nowrap">{{ profit }} {{ currency }}</p>
             <small class="text-muted text-center">оплачено − расход</small>
           </div>
         </div>

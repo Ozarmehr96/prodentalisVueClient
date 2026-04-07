@@ -258,7 +258,9 @@ export default {
     }),
 
     materialName() {
-      return this.materials.find((m) => m.id === this.localItem.material_id)?.name || "";
+      let name = this.materials.find((m) => m.id === this.localItem.material_id)?.name;
+      if (!name && this.item) return this.item?.material_name + " (удалён)";
+      return name;
     },
 
     totalAmount() {
